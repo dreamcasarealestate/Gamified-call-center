@@ -21,7 +21,7 @@ export default function LeaderboardPanel({ entries }: { entries: LeaderboardEntr
 
       <div className="mt-4 space-y-2">
         {entries.slice(0, 5).map((e) => (
-          <div key={e.id} className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+          <div key={e.id} className="rounded-xl border border-white/10 bg-white/3 px-4 py-3">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="h-9 w-9 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center text-sm font-semibold">

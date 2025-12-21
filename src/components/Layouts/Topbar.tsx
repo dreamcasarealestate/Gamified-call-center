@@ -6,11 +6,11 @@ import { Bell, ShieldCheck, Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function Topbar({
-  sidebarWidth = 280,
+  sidebarLeft = 280,
   onOpenSidebar,
-  title = "ACA",
+  title = "Admin Panel",
 }: {
-  sidebarWidth?: number;
+  sidebarLeft?: number;
   onOpenSidebar?: () => void;
   title?: string;
 }) {
@@ -18,13 +18,17 @@ export default function Topbar({
 
   return (
     <header
-      className="fixed top-0 right-0 h-16 bg-white border-b border-black/10 z-40"
+      className="fixed top-0 right-0 h-16 bg-white border-b border-black/10 z-40 transition-[left] duration-200"
       style={{
-        left: 0,
+        left: 0, // mobile default
       }}
     >
-      <div className="h-full px-4 md:px-6 flex items-center justify-between md:pl-6">
-        {/* Left: Mobile hamburger + App title */}
+      {/* Desktop push to right of sidebar */}
+      <div
+        className="h-full px-4 md:px-6 flex items-center justify-between"
+        style={{ marginLeft: sidebarLeft }}
+      >
+        {/* Left */}
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -37,16 +41,14 @@ export default function Topbar({
 
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-black/70" />
-            <div className="text-[15px] font-semibold text-[#111827]">
-              {title}
-            </div>
+            <div className="text-[15px] font-semibold text-[#111827]">{title}</div>
           </div>
         </div>
 
-        {/* Right: apps + notifications + avatar */}
+        {/* Right */}
         <div className="flex items-center gap-3">
           <AppsMenu
-            onNavigate={(href:any) => {
+            onNavigate={(href: any) => {
               router.push(href);
             }}
           />
@@ -64,14 +66,11 @@ export default function Topbar({
               name="Super Admin"
               role="Administrator"
               onLogout={() => {
-                // wire your signOut logic here
-                // signOut({ callbackUrl: "/" })
                 console.log("logout");
               }}
             />
           </div>
 
-          {/* On mobile show just circle avatar */}
           <div className="sm:hidden">
             <AvatarMenu name="Super Admin" role="Administrator" />
           </div>

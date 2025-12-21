@@ -23,7 +23,7 @@ export default function Boosts({ boosts }: BoostsProps) {
 
       {activeBoosts.length === 0 ? (
         <div className="text-center py-8">
-          <Zap size={32} className="text-slate-600 mx-auto mb-2" />
+          <Zap size={32} className=" mx-auto mb-2" />
           <p className="text-slate-400 text-sm">No active boosts</p>
         </div>
       ) : (
