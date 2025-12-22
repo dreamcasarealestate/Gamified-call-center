@@ -1022,7 +1022,7 @@ export default function TrainingPage() {
             </div>
 
             <p className="text-sm text-slate-600 text-center mb-6">
-              Delete <span className="font-semibold text-slate-900">"{deleteTarget.title}"</span>?
+              Delete <span className="font-semibold text-slate-900">{deleteTarget.title}</span>?
               <br />
               This action cannot be undone.
             </p>
