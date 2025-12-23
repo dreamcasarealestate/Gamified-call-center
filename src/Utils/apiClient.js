@@ -2,18 +2,18 @@ import merge from "lodash/merge";
 import { getSession } from "next-auth/react";
 
 // const base_url = process.env.NEXT_PUBLIC_LOCAL_API_ENDPOINT;
-const base_url = "http://localhost:3001/api/"
+const base_url = "http://localhost:3000/api/";
 
 const URLS = {
   blogs: `${base_url}blog`,
   otp: `${base_url}otp`,
   user: `${base_url}users`,
-  s3bucket:"s3bucket",
-  training:`${base_url}training`,
-  agent:`${base_url}agent`,
-  deals:`${base_url}deals`,
-  designation:`${base_url}designation`,
-  employee:`${base_url}employee`
+  s3bucket: "s3bucket",
+  training: `${base_url}training`,
+  agent: `${base_url}agent`,
+  deals: `${base_url}deals`,
+  designation: `${base_url}designation`,
+  employee: `${base_url}employee`,
 };
 
 export function encodeQueryData(data = {}) {
@@ -75,8 +75,7 @@ const makeHeadersAndParams = async (params, auth, type, ctx = undefined) => {
 
   if (auth && !headerConfig.get("Authorization")) {
     const session = ctx ? await getSession(ctx) : await getSession();
-    // const token = session?.accessToken || session?.token || "";
-    const token = "sdfs";
+    const token = session?.accessToken || session?.token || "";
     if (token) {
       headerConfig.set("Authorization", `Bearer ${token}`);
     }

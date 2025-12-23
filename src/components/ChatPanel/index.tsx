@@ -8,13 +8,8 @@ import {
   Users,
   X,
   ChevronRight,
-  User,
   MoreVertical,
-  Check,
   CheckCheck,
-  Phone,
-  Video,
-  Star,
   Pin,
   Mail,
   Bell,
@@ -82,7 +77,7 @@ export default function ChatSidebar({ isOpen, onClose }: ChatSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  
+
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   // Filter users based on search
@@ -156,7 +151,7 @@ export default function ChatSidebar({ isOpen, onClose }: ChatSidebarProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-4000 md:hidden"
             onClick={onClose}
           />
 
@@ -166,18 +161,18 @@ export default function ChatSidebar({ isOpen, onClose }: ChatSidebarProps) {
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
-            transition={{ 
+            transition={{
               type: "spring",
               damping: 30,
               stiffness: 300
             }}
-            className="fixed md:relative inset-y-0 left-0 w-full md:w-96 bg-gradient-to-b from-gray-50 to-white shadow-2xl z-50 flex flex-col h-screen border-r border-gray-200"
+            className="fixed md:relative inset-y-0 left-0 w-full md:w-96 bg-linear-to-b from-gray-50 to-white shadow-2xl z-50 flex flex-col h-screen border-r border-gray-200"
           >
             {/* Header */}
             <div className="p-6 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
+                  <div className="p-2 bg-linear-to-br from-blue-500 to-purple-600 rounded-xl">
                     <MessageSquare className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -185,7 +180,7 @@ export default function ChatSidebar({ isOpen, onClose }: ChatSidebarProps) {
                     <p className="text-sm text-gray-500">Connect with your team</p>
                   </div>
                 </div>
-                
+
                 <button
                   onClick={onClose}
                   className="p-2 hover:bg-gray-100 rounded-full transition-colors md:hidden"
@@ -196,9 +191,8 @@ export default function ChatSidebar({ isOpen, onClose }: ChatSidebarProps) {
 
               {/* Search Bar */}
               <div className="relative">
-                <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors ${
-                  isSearchFocused ? "text-blue-500" : "text-gray-400"
-                }`}>
+                <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors ${isSearchFocused ? "text-blue-500" : "text-gray-400"
+                  }`}>
                   <Search className="w-5 h-5" />
                 </div>
                 <input
@@ -225,36 +219,34 @@ export default function ChatSidebar({ isOpen, onClose }: ChatSidebarProps) {
             <div className="flex border-b border-gray-200 bg-white/50">
               <button
                 onClick={() => setActiveTab("chats")}
-                className={`flex-1 py-4 flex items-center justify-center gap-2 transition-all relative ${
-                  activeTab === "chats"
-                    ? "text-blue-600 font-semibold"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`flex-1 py-4 flex items-center justify-center gap-2 transition-all relative ${activeTab === "chats"
+                  ? "text-blue-600 font-semibold"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
               >
                 <MessageSquare className="w-5 h-5" />
                 <span>Chats</span>
                 {activeTab === "chats" && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-b from-blue-500 to-purple-500"
                   />
                 )}
               </button>
-              
+
               <button
                 onClick={() => setActiveTab("channels")}
-                className={`flex-1 py-4 flex items-center justify-center gap-2 transition-all relative ${
-                  activeTab === "channels"
-                    ? "text-blue-600 font-semibold"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`flex-1 py-4 flex items-center justify-center gap-2 transition-all relative ${activeTab === "channels"
+                  ? "text-blue-600 font-semibold"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
               >
                 <Users className="w-5 h-5" />
                 <span>Channels</span>
                 {activeTab === "channels" && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-b from-blue-500 to-purple-500"
                   />
                 )}
               </button>
@@ -290,11 +282,10 @@ export default function ChatSidebar({ isOpen, onClose }: ChatSidebarProps) {
                           whileHover={{ scale: 1.005 }}
                           whileTap={{ scale: 0.995 }}
                           onClick={() => setSelectedChat(user.id)}
-                          className={`p-4 rounded-xl cursor-pointer transition-all ${
-                            selectedChat === user.id
-                              ? "bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100"
-                              : "hover:bg-gray-50"
-                          }`}
+                          className={`p-4 rounded-xl cursor-pointer transition-all ${selectedChat === user.id
+                            ? "bg-linear-to-b from-blue-50 to-purple-50 border border-blue-100"
+                            : "hover:bg-gray-50"
+                            }`}
                         >
                           <div className="flex items-start gap-3">
                             {/* Avatar */}
@@ -337,7 +328,7 @@ export default function ChatSidebar({ isOpen, onClose }: ChatSidebarProps) {
                                   {user.lastMessage}
                                 </p>
                                 {user.unreadCount && user.unreadCount > 0 && (
-                                  <span className="ml-2 px-2 py-1 text-xs font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full min-w-[20px] text-center">
+                                  <span className="ml-2 px-2 py-1 text-xs font-semibold bg-linear-to-b from-blue-500 to-purple-500 text-white rounded-full min-w-[20px] text-center">
                                     {user.unreadCount}
                                   </span>
                                 )}
@@ -345,13 +336,12 @@ export default function ChatSidebar({ isOpen, onClose }: ChatSidebarProps) {
 
                               {/* Status */}
                               <div className="flex items-center gap-2 mt-2">
-                                <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                  user.status === "online"
-                                    ? "bg-green-100 text-green-700"
-                                    : user.status === "away"
+                                <span className={`text-xs px-2 py-0.5 rounded-full ${user.status === "online"
+                                  ? "bg-green-100 text-green-700"
+                                  : user.status === "away"
                                     ? "bg-yellow-100 text-yellow-700"
                                     : "bg-gray-100 text-gray-500"
-                                }`}>
+                                  }`}>
                                   {getStatusText(user.status)}
                                 </span>
                                 {user.unreadCount === 0 && user.lastMessage && (
@@ -385,11 +375,10 @@ export default function ChatSidebar({ isOpen, onClose }: ChatSidebarProps) {
                           whileHover={{ scale: 1.005 }}
                           whileTap={{ scale: 0.995 }}
                           onClick={() => setSelectedChat(channel.id)}
-                          className={`p-4 rounded-xl cursor-pointer transition-all ${
-                            selectedChat === channel.id
-                              ? "bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100"
-                              : "hover:bg-gray-50"
-                          }`}
+                          className={`p-4 rounded-xl cursor-pointer transition-all ${selectedChat === channel.id
+                            ? "bg-linear-to-b from-blue-50 to-purple-50 border border-blue-100"
+                            : "hover:bg-gray-50"
+                            }`}
                         >
                           <div className="flex items-start gap-3">
                             {/* Channel Icon */}
@@ -426,7 +415,7 @@ export default function ChatSidebar({ isOpen, onClose }: ChatSidebarProps) {
                                   {channel.lastMessage}
                                 </p>
                                 {channel.unreadCount && channel.unreadCount > 0 && (
-                                  <span className="ml-2 px-2 py-1 text-xs font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full min-w-[20px] text-center">
+                                  <span className="ml-2 px-2 py-1 text-xs font-semibold bg-linear-to-b from-blue-500 to-purple-500 text-white rounded-full min-w-[20px] text-center">
                                     {channel.unreadCount}
                                   </span>
                                 )}
