@@ -1,8 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type User = {
-  username: string;
+export type User = {
+  id: string; // or number if your backend uses number
+  name: string;
+  designation: string;
+  isTrainingCompleted: boolean;
+  email?: string; // optional but handy
 };
 
 type AuthState = {
@@ -22,9 +26,7 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isAuthenticated: false,
 
-      // ✅ Call on successful login
       login: (token, user) => {
-        console.log(user);
         set({
           token,
           user,
@@ -32,7 +34,6 @@ export const useAuthStore = create<AuthState>()(
         });
       },
 
-      // ✅ Logout user
       logout: () => {
         set({
           token: null,
@@ -41,17 +42,19 @@ export const useAuthStore = create<AuthState>()(
         });
       },
 
-      // ✅ Rehydrate auth on app load
       initializeAuth: () => {
         const { token, user } = get();
-
-        if (token && user) {
-          set({ isAuthenticated: true });
-        }
+        if (token && user) set({ isAuthenticated: true });
       },
     }),
     {
-      name: "auth-storage", // localStorage key
+      name: "auth-storage",
+      // optional: keep only what you need
+      partialize: (state) => ({
+        token: state.token,
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+      }),
     }
   )
 );

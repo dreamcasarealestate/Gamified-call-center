@@ -4,6 +4,7 @@ import React, { type ComponentType, useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import FloatingChatButton from "../ChatButton";
 
 type WithAdminLayoutOptions = {
   hideChrome?: boolean;
@@ -59,6 +60,7 @@ function AdminShell({
 
         <main className="flex-1 overflow-y-auto scrollbar-hide px-6 py-3">
           {children}
+          <FloatingChatButton />
         </main>
       </div>
     </div>

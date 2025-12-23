@@ -10,6 +10,8 @@ export default defineConfig([
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
+        "tailwindcss/classnames-order": "off",
+      "tailwindcss/enforces-shorthand": "off"
     },
   },
 ]);

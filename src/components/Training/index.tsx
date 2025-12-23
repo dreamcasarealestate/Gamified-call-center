@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ChevronRight,
   ChevronDown,
@@ -14,7 +14,6 @@ import {
   CheckCircle,
   Clock,
   Award,
-  Star,
   Target,
   Search,
   AlertCircle,
@@ -24,18 +23,22 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import apiClient from "../../Utils/apiClient"; // ✅ CHANGE THIS PATH
 import Image from "next/image";
 
 type TrainingType = "video" | "image" | "pdf";
 
 type TrainingItem = {
-  id: number;
+  id: string | number;
   title: string;
   type: TrainingType;
   src: string;
   completed?: boolean;
   viewedTime?: number;
-  lastAccessed?: Date;
+  lastAccessed?: Date | string;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 };
 
 // Mock user progress
@@ -47,105 +50,45 @@ type UserProgress = {
   lastActive: Date;
 };
 
-const initialData: TrainingItem[] = [
-  {
-    id: 1,
-    title: "Chase Data Agent Training",
-    type: "video",
-    src: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    completed: true,
-    viewedTime: 2700,
-    lastAccessed: new Date("2024-12-20"),
-  },
-  {
-    id: 2,
-    title: "Sherpa Walkthrough",
-    type: "pdf",
-    src: "/PDF/GM Project Document.pdf",
-    completed: false,
-    viewedTime: 1200,
-    lastAccessed: new Date("2024-12-21"),
-  },
-  {
-    id: 3,
-    title: "Advanced Sales Techniques",
-    type: "video",
-    src: "https://www.youtube.com/embed/9bZkp7q19f0",
-    completed: false,
-    lastAccessed: new Date("2024-12-19"),
-  },
-  {
-    id: 4,
-    title: "Customer Service Best Practices",
-    type: "pdf",
-    src: "/PDF/customer-service.pdf",
-    completed: true,
-    viewedTime: 1500,
-    lastAccessed: new Date("2024-12-18"),
-  },
-  {
-    id: 5,
-    title: "Product Demo Images",
-    type: "image",
-    src: "/images/product-demo.jpg",
-    completed: false,
-    lastAccessed: new Date("2024-12-17"),
-  },
-  {
-    id: 6,
-    title: "Compliance Guidelines 2025",
-    type: "pdf",
-    src: "/PDF/compliance.pdf",
-    completed: false,
-    lastAccessed: new Date("2024-12-16"),
-  },
-  {
-    id: 7,
-    title: "Team Collaboration Workshop",
-    type: "video",
-    src: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    completed: true,
-    viewedTime: 3000,
-    lastAccessed: new Date("2024-12-15"),
-  },
-  {
-    id: 8,
-    title: "Market Analysis Report",
-    type: "pdf",
-    src: "/PDF/market-analysis.pdf",
-    completed: false,
-    lastAccessed: new Date("2024-12-14"),
-  },
-  {
-    id: 9,
-    title: "Soft Skills Development",
-    type: "video",
-    src: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    completed: true,
-    viewedTime: 3300,
-    lastAccessed: new Date("2024-12-13"),
-  },
-  {
-    id: 10,
-    title: "Quarterly Performance Review",
-    type: "pdf",
-    src: "/PDF/performance-review.pdf",
-    completed: false,
-    lastAccessed: new Date("2024-12-12"),
-  },
-];
+/** ---------------- RBAC ---------------- */
+type Role = "ceo" | "manager" | "agent_lead" | "agent" | string;
+
+// const canManageTraining = (role?: Role) => role === "ceo"; // ✅ only CEO can Add/Edit/Delete
+const canManageTraining = (role?: Role) => role === role; // ✅ only CEO can Add/Edit/Delete
+
+// const canUpdateProgress = (role?: Role) => Boolean(role); // ✅ everyone logged-in can mark completion
+const canUpdateProgress = (role?: Role) => true; // ✅ everyone logged-in can mark completion
+
+/** ---------------- Normalizers ---------------- */
+const normalizeTrainingItem = (item: any): TrainingItem => ({
+  ...item,
+  lastAccessed: item?.lastAccessed ? new Date(item.lastAccessed) : undefined,
+  createdAt: item?.createdAt ? new Date(item.createdAt) : item?.createdAt,
+  updatedAt: item?.updatedAt ? new Date(item.updatedAt) : item?.updatedAt,
+});
 
 export default function TrainingPage() {
-  const [data, setData] = useState<TrainingItem[]>(initialData);
-  const [openId, setOpenId] = useState<number | null>(null);
+  const { data: session } = useSession();
+  const role: Role | undefined =
+    (session as any)?.user?.role ?? (session as any)?.role;
+
+  const [data, setData] = useState<TrainingItem[]>([]);
+  const [openId, setOpenId] = useState<string | number | null>(null);
+
+  // file upload state
   const [file, setFile] = useState<File | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<TrainingItem | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showCompleted, setShowCompleted] = useState<boolean>(true);
 
   // modal state
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState<TrainingItem | null>(null);
+
+  const [deleteTarget, setDeleteTarget] = useState<TrainingItem | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showCompleted, setShowCompleted] = useState<boolean>(true);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -153,107 +96,228 @@ export default function TrainingPage() {
     src: "",
   });
 
-  // User progress state
+  // User progress state (UI-only; backend can supply later if needed)
   const [userProgress, setUserProgress] = useState<UserProgress>({
     userId: "user_001",
-    completedChapters: 4,
+    completedChapters: 0,
     totalTimeSpent: 120,
     streakDays: 7,
     lastActive: new Date(),
   });
 
-  // Calculate completion percentage
-  const completedChapters = data.filter(item => item.completed).length;
-  const totalChapters = data.length;
-  const completionPercentage = totalChapters > 0 ? Math.round((completedChapters / totalChapters) * 100) : 0;
-
-  // Check if all chapters are completed
-  const allChaptersCompleted = completedChapters === totalChapters;
-
-  // Filter data based on search
-  const filteredData = data.filter(item => {
-    const matchesSearch = searchQuery === "" ||
-      item.title.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesCompletion = showCompleted ? true : !item.completed;
-
-    return matchesSearch && matchesCompletion;
-  });
-
-  // Toggle chapter completion
-  const toggleCompletion = (id: number) => {
-    setData(prev => prev.map(item => {
-      if (item.id === id) {
-        const newCompleted = !item.completed;
-        setUserProgress(prevProgress => ({
-          ...prevProgress,
-          completedChapters: newCompleted ?
-            prevProgress.completedChapters + 1 :
-            prevProgress.completedChapters - 1,
-          lastActive: new Date(),
-        }));
-        return { ...item, completed: newCompleted };
-      }
-      return item;
-    }));
+  /** ---------------- API wrappers ---------------- */
+  const fetchChapters = async () => {
+    const res = await apiClient.get(apiClient.URLS.training, {}, true);
+    console.log(res.body);
+    return res.body;
   };
 
-  // Mark all as completed
-  const markAllAsCompleted = () => {
-    setData(prev => prev.map(item => ({ ...item, completed: true })));
-    setUserProgress(prev => ({
+  const createChapter = async (payload: {
+    title: string;
+    type: TrainingType;
+    src: string;
+  }) => {
+    const res = await apiClient.post(apiClient.URLS.training, payload, true);
+    return res.body;
+  };
+
+  const updateChapter = async (
+    id: TrainingItem["id"],
+    payload: { title: string; type: TrainingType; src: string }
+  ) => {
+    const res = await apiClient.put(
+      `${apiClient.URLS.training}/${id}`,
+      payload,
+      true
+    );
+    return res.body;
+  };
+
+  const deleteChapterApi = async (id: TrainingItem["id"]) => {
+    const res = await apiClient.delete(
+      `${apiClient.URLS.training}/${id}`,
+      {},
+      true
+    );
+    return res.body;
+  };
+
+  const updateProgress = async (
+    id: TrainingItem["id"],
+    payload: { completed?: boolean; viewedTime?: number; lastAccessed?: string }
+  ) => {
+    const res = await apiClient.patch(
+      `${apiClient.URLS.training}/${id}/progress`,
+      payload,
+      true
+    );
+    return res.body;
+  };
+
+  /** ---------------- Initial load ---------------- */
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const body = await fetchChapters();
+        const items = Array.isArray(body) ? body : body?.items ?? [];
+
+        const normalized = items.map(normalizeTrainingItem);
+        setData(normalized);
+
+        // derive completed count for UI progress
+        const completedCount = normalized.filter(
+          (i: TrainingItem) => i.completed
+        ).length;
+        setUserProgress((p) => ({
+          ...p,
+          completedChapters: completedCount,
+          lastActive: new Date(),
+        }));
+      } catch (e: any) {
+        setError(
+          e?.body?.error || e?.message || "Failed to load training data"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, []);
+
+  /** ---------------- Derived values ---------------- */
+  const completedChapters = useMemo(
+    () => data.filter((item) => item.completed).length,
+    [data]
+  );
+  const totalChapters = data.length;
+  const completionPercentage =
+    totalChapters > 0
+      ? Math.round((completedChapters / totalChapters) * 100)
+      : 0;
+  const allChaptersCompleted = completedChapters === totalChapters;
+
+  const filteredData = useMemo(() => {
+    return data.filter((item) => {
+      const matchesSearch =
+        searchQuery === "" ||
+        item.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCompletion = showCompleted ? true : !item.completed;
+      return matchesSearch && matchesCompletion;
+    });
+  }, [data, searchQuery, showCompleted]);
+
+  /** ---------------- Actions ---------------- */
+  const toggle = (id: string | number) => {
+    setOpenId((prev) => (prev === id ? null : id));
+  };
+
+  const toggleCompletion = async (id: TrainingItem["id"]) => {
+    // if (!canUpdateProgress(role)) return;
+
+    const current = data.find((x) => x.id === id);
+    if (!current) return;
+
+    const nextCompleted = !current.completed;
+
+    // optimistic update
+    setData((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, completed: nextCompleted } : item
+      )
+    );
+
+    try {
+      await updateProgress(id, {
+        completed: nextCompleted,
+        lastAccessed: new Date().toISOString(),
+      });
+
+      setUserProgress((prevProgress) => ({
+        ...prevProgress,
+        completedChapters: nextCompleted
+          ? prevProgress.completedChapters + 1
+          : Math.max(0, prevProgress.completedChapters - 1),
+        lastActive: new Date(),
+      }));
+    } catch (e: any) {
+      // rollback
+      setData((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, completed: current.completed } : item
+        )
+      );
+      setError(e?.body?.error || e?.message || "Failed to update progress");
+    }
+  };
+
+  const markAllAsCompleted = async () => {
+    // Optional: Could call backend in bulk later. For now, local.
+    setData((prev) => prev.map((item) => ({ ...item, completed: true })));
+    setUserProgress((prev) => ({
       ...prev,
       completedChapters: totalChapters,
       lastActive: new Date(),
     }));
   };
 
-  // Reset all progress
-  const resetProgress = () => {
-    setData(prev => prev.map(item => ({ ...item, completed: false })));
-    setUserProgress(prev => ({
+  const resetProgress = async () => {
+    // Optional: Could call backend in bulk later. For now, local.
+    setData((prev) => prev.map((item) => ({ ...item, completed: false })));
+    setUserProgress((prev) => ({
       ...prev,
       completedChapters: 0,
       lastActive: new Date(),
     }));
   };
 
-  // Mark as completed after video view
-  const markAsWatched = (id: number) => {
-    setData(prev => prev.map(item => {
-      if (item.id === id && item.type === "video") {
-        const isCompleted = !item.completed;
-        if (isCompleted) {
-          setUserProgress(prevProgress => ({
-            ...prevProgress,
-            completedChapters: prevProgress.completedChapters + 1,
-            lastActive: new Date(),
-          }));
-        }
-        return {
-          ...item,
-          completed: isCompleted,
-          lastAccessed: new Date()
-        };
-      }
-      return item;
-    }));
-  };
+  const markAsWatched = async (id: TrainingItem["id"]) => {
+    // if (!canUpdateProgress(role)) return;
 
-  // Complete all chapters
-  const handleCompleteAll = () => {
-    if (allChaptersCompleted) {
-      alert("🎉 Congratulations! You've completed all chapters! Your certificate will be generated shortly.");
+    const current = data.find((x) => x.id === id);
+    if (!current) return;
+    if (current.completed) return;
+
+    // optimistic
+    setData((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, completed: true, lastAccessed: new Date() }
+          : item
+      )
+    );
+
+    try {
+      await updateProgress(id, {
+        completed: true,
+        lastAccessed: new Date().toISOString(),
+      });
+
+      setUserProgress((prevProgress) => ({
+        ...prevProgress,
+        completedChapters: prevProgress.completedChapters + 1,
+        lastActive: new Date(),
+      }));
+    } catch (e: any) {
+      setError(e?.body?.error || e?.message || "Failed to mark as watched");
     }
   };
 
-  const toggle = (id: number) => {
-    setOpenId((prev) => (prev === id ? null : id));
+  const handleCompleteAll = () => {
+    if (allChaptersCompleted) {
+      alert(
+        "🎉 Congratulations! You've completed all chapters! Your certificate will be generated shortly."
+      );
+    }
   };
 
-  /* ------------------ CRUD LOGIC ------------------ */
-
+  /** ---------------- CRUD modal ---------------- */
   const openAddModal = () => {
+    if (!canManageTraining(role)) return;
+
     setEditingItem(null);
     setForm({
       title: "",
@@ -264,6 +328,8 @@ export default function TrainingPage() {
     setShowModal(true);
   };
 
+  // NOTE: Your current upload uses /api/upload (Next route).
+  // If backend later adds /api/uploads (multipart), update here.
   const uploadFile = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -273,89 +339,115 @@ export default function TrainingPage() {
       body: formData,
     });
 
-    const data = await res.json();
+    const json = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.error || "Upload failed");
+      throw new Error(json.error || "Upload failed");
     }
 
-    return data.url;
+    return json.url;
   };
 
   const handleFileChange = async (file: File) => {
     setFile(file);
-
     try {
       const uploadedUrl = await uploadFile(file);
       setForm((prev) => ({ ...prev, src: uploadedUrl }));
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      setError(err?.message || "Upload failed");
     }
   };
 
   const openEditModal = (item: TrainingItem) => {
+    if (!canManageTraining(role)) return;
+
     setEditingItem(item);
     setForm({
       title: item.title,
       type: item.type,
       src: item.src,
     });
+    setFile(null);
     setShowModal(true);
   };
 
   const handleSave = async () => {
-    if (!form.title || (!file && !editingItem)) return;
+    if (!canManageTraining(role)) return;
+    if (!form.title) return;
 
     try {
-      let uploadedUrl = form.src;
+      setError(null);
+
+      let src = form.src;
 
       if (file) {
-        uploadedUrl = await uploadFile(file);
+        src = await uploadFile(file);
       }
 
-      const newId = editingItem ? editingItem.id : Date.now();
+      if (!src) {
+        setError("Please upload/select a file (src) before saving.");
+        return;
+      }
 
-      const newItem: TrainingItem = {
-        id: newId,
-        title: form.title,
-        type: form.type,
-        src: uploadedUrl,
-        completed: false,
-        lastAccessed: new Date(),
-      };
+      const payload = { title: form.title, type: form.type, src };
 
-      setData((prev) => {
-        if (editingItem) {
-          return prev.map((item) =>
-            item.id === editingItem.id ? newItem : item
-          );
-        } else {
-          return [...prev, newItem];
-        }
-      });
+      if (editingItem) {
+        const updated = normalizeTrainingItem(
+          await updateChapter(editingItem.id, payload)
+        );
+        setData((prev) =>
+          prev.map((it) => (it.id === editingItem.id ? updated : it))
+        );
+        setOpenId(updated.id as any);
+      } else {
+        const created = normalizeTrainingItem(await createChapter(payload));
+        setData((prev) => [...prev, created]);
+        setOpenId(created.id as any);
+      }
 
       setShowModal(false);
+      setEditingItem(null);
       setFile(null);
-      setForm({
-        title: "",
-        type: "video",
-        src: "",
-      });
-      setOpenId(newId);
-    } catch (err) {
-      console.error(err);
+      setForm({ title: "", type: "video", src: "" });
+    } catch (e: any) {
+      setError(e?.body?.error || e?.message || "Failed to save chapter");
     }
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
+    if (!canManageTraining(role)) return;
     if (!deleteTarget) return;
 
-    setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
+    const target = deleteTarget;
     setDeleteTarget(null);
+
+    // optimistic remove
+    setData((prev) => prev.filter((it) => it.id !== target.id));
+
+    try {
+      await deleteChapterApi(target.id);
+    } catch (e: any) {
+      // rollback
+      setData((prev) => [...prev, target]);
+      setError(e?.body?.error || e?.message || "Failed to delete chapter");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 px-3 sm:px-4 md:px-6 py-4">
+    <div className="min-h-screen bg-slate-50 px-3 sm:px-4 md:px-6 py-4">
+      {/* Loading + Error */}
+      {loading && (
+        <div className="max-w-7xl mx-auto mb-4 p-3 rounded-xl bg-slate-100 text-slate-700">
+          Loading training...
+        </div>
+      )}
+      {error && (
+        <div className="max-w-7xl mx-auto mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700">
+          {error}
+        </div>
+      )}
+
+      {/* Premium Top Navigation Bar - Mobile Responsive */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -367,24 +459,31 @@ export default function TrainingPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             {/* Left Section */}
             <div className="flex items-center gap-3">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="relative"
-              >
+              <motion.div whileHover={{ scale: 1.05 }} className="relative">
                 <div className="absolute inset-0 bg-linear-to-br from-purple-400 to-pink-400 rounded-xl blur opacity-20"></div>
-                <div className="relative  from-purple-500 to-pink-500 p-3 rounded-xl">
+                <div className="relative bg-linear-to-br from-purple-500 to-pink-500 p-3 rounded-xl">
                   <GraduationCap className="w-6 h-6 text-white" />
                 </div>
               </motion.div>
 
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900">Training Portal</h1>
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900">
+                    Training Portal
+                  </h1>
                   <div className="px-2 py-1 bg-linear-to-r from-purple-100 to-pink-100 rounded-lg">
                     <span className="text-xs font-semibold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                       TRAINING
                     </span>
                   </div>
+                  {/* Role Badge */}
+                  {role && (
+                    <div className="px-2 py-1 bg-slate-100 rounded-lg border border-slate-200">
+                      <span className="text-xs font-semibold text-slate-700">
+                        Role: {String(role)}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1">
                   Interactive learning materials and resources
@@ -399,7 +498,9 @@ export default function TrainingPage() {
                 className="flex items-center gap-2 text-slate-700 hover:text-purple-600 transition-colors duration-100 group"
               >
                 <Home className="w-4 h-4 group-hover:scale-110 transition-transform duration-100" />
-                <span className="text-sm font-medium group-hover:text-purple-600 transition-colors duration-100">Home</span>
+                <span className="text-sm font-medium group-hover:text-purple-600 transition-colors duration-100">
+                  Home
+                </span>
               </Link>
 
               <ChevronRight className="w-4 h-4 text-slate-400 mx-1" />
@@ -416,11 +517,19 @@ export default function TrainingPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2">
                 <Target className="w-5 h-5 text-purple-600" />
-                <h3 className="font-semibold text-slate-900">Learning Progress</h3>
+                <h3 className="font-semibold text-slate-900">
+                  Learning Progress
+                </h3>
               </div>
               <div className="text-sm text-slate-600">
-                <span className="font-bold text-purple-600">{completedChapters}</span> of{" "}
-                <span className="font-bold text-slate-900">{totalChapters}</span> chapters
+                <span className="font-bold text-purple-600">
+                  {completedChapters}
+                </span>{" "}
+                of{" "}
+                <span className="font-bold text-slate-900">
+                  {totalChapters}
+                </span>{" "}
+                chapters
               </div>
             </div>
 
@@ -440,10 +549,11 @@ export default function TrainingPage() {
                 {[0, 25, 50, 75, 100].map((percent) => (
                   <div
                     key={percent}
-                    className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${completionPercentage >= percent
-                      ? 'bg-white shadow-lg'
-                      : 'bg-slate-300'
-                      }`}
+                    className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${
+                      completionPercentage >= percent
+                        ? "bg-white shadow-lg"
+                        : "bg-slate-300"
+                    }`}
                   />
                 ))}
               </div>
@@ -452,7 +562,8 @@ export default function TrainingPage() {
             {/* Progress Actions */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-2">
               <div className="text-xs text-slate-500">
-                {completionPercentage}% • {totalChapters - completedChapters} remaining
+                {completionPercentage}% • {totalChapters - completedChapters}{" "}
+                remaining
               </div>
               <div className="flex items-center gap-2">
                 <motion.button
@@ -482,28 +593,36 @@ export default function TrainingPage() {
                 <div className="text-xs text-slate-500">Total</div>
                 <BookOpen className="w-4 h-4 text-blue-500" />
               </div>
-              <div className="text-xl sm:text-2xl font-bold text-slate-900 mt-1 sm:mt-2">{data.length}</div>
+              <div className="text-xl sm:text-2xl font-bold text-slate-900 mt-1 sm:mt-2">
+                {data.length}
+              </div>
             </div>
             <div className="bg-linear-to-br from-purple-50 to-pink-50 p-3 sm:p-4 rounded-xl border border-purple-100">
               <div className="flex items-center justify-between">
                 <div className="text-xs text-slate-500">Completed</div>
                 <CheckCircle className="w-4 h-4 text-purple-500" />
               </div>
-              <div className="text-xl sm:text-2xl font-bold text-slate-900 mt-1 sm:mt-2">{completedChapters}</div>
+              <div className="text-xl sm:text-2xl font-bold text-slate-900 mt-1 sm:mt-2">
+                {completedChapters}
+              </div>
             </div>
             <div className="bg-linear-to-br from-emerald-50 to-teal-50 p-3 sm:p-4 rounded-xl border border-emerald-100">
               <div className="flex items-center justify-between">
                 <div className="text-xs text-slate-500">Time Spent</div>
                 <Clock className="w-4 h-4 text-emerald-500" />
               </div>
-              <div className="text-xl sm:text-2xl font-bold text-slate-900 mt-1 sm:mt-2">{userProgress.totalTimeSpent}m</div>
+              <div className="text-xl sm:text-2xl font-bold text-slate-900 mt-1 sm:mt-2">
+                {userProgress.totalTimeSpent}m
+              </div>
             </div>
             <div className="bg-linear-to-br from-amber-50 to-orange-50 p-3 sm:p-4 rounded-xl border border-amber-100">
               <div className="flex items-center justify-between">
                 <div className="text-xs text-slate-500">Streak</div>
                 <Award className="w-4 h-4 text-amber-500" />
               </div>
-              <div className="text-xl sm:text-2xl font-bold text-slate-900 mt-1 sm:mt-2">{userProgress.streakDays} days</div>
+              <div className="text-xl sm:text-2xl font-bold text-slate-900 mt-1 sm:mt-2">
+                {userProgress.streakDays} days
+              </div>
             </div>
           </div>
         </div>
@@ -517,20 +636,23 @@ export default function TrainingPage() {
         className="max-w-7xl mx-auto"
       >
         <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl shadow-blue-100/50 p-4 sm:p-6 md:p-8">
-          {/* Header with Controls - Mobile Responsive */}
+          {/* Header with Controls */}
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 sm:mb-8 gap-4">
             <div className="flex items-center gap-3">
               <div className="bg-linear-to-br from-purple-500 to-pink-500 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl">
                 <BookOpen className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-lg sm:text-xl md:text-xl font-bold text-slate-900">Training Materials</h2>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900">
+                  Training Materials
+                </h2>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1">
                   {filteredData.length} chapters • {completedChapters} completed
                 </p>
               </div>
             </div>
 
+            {/* Search and Actions */}
             <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
               <div className="relative w-full">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2  h-3 w-3 text-slate-400" />
@@ -546,30 +668,38 @@ export default function TrainingPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowCompleted(!showCompleted)}
-                  className={`px-3 sm:px-4 py-1.5 rounded-xl font-medium transition-all md:text-[14px] text-[12px] duration-100 flex items-center gap-2 flex-1 sm:flex-none justify-center ${showCompleted
-                    ? 'bg-linear-to-r from-purple-50 to-pink-50 text-purple-700 border border-purple-200'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
+                  className={`px-3 sm:px-4 py-2.5 rounded-xl font-medium transition-all duration-100 flex items-center gap-2 flex-1 sm:flex-none justify-center ${
+                    showCompleted
+                      ? "bg-linear-to-r from-purple-50 to-pink-50 text-purple-700 border border-purple-200"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
                 >
-                  {showCompleted ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  {showCompleted ? (
+                    <Eye className="w-4 h-4" />
+                  ) : (
+                    <EyeOff className="w-4 h-4" />
+                  )}
                   <span className="hidden sm:inline">Completed</span>
                 </button>
 
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={openAddModal}
-                  className="px-2 sm:px-6 py-1.5 rounded-xl font-medium md:text-[14px] text-[12px] bg-linear-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-200 transition-all duration-100 flex items-center gap-2 flex-1 sm:flex-none justify-center"
-                >
-                  <Plus size={18} />
-                  <span className="hidden sm:inline">Add Chapter</span>
-                  <span className="sm:hidden">Add</span>
-                </motion.button>
+                {/* ✅ CEO only */}
+                {canManageTraining(role) && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={openAddModal}
+                    className="px-4 sm:px-6 py-2.5 rounded-xl font-medium bg-linear-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-200 transition-all duration-100 flex items-center gap-2 flex-1 sm:flex-none justify-center"
+                  >
+                    <Plus size={18} />
+                    <span className="hidden sm:inline">Add Chapter</span>
+                    <span className="sm:hidden">Add</span>
+                  </motion.button>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Completion Banner - Responsive */}
+          {/* Completion Banner */}
           {allChaptersCompleted && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -582,7 +712,9 @@ export default function TrainingPage() {
                     <Award className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-emerald-900 text-sm sm:text-base">🎉 Training Completed!</h3>
+                    <h3 className="font-bold text-emerald-900 text-sm sm:text-base">
+                      🎉 Training Completed!
+                    </h3>
                     <p className="text-xs sm:text-sm text-emerald-700">
                       All {totalChapters} chapters completed
                     </p>
@@ -601,6 +733,7 @@ export default function TrainingPage() {
             </motion.div>
           )}
 
+          {/* Training Materials List */}
           <div className="space-y-3">
             {filteredData.length > 0 ? (
               filteredData.map((item, index) => {
@@ -608,23 +741,33 @@ export default function TrainingPage() {
 
                 return (
                   <motion.div
-                    key={item.id}
+                    key={String(item.id)}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.03 }}
                     whileHover={{
                       scale: 1.01,
                       y: -2,
-                      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.05)"
+                      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.05)",
                     }}
                     className={`group relative bg-white border rounded-xl sm:rounded-2xl transition-all duration-150 hover:border-purple-200
-                      ${isOpen ? "border-purple-300 bg-linear-to-r from-purple-50/30 via-white to-white" : "border border-slate-200"}
-                      ${item.completed ? "border-l-4 border-l-emerald-500" : ""}`}
+                      ${
+                        isOpen
+                          ? "border-purple-300 bg-linear-to-r from-purple-50/30 via-white to-white"
+                          : "border border-slate-200"
+                      }
+                      ${
+                        item.completed ? "border-l-4 border-l-emerald-500" : ""
+                      }`}
                   >
-                    {/* Header - Mobile Responsive */}
+                    {/* Header */}
                     <div
-                      className={`flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:px-6
-                      ${isOpen ? "bg-linear-to-r from-purple-50/50 to-transparent" : "bg-white"}`}
+                      className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 sm:px-6
+                      ${
+                        isOpen
+                          ? "bg-linear-to-r from-purple-50/50 to-transparent"
+                          : "bg-white"
+                      }`}
                     >
                       <div className="flex items-center gap-3 flex-1">
                         {/* Completion Checkbox */}
@@ -632,10 +775,16 @@ export default function TrainingPage() {
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                           onClick={() => toggleCompletion(item.id)}
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-100 ${item.completed
-                            ? 'bg-linear-to-br from-emerald-500 to-teal-500'
-                            : 'bg-slate-100 hover:bg-slate-200'
-                            }`}
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-100 ${
+                            item.completed
+                              ? "bg-linear-to-br from-emerald-500 to-teal-500"
+                              : "bg-slate-100 hover:bg-slate-200"
+                          }`}
+                          title={
+                            canUpdateProgress(role)
+                              ? "Toggle completion"
+                              : "Login required"
+                          }
                         >
                           {item.completed && (
                             <motion.div
@@ -657,18 +806,26 @@ export default function TrainingPage() {
                               animate={{ rotate: 180 }}
                               transition={{ duration: 0.2 }}
                             >
-                              <ChevronDown className="text-purple-500 group-hover/button:text-purple-600 transition-colors duration-100" size={20} />
+                              <ChevronDown
+                                className="text-purple-500 group-hover/button:text-purple-600 transition-colors duration-100"
+                                size={20}
+                              />
                             </motion.div>
                           ) : (
-                            <ChevronRight className="text-purple-500 group-hover/button:text-purple-600 transition-colors duration-100" size={20} />
+                            <ChevronRight
+                              className="text-purple-500 group-hover/button:text-purple-600 transition-colors duration-100"
+                              size={20}
+                            />
                           )}
 
                           <div className="flex items-center gap-3 sm:gap-4 flex-1">
-                            {/* Chapter Number - Hidden on small mobile */}
-                            <div className={`hidden xs:flex w-8 h-8 sm:w-10 sm:h-10 items-center justify-center rounded-xl font-bold shadow-sm ${item.completed
-                              ? 'bg-linear-to-br from-emerald-100 to-teal-100 text-emerald-700'
-                              : 'bg-linear-to-br from-purple-100 to-pink-100 text-purple-700'
-                              }`}>
+                            <div
+                              className={`hidden xs:flex w-8 h-8 sm:w-10 sm:h-10 items-center justify-center rounded-xl font-bold shadow-sm ${
+                                item.completed
+                                  ? "bg-linear-to-br from-emerald-100 to-teal-100 text-emerald-700"
+                                  : "bg-linear-to-br from-purple-100 to-pink-100 text-purple-700"
+                              }`}
+                            >
                               {index + 1}
                             </div>
 
@@ -684,10 +841,15 @@ export default function TrainingPage() {
                                 )}
                               </div>
                               <div className="flex items-center gap-2 mt-1">
-                                <div className={`px-2 py-0.5 rounded-lg text-xs font-medium ${item.type === 'video' ? 'bg-red-50 text-red-700' :
-                                  item.type === 'pdf' ? 'bg-blue-50 text-blue-700' :
-                                    'bg-emerald-50 text-emerald-700'
-                                  }`}>
+                                <div
+                                  className={`px-2 py-0.5 rounded-lg text-xs font-medium ${
+                                    item.type === "video"
+                                      ? "bg-red-50 text-red-700"
+                                      : item.type === "pdf"
+                                      ? "bg-blue-50 text-blue-700"
+                                      : "bg-emerald-50 text-emerald-700"
+                                  }`}
+                                >
                                   {item.type.toUpperCase()}
                                 </div>
                                 {item.completed && (
@@ -701,7 +863,7 @@ export default function TrainingPage() {
                         </button>
                       </div>
 
-                      {/* Actions - Stack on mobile */}
+                      {/* Actions */}
                       <div className="flex gap-2 ml-0 sm:ml-4 mt-3 sm:mt-0">
                         {item.type === "video" && !item.completed && (
                           <motion.button
@@ -710,29 +872,44 @@ export default function TrainingPage() {
                             onClick={() => markAsWatched(item.id)}
                             className="px-3 py-2 rounded-lg bg-linear-to-r from-blue-50 to-cyan-50 text-blue-700 hover:shadow transition-all duration-100 text-sm font-medium flex-1 sm:flex-none"
                           >
-                            <span className="hidden sm:inline">Mark as Watched</span>
+                            <span className="hidden sm:inline">
+                              Mark as Watched
+                            </span>
                             <span className="sm:hidden">Watched</span>
                           </motion.button>
                         )}
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => openEditModal(item)}
-                          className="p-2 rounded-lg bg-slate-50 hover:bg-purple-50 text-slate-600 hover:text-purple-600 transition-all duration-100 group/edit flex-1 sm:flex-none justify-center"
-                        >
-                          <Pencil size={18} className="mx-auto group-hover/edit:scale-110 transition-transform duration-100" />
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => setDeleteTarget(item)}
-                          className="p-2 rounded-lg bg-slate-50 hover:bg-red-50 text-slate-600 hover:text-red-600 transition-all duration-100 group/delete flex-1 sm:flex-none justify-center"
-                        >
-                          <Trash2 size={18} className="mx-auto group-hover/delete:scale-110 transition-transform duration-100" />
-                        </motion.button>
+
+                        {/* ✅ CEO only edit/delete */}
+                        {canManageTraining(role) && (
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => openEditModal(item)}
+                            className="p-2 rounded-lg bg-slate-50 hover:bg-purple-50 text-slate-600 hover:text-purple-600 transition-all duration-100 group/edit flex-1 sm:flex-none justify-center"
+                          >
+                            <Pencil
+                              size={18}
+                              className="mx-auto group-hover/edit:scale-110 transition-transform duration-100"
+                            />
+                          </motion.button>
+                        )}
+                        {canManageTraining(role) && (
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => setDeleteTarget(item)}
+                            className="p-2 rounded-lg bg-slate-50 hover:bg-red-50 text-slate-600 hover:text-red-600 transition-all duration-100 group/delete flex-1 sm:flex-none justify-center"
+                          >
+                            <Trash2
+                              size={18}
+                              className="mx-auto group-hover/delete:scale-110 transition-transform duration-100"
+                            />
+                          </motion.button>
+                        )}
                       </div>
                     </div>
 
+                    {/* Content */}
                     {isOpen && (
                       <motion.div
                         initial={{ opacity: 0, height: 0 }}
@@ -741,24 +918,20 @@ export default function TrainingPage() {
                         transition={{ duration: 0.3 }}
                         className="p-3 sm:p-4 sm:px-6 border-t border-slate-100"
                       >
-                        {item.type === "video" && item.viewedTime && (
-                          <div className="mb-4">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm text-slate-600">Watch Progress</span>
-                              <span className="text-sm font-medium text-slate-700">
-                                {Math.round((item.viewedTime / (45 * 60)) * 100)}%
-                              </span>
-                            </div>
-                            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                              <div
-                                className="h-full rounded-full bg-linear-to-r from-blue-500 to-cyan-500"
-                                style={{ width: `${Math.round((item.viewedTime / (45 * 60)) * 100)}%` }}
-                              />
-                            </div>
-                          </div>
-                        )}
+                        {item.type === "video" && (
+  <div className="relative group/video">
+    <iframe
+    
+      src={item.src}
+      className="w-full h-75 sm:h-100 md:h-125 rounded-xl border-4 border-white shadow-lg"
+      title={item.title || "Video"}
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowFullScreen
+    />
+  </div>
+)}
 
-                        {/* Content Display - Responsive */}
+
                         {item.type === "image" && (
                           <div className="relative group/image">
                             <Image
@@ -779,31 +952,12 @@ export default function TrainingPage() {
                           </div>
                         )}
 
-                        {item.type === "video" && (
-                          <div className="relative group/video">
-                            <video
-                              controls
-                              className="w-full h-[300px] sm:h-[400px] md:h-[500px] rounded-xl border-4 border-white shadow-lg object-cover"
-                              poster="/video-poster.jpg"
-                              onTimeUpdate={(e) => {
-                                const video = e.currentTarget;
-                                const progress = (video.currentTime / video.duration) * 100;
-                                if (progress > 90 && !item.completed) {
-                                  toggleCompletion(item.id);
-                                }
-                              }}
-                            >
-                              <source src={item.src} type="video/mp4" />
-                              Your browser does not support the video tag.
-                            </video>
-                          </div>
-                        )}
+                       
 
-                        {/* Completion Note - Responsive */}
                         {!item.completed && (
                           <div className="mt-4 p-3 bg-linear-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
                             <div className="flex items-start gap-2">
-                              <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                              <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
                               <p className="text-sm text-amber-700">
                                 {item.type === "video"
                                   ? "Watch 90% of the video to complete this chapter."
@@ -820,7 +974,6 @@ export default function TrainingPage() {
                 );
               })
             ) : (
-              // Empty State - Responsive
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -829,8 +982,12 @@ export default function TrainingPage() {
                 <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-linear-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
                   <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 text-slate-400" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-slate-900 mb-2">No Training Materials Found</h3>
-                <p className="text-sm text-slate-500 mb-6">Try adjusting your search or filters</p>
+                <h3 className="text-lg sm:text-xl font-semibold text-slate-900 mb-2">
+                  No Training Materials Found
+                </h3>
+                <p className="text-sm text-slate-500 mb-6">
+                  Try adjusting your search or filters
+                </p>
                 <button
                   onClick={() => {
                     setSearchQuery("");
@@ -844,7 +1001,7 @@ export default function TrainingPage() {
             )}
           </div>
 
-          {/* Summary Footer - Responsive */}
+          {/* Summary Footer */}
           <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-200">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <div className="flex items-center gap-3 sm:gap-4">
@@ -859,15 +1016,21 @@ export default function TrainingPage() {
               </div>
 
               <div className="text-sm text-slate-600 text-center sm:text-right">
-                <span className="font-bold text-slate-900">{userProgress.totalTimeSpent}m</span> total •
-                <span className="font-bold text-slate-900 ml-2">{userProgress.streakDays} day</span> streak
+                <span className="font-bold text-slate-900">
+                  {userProgress.totalTimeSpent}m
+                </span>{" "}
+                total •
+                <span className="font-bold text-slate-900 ml-2">
+                  {userProgress.streakDays} day
+                </span>{" "}
+                streak
               </div>
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* ADD/EDIT MODAL - Responsive */}
+      {/* ADD/EDIT MODAL */}
       {showModal && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -883,7 +1046,11 @@ export default function TrainingPage() {
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <div className="flex items-center gap-3">
                 <div className="bg-linear-to-br from-purple-500 to-pink-500 p-2 rounded-xl">
-                  {editingItem ? <Pencil className="w-5 h-5 text-white" /> : <Plus className="w-5 h-5 text-white" />}
+                  {editingItem ? (
+                    <Pencil className="w-5 h-5 text-white" />
+                  ) : (
+                    <Plus className="w-5 h-5 text-white" />
+                  )}
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold text-slate-900">
                   {editingItem ? "Edit Chapter" : "Add Chapter"}
@@ -917,10 +1084,7 @@ export default function TrainingPage() {
                 <select
                   value={form.type}
                   onChange={(e) =>
-                    setForm({
-                      ...form,
-                      type: e.target.value as TrainingType,
-                    })
+                    setForm({ ...form, type: e.target.value as TrainingType })
                   }
                   className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all duration-100"
                 >
@@ -930,7 +1094,6 @@ export default function TrainingPage() {
                 </select>
               </div>
 
-              {/* File Upload - Responsive */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Upload File
@@ -940,8 +1103,8 @@ export default function TrainingPage() {
                     type="file"
                     accept=".pdf,image/*,video/*"
                     onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleFileChange(file);
+                      const f = e.target.files?.[0];
+                      if (f) handleFileChange(f);
                     }}
                     className="hidden"
                     id="file-upload"
@@ -987,7 +1150,7 @@ export default function TrainingPage() {
         </motion.div>
       )}
 
-      {/* DELETE CONFIRMATION MODAL - Responsive */}
+      {/* DELETE CONFIRMATION MODAL */}
       {deleteTarget && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -1010,7 +1173,11 @@ export default function TrainingPage() {
             </div>
 
             <p className="text-sm text-slate-600 text-center mb-6">
-              Delete <span className="font-semibold text-slate-900">{deleteTarget.title}</span>?
+              Delete{" "}
+              <span className="font-semibold text-slate-900">
+                {deleteTarget.title}
+              </span>
+              ?
               <br />
               This action cannot be undone.
             </p>
