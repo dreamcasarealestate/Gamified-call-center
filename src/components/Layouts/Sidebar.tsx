@@ -25,7 +25,7 @@ const SECTIONS = [
     title: "MENU",
     items: [
       { label: "Dashboard", href: "/aca/dashboard", icon: LayoutDashboard },
-      { label: "Agents", href: "/agents", icon: Users },
+      { label: "Agents", href: "/aca/agents", icon: Users },
       { label: "Deals", href: "/aca/deals", icon: Briefcase },
     ],
   },
@@ -105,7 +105,6 @@ export default function Sidebar({
           </span>
         )}
  
-        {/* Chevron for active item */}
         {active && (
           <ChevronRight className="h-4 w-4 text-blue-400 ml-auto" />
         )}
@@ -115,7 +114,6 @@ export default function Sidebar({
  
   const Content = (
     <div className="h-full flex flex-col bg-gradient-to-b from-[#080c16] via-[#1e293b] to-[#060a14] border-r border-white/10">
-      {/* Header */}
       <div className="p-6 border-b border-white/10">
         <div className="flex items-center gap-3 mb-2">
           <div className="relative">
@@ -132,7 +130,6 @@ export default function Sidebar({
           </div>
         </div>
  
-        {/* Stats Badge */}
         <div className="mt-4 p-3 rounded-xl bg-gradient-to-br from-blue-900/30 to-purple-900/30 border border-white/10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -162,7 +159,6 @@ export default function Sidebar({
         ))}
       </div>
  
-      {/* User Profile */}
       <div className="p-4 border-t border-white/10 bg-gradient-to-br from-blue-900/20 to-purple-900/20">
         <div className="flex items-center gap-3">
           <div className="relative">
@@ -187,7 +183,6 @@ export default function Sidebar({
  
   return (
     <>
-      {/* Desktop Sidebar */}
       <motion.aside
         initial={{ x: -100 }}
         animate={{ x: 0 }}

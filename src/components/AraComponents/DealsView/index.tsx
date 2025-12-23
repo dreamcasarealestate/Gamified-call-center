@@ -1,11 +1,12 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Download, Eye, Pencil, Trash2 } from "lucide-react";
 import apiClient from "@/Utils/apiClient";
 import TableToolbar from "@/commonComponents/TableSearchBar";
 import CreateDealModal from "./CreateDealModal.tsx";
 import Loader from "@/commonComponents/Loader/";
 import Pagination from "@/commonComponents/Pagination";
+import toast from "react-hot-toast";
 
 type DealRow = {
   id: string | number;
@@ -28,6 +29,7 @@ type DealRow = {
   socialProvided?: string;
   customerLanguage?: string;
   notes?: string;
+  status?: string;
 };
 
 type ListResponse = {
@@ -79,9 +81,9 @@ const AraDealsView = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const [agents, setAgents] = useState<SelectOption[]>([
-    { label: "Select Agent", value: "" },
-  ]);
+  const [agents, setAgents] = useState<
+    { label: string; value: string }[]
+  >([]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [mode, setMode] = useState<"CREATE" | "EDIT">("CREATE");
@@ -96,14 +98,13 @@ const AraDealsView = () => {
   const fetchDeals = async () => {
     setLoading(true);
     try {
-      // ✅ change endpoint to your backend
-      // Example expected: { items, total, page, limit }
-      const res = await apiClient.get("/deals", {
-        params: { page, limit: LIMIT, q: q.trim(), from, to },
-      });
-      const data: ListResponse = res.data;
-      setItems(data.items || []);
-      setTotal(data.total || 0);
+      const res: any = await apiClient.get(apiClient.URLS.deals, {}, true);
+
+
+      const list = Array.isArray(res.body) ? res.body : [];
+
+      setItems(list);
+      setTotal(list.length);
     } catch (e) {
       console.error(e);
       setItems([]);
@@ -114,28 +115,38 @@ const AraDealsView = () => {
   };
 
   const fetchAgents = async () => {
+    setLoading(true);
+
     try {
-      const res = await apiClient.get("/agents", { params: { limit: 200 } });
-      const list = (res.data?.items ?? res.data ?? []) as any[];
-      const mapped: SelectOption[] = [
-        { label: "Select Agent", value: "" },
-        ...list.map((a) => ({
-          label: a.fullName || a.name || a.username || `Agent ${a.id}`,
-          value: String(a.id),
-        })),
-      ];
-      setAgents(mapped);
+      const res = await apiClient.get(apiClient.URLS.user, {}, true);
+
+
+      if (res.body && Array.isArray(res.body)) {
+        console.log("Agents options:", res.body);
+        const options = res.body.map((d: any) => ({
+          label: d.firstName,
+          value: d.id,
+        }));
+
+
+        setAgents(options);
+      }
     } catch (e) {
-      console.error("Agents fetch failed", e);
+      console.error(e);
+
+
+    } finally {
+      setLoading(false);
     }
   };
 
   const createDeal = async (dto: any) => {
-    await apiClient.post("/deals", dto);
+    await apiClient.post(apiClient.URLS.deals, dto);
   };
+  console.log(agents)
 
   const updateDeal = async (id: string | number, dto: any) => {
-    await apiClient.put(`/deals/${id}`, dto);
+    await apiClient.put(`${apiClient.URLS.deals}/${id}`, dto);
   };
 
   const removeDeal = async (id: string | number) => {
@@ -198,44 +209,56 @@ const AraDealsView = () => {
 
   /** ---- submit (create or update) ---- */
   const handleSubmit = async (payload: any) => {
-    // Map modal form -> API DTO (adjust to your backend)
-    const dto = {
-      coverageTypes: payload.coverageTypes,
-      firstName: payload.firstName,
-      lastName: payload.lastName,
-      applicantsCount: Number(payload.numberOfApplicants || 0),
-      ffm: payload.ffm,
-      career: payload.career,
-      typeOfWork: payload.typeOfWork,
-      monthlyIncome: Number(payload.monthlyIncome || 0),
-      documentsNeeded: payload.documentsNeeded,
-      socialProvided: payload.socialProvided,
-      customerLanguage: payload.customerLanguage,
-      closedAt: payload.closedDate
-        ? new Date(payload.closedDate).toISOString()
-        : null,
-      agentId: payload.agentId,
-      notes: payload.notes,
-    };
+    try {
+      const dto = {
+        typeOfCoverage: payload.coverageTypes,
+        applicantFirstName: payload.firstName,
+        applicantLastName: payload.lastName,
+        numberOfApplicants: Number(payload.numberOfApplicants || 0),
+        ffm: !!payload.ffm,
+        carrier: payload.career || "",
+        typeOfWork: payload.typeOfWork || "",
+        monthlyIncome: Number(payload.monthlyIncome || 0),
+        documentsNeeded: payload.documentsNeeded || "",
+        socialProvider: payload.socialProvided || "",
+        customerLanguage: payload.customerLanguage || "",
+        closedDate: payload.closedDate
+          ? new Date(payload.closedDate).toISOString()
+          : null,
+        agentId: payload.agentId || "",
+        notes: payload.notes || "",
+        status: mode === "EDIT" && editing?.status ? editing.status : "OPEN",
+      };
 
-    // 🔥 Files: usually upload separately (S3 / signed URL) then send URLs in dto
-    // payload.files -> handle later
+      if (mode === "CREATE") {
+        await createDeal(dto);
+        toast.success("Deal created successfully!");
+      } else if (mode === "EDIT" && editing) {
+        await updateDeal(editing.id, dto);
+        toast.success("Deal updated successfully!");
+      }
 
-    if (mode === "CREATE") {
-      await createDeal(dto);
-    } else if (mode === "EDIT" && editing) {
-      await updateDeal(editing.id, dto);
+      setModalOpen(false);
+      await fetchDeals();
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong. Please try again.");
     }
-
-    setModalOpen(false);
-    await fetchDeals(); // ✅ refresh list after modal closes
   };
 
+
+
   const handleDelete = async (deal: DealRow) => {
-    const ok = window.confirm(`Delete deal #${deal.dealNo}?`);
-    if (!ok) return;
-    await removeDeal(deal.id);
-    await fetchDeals();
+    try {
+      const res = await apiClient.delete(`${apiClient.URLS.deals}/${deal.id}`, {}, true);
+      if (res.status === 200) {
+        toast.success("Agent deleted successfully");
+      }
+      await fetchDeals();
+    } catch (e) {
+      console.error(e);
+      toast.error("something went worong");
+    }
   };
 
   const showingText = useMemo(() => {
@@ -247,49 +270,47 @@ const AraDealsView = () => {
   if (loading) {
     return (
       <div className="w-full h-full items-center flex justify-center">
-        <Loader showLabel label="Loading Deals..." />
+        <Loader />
       </div>
     );
   }
 
   return (
     <div className="p-4">
-      <div className="mb-3 flex items-center gap-2 text-slate-700 ">
-        <span className="font-semibold">DEALS</span>
-      </div>
+      <div className="overflow-hidden rounded-md shadow-2xl p-4 bg-white">
+        <TableToolbar
+          search={{
+            value: q,
+            onChange: (v: any) => setQ(v),
+            placeholder: "Search...",
+            debounceMs: 350,
+          }}
+          dateRange={{
+            value: { from, to },
+            onChange: (r: any) => {
+              setFrom(r.from);
+              setTo(r.to);
+            },
+          }}
+          actionsSlot={
+            <>
+              <button className="rounded-xl flex items-center gap-2  px-4 py-2 text-sm bg-[#80d26e] font-semibold text-white hover:bg-emerald-600">
+                <Download className="w-4 h-4" />
+                Excel
+              </button>
+              <button
+                onClick={openCreate}
+                className="rounded-xl bg-[#477891] px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+              >
+                + Create New Deal
+              </button>
+            </>
+          }
+        />
 
-      <TableToolbar
-        search={{
-          value: q,
-          onChange: (v: any) => setQ(v),
-          placeholder: "Search...",
-          debounceMs: 350,
-        }}
-        dateRange={{
-          value: { from, to },
-          onChange: (r: any) => {
-            setFrom(r.from);
-            setTo(r.to);
-          },
-        }}
-        actionsSlot={
-          <>
-            <button className="rounded-xl bg--200 px-4 py-2 text-sm bg-[#80d26e] font-semibold text-white hover:bg-emerald-600">
-              Excel
-            </button>
-            <button
-              onClick={openCreate}
-              className="rounded-xl bg-[#477891] px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
-            >
-              + Create New Deal
-            </button>
-          </>
-        }
-      />
+        {/* Table */}
 
-      {/* Table */}
-      <div className="overflow-hidden rounded-md shadow-2xl  min-h-full  border bg-white">
-        <div className="overflow-auto">
+        <div className="overflow-auto rounded-md shadow-2xl  min-h-full border border-slate-200  bg-white">
           <table className="min-w-275 min-h-100 w-full text-sm">
             <thead className="bg-slate-50  dark:bg-gray-300 ">
               <tr>
@@ -369,8 +390,6 @@ const AraDealsView = () => {
             </tbody>
           </table>
         </div>
-
-        {/* Footer */}
         <div className="">
           <Pagination
             page={page}
@@ -382,7 +401,6 @@ const AraDealsView = () => {
         </div>
       </div>
 
-      {/* Modal (Create/Edit) */}
       <CreateDealModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}

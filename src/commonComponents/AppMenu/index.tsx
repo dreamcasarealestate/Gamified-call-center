@@ -13,8 +13,8 @@ type AppItem = {
 };
 
 const APPS: AppItem[] = [
-  { key: "aca", title: "ACA", icon: ShieldCheck, href: "/dashboard" },
-  { key: "medicare", title: "Medicare", icon: Pill, href: "/medicare", disabled: true },
+  { key: "aca", title: "ACA", icon: ShieldCheck, href: "/aca/dashboard" },
+  { key: "medicare", title: "Medicare", icon: Pill, href: "/medicare/dashboard", },
   { key: "taxation", title: "Taxation", icon: Calculator, href: "/taxation", disabled: true },
   { key: "launchpad", title: "Launch Pad", icon: Rocket, href: "/launchpad", disabled: true },
 ];
@@ -45,7 +45,6 @@ export default function AppsMenu({
 
   return (
     <div className="relative" ref={rootRef}>
-      {/* Button */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
