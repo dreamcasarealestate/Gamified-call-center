@@ -157,7 +157,7 @@ export default function PremiumLogin() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="flex items-center gap-2 text-white/90"
+                className="flex items-center gap-2 text-white"
               >
                 <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
                 <h2 className="text-lg sm:text-xl font-semibold">Welcome Back!</h2>
