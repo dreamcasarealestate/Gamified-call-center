@@ -14,6 +14,8 @@ const URLS = {
   deals: `${base_url}deals`,
   designation: `${base_url}designation`,
   employee: `${base_url}employee`,
+  permissions: `${base_url}permissions`,
+  designationPermissions: `${base_url}designationPermissions`,
 };
 
 export function encodeQueryData(data = {}) {

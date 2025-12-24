@@ -50,7 +50,7 @@ export default function Pagination({
   }, [page, totalItems, limit]);
 
   const btnClass =
-    "min-w-[36px] px-3 py-2 rounded-lg border text-sm font-medium transition-all flex items-center justify-center";
+    "min-w-[36px] px-3 py-1 rounded-lg border text-sm font-medium transition-all flex items-center justify-center";
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-2">

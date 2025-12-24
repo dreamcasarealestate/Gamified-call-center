@@ -34,6 +34,7 @@ const config: Config = {
           "50%": { clipPath: "inset(0% 0 0 0)" },
         },
       },
+      
        animation: {
         loaderProgress: "loaderProgress 2s ease-in-out infinite",
         loaderFill: "loaderFill 2.2s ease-in-out infinite",

@@ -119,7 +119,7 @@ export function MultiSelect({
                     "dark:border-slate-100 dark:bg-slate-100 "
                   )}
                 >
-                  <span className="max-w-[140px] truncate">{opt.label}</span>
+                  <span className="max-w-35 truncate">{opt.label}</span>
 
                   <span
                     onClick={(e) => {
@@ -160,11 +160,18 @@ export function MultiSelect({
                     "hover:bg-slate-100 dark:hover:bg-slate-800",
                     opt.disabled && "opacity-50 pointer-events-none",
                     active &&
-                    "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300"
+                      "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300"
                   )}
                 >
-                  <span className="truncate">{opt.label}</span>
-                  {active ? <span className="text-xs">Selected</span> : null}
+                  <span className="truncate text-slate-900 dark:text-slate-100">
+                    {opt.label}
+                  </span>
+
+                  {active ? (
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                      Selected
+                    </span>
+                  ) : null}
                 </button>
               );
             })}

@@ -24,7 +24,7 @@ export default function ProgressSection({
         {/* LEVEL INFO */}
         <div className="flex items-center gap-4">
           <div className="relative">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-400 via-yellow-400 to-amber-500 flex items-center justify-center shadow-lg shadow-amber-400/40">
+            <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-amber-400 via-yellow-400 to-amber-500 flex items-center justify-center shadow-lg shadow-amber-400/40">
               <Trophy size={32} className="text-white" />
             </div>
 
@@ -59,10 +59,10 @@ export default function ProgressSection({
 
             <div className="h-4 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
               <div
-                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-500 shadow-sm"
+                className="h-full bg-linear-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-500 shadow-sm"
                 style={{ width: `${progressPercentage}%` }}
               >
-                <div className="h-full w-full bg-gradient-to-r from-white/30 to-transparent" />
+                <div className="h-full w-full bg-linear-to-r from-white/30 to-transparent" />
               </div>
             </div>
           </div>
@@ -70,7 +70,7 @@ export default function ProgressSection({
 
         {/* DAILY STREAK */}
         <div className="flex justify-end">
-          <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-2xl px-6 py-4 flex items-center gap-3 shadow-sm">
+          <div className="bg-linear-to-br from-orange-50 to-red-50 border border-orange-200 rounded-2xl px-6 py-4 flex items-center gap-3 shadow-sm">
             <div className="relative">
               <Flame size={32} className="text-orange-500" />
               <div className="absolute inset-0 animate-pulse">
