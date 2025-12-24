@@ -401,9 +401,9 @@ const AraDealsView = () => {
           }
         />
 
-        <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
-          <table className="min-w-275 w-full text-sm text-black dark:text-slate-200 border-collapse">
-            <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+        <div className="overflow-x-auto rounded-sm border border-slate-200  bg-white  shadow-sm">
+          <table className="min-w-275 w-full text-sm text-black  border-collapse">
+            <thead className="sticky top-0 z-10 bg-slate-100   ">
               <tr>
                 <th className="px-4 py-1 text-left font-bold border border-slate-200 dark:border-slate-700">
                   Deal #

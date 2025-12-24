@@ -410,7 +410,7 @@ export default function UserProfileView() {
 
   if (loading) {
     return (
-       <div className="w-full h-full items-center flex justify-center">
+      <div className="w-full h-full items-center flex justify-center">
         <Loader />
       </div>
     );
@@ -710,17 +710,17 @@ export default function UserProfileView() {
     const init = primary
       ? { ...primary }
       : {
-          address1: "",
-          address2: null,
-          city: "",
-          state: "",
-          zip: "",
-          country: "",
-          locality: null,
-          landmark: null,
+        address1: "",
+        address2: null,
+        city: "",
+        state: "",
+        zip: "",
+        country: "",
+        locality: null,
+        landmark: null,
 
-          isDefault: true,
-        };
+        isDefault: true,
+      };
 
     return (
       <div className="space-y-6 animate-fadeIn p-6">
@@ -891,18 +891,16 @@ export default function UserProfileView() {
                     <button
                       key={t.id}
                       onClick={() => setActiveTab(t.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                        activeTab === t.id
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${activeTab === t.id
                           ? "bg-linear-to-r from-blue-500 to-cyan-500 text-white shadow-lg"
                           : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
-                      }`}
+                        }`}
                     >
                       {t.icon}
                       <span className="font-medium">{t.label}</span>
                       <ChevronRight
-                        className={`w-4 h-4 ml-auto transition-transform ${
-                          activeTab === t.id ? "rotate-90" : ""
-                        }`}
+                        className={`w-4 h-4 ml-auto transition-transform ${activeTab === t.id ? "rotate-90" : ""
+                          }`}
                       />
                     </button>
                   ))}
@@ -1085,18 +1083,18 @@ function ProfileModal({
         ? "Edit Profile"
         : "Add Profile"
       : type === "employee"
-      ? mode === "edit"
-        ? "Edit Employee"
-        : "Add Employee"
-      : type === "professional"
-      ? mode === "edit"
-        ? "Edit Professional"
-        : "Add Professional"
-      : type === "address"
-      ? mode === "edit"
-        ? "Edit Address"
-        : "Add Address"
-      : "Change Password";
+        ? mode === "edit"
+          ? "Edit Employee"
+          : "Add Employee"
+        : type === "professional"
+          ? mode === "edit"
+            ? "Edit Professional"
+            : "Add Professional"
+          : type === "address"
+            ? mode === "edit"
+              ? "Edit Address"
+              : "Add Address"
+            : "Change Password";
 
   const validate = () => {
     if (type === "profile") {
