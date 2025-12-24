@@ -203,10 +203,10 @@ export default function CreateDealModal({
     overflow-x-hidden
     z-[9999999]
   "
-      panelInnerCls="px-8 py-6"
+      panelInnerCls="md:px-8 px-3 py-6"
       overLayCls="bg-slate-900/40 backdrop-blur-sm"
     >
-      <div className="space-y-8">
+      <div className="md:space-y-8 space-y-4">
 
         <div className="mb-6">
           <div className="flex items-center gap-2 font-Gordita-Bold text-lg">
@@ -237,7 +237,7 @@ export default function CreateDealModal({
           </p>
         </div>
 
-        {/* ---------------- Coverage ---------------- */}
+       
         <Section title="Coverage & Customer" >
           <Field label="Coverage Type" required>
             <MultiSelect
@@ -445,7 +445,7 @@ const Section = ({ title, subtitle, titleCls, children }: SectionProps) => (
       hover:shadow-md
     "
   >
-    {/* Header */}
+    
     <div
       className="
         px-6 py-4
@@ -455,7 +455,7 @@ const Section = ({ title, subtitle, titleCls, children }: SectionProps) => (
       "
     >
       <div className="flex items-start gap-3">
-        {/* Accent bar */}
+       
         <span className="mt-1 h-5 w-1 rounded-full bg-indigo-600" />
 
         <div>
@@ -495,7 +495,7 @@ const TwoCol = ({ children }: { children: React.ReactNode }) => (
       grid-cols-1
       md:grid-cols-2
       gap-x-4
-      md:gap-y-4 gap-y-2
+      md:gap-y-4 gap-y-1
     "
   >
     {children}

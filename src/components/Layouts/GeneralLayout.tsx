@@ -28,9 +28,7 @@ function AdminShell({
     const relevant = parts.slice(-2);
     return relevant
       .map((part) =>
-        part
-          .replace(/[-_]/g, " ")
-          .replace(/\b\w/g, (c) => c.toUpperCase())
+        part.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
       )
       .join(" > ");
   }, [pathname]);
@@ -46,19 +44,16 @@ function AdminShell({
   if (hideChrome) return <>{children}</>;
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-[#F5F7FB] flex">
+    <div className="h-screen w-full bg-[#F5F7FB] flex">
       <Sidebar
         mobileOpen={mobileOpen}
         onCloseMobile={() => setMobileOpen(false)}
       />
 
-      <div className="flex-1 flex flex-col md:ml-70 ml-0">
-        <Topbar
-          title={title}
-          onOpenSidebar={() => setMobileOpen(true)}
-        />
+      <div className="flex-1 flex flex-col min-w-0 md:ml-70 ml-0">
+        <Topbar title={title} onOpenSidebar={() => setMobileOpen(true)} />
 
-        <main className="flex-1 overflow-y-auto scrollbar-hide px-6 py-3">
+        <main className="flex-1 overflow-x-auto overflow-y-auto md:px-6 px-2 py-3 min-w-0">
           {children}
           <FloatingChatButton />
         </main>

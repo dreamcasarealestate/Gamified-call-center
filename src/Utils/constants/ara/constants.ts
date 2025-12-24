@@ -55,8 +55,8 @@ export const DEFAULT_ROLE_OPTIONS: SelectOption[] = [
 ];
 
 export const DEFAULT_ACCESS_OPTIONS: SelectOption[] = [
-  { label: "Training", value: "Training" },
-  { label: "Full Access", value: "FullAccess" },
+  { label: "Training", value: "TRAINING" },
+  { label: "Full Access", value: "ALL_ACCESS" },
   
 ];
 

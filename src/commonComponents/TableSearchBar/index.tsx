@@ -83,7 +83,7 @@ export default function TableToolbar({
         ) : null}
 
         {dateRange ? (
-          <div className="flex items-center gap-2 rounded-xl border bg-white px-3 py-2  dark:border-slate-700">
+          <div className="flex items-center md:gap-2 gap-1 rounded-xl border bg-white md:px-3 px-1 py-2  dark:border-slate-700">
             {dateRange.label ? (
               <span className="text-xs text-slate-500 dark:text-slate-400">{dateRange.label}</span>
             ) : null}

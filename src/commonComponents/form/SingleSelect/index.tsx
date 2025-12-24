@@ -221,27 +221,27 @@ export function SingleSelect({
 
                 return (
                   <button
-                    key={opt.value}
-                    type="button"
-                    disabled={opt.disabled}
-                    onMouseEnter={() => setActiveIndex(idx)}
-                    onClick={() => {
-                      if (opt.disabled) return;
-                      onChange(opt.value);
-                      setOpen(false);
-                    }}
-                    className={cn(
-                      "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm",
-                      "hover:bg-slate-100 dark:hover:bg-slate-800",
-                      opt.disabled && "opacity-50 pointer-events-none",
-                      isActive && "bg-slate-100 dark:bg-slate-800",
-                      isSelected && "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300"
-                    )}
-                    role="option"
-                    aria-selected={isSelected}
-                  >
-                    <span className="truncate">{opt.label}</span>
-                  </button>
+  key={opt.value}
+  type="button"
+  disabled={opt.disabled}
+  onMouseEnter={() => setActiveIndex(idx)}
+  onClick={() => {
+    if (opt.disabled) return;
+    onChange(opt.value);
+    setOpen(false);
+  }}
+  className={cn(
+    "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm",
+    "hover:bg-slate-100 dark:hover:bg-slate-800",
+    opt.disabled && "opacity-50 pointer-events-none",
+    isActive && "bg-slate-100 dark:bg-slate-800",
+    isSelected && "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300"
+  )}
+  role="option"
+  aria-selected={isSelected}
+>
+  <span className="truncate text-slate-900 dark:text-slate-100">{opt.label}</span>
+</button>
                 );
               })
             )}

@@ -17,6 +17,11 @@ import {
   ArrowDown,
   Calendar,
   Check,
+  Plus,
+  Eye,
+  EyeOff,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import apiClient from "@/Utils/apiClient";
 import Modal from "@/commonComponents/Modal";
@@ -150,6 +155,7 @@ export default function AcaAgentsView() {
 
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [OpenModal, setOpenModal] = useState(false);
   const [editing, setEditing] = useState<AgentsRow | null>(null);
@@ -183,17 +189,21 @@ export default function AcaAgentsView() {
     confirmPassword: "",
   });
   const [updating, setUpdating] = useState(false);
+
   const fetchAgents = async () => {
     setLoading(true);
-
     try {
-      const res: any = await apiClient.get(apiClient.URLS.user, {}, true);
+      const res: any = await apiClient.get(
+        apiClient.URLS.user,
+        { page, limit: LIMIT },
+        true
+      );
+      const body = res?.body ?? res;
 
-
-      const list = Array.isArray(res.body) ? res.body : [];
-
-      setItems(list);
-      setTotal(list.length);
+      const list = body?.data?.items || body?.items || body?.data || [];
+      const totalCount = body?.data?.total || body?.meta?.total || list.length;
+      setItems(Array.isArray(list) ? list : []);
+      setTotal(totalCount);
     } catch (e) {
       console.error(e);
       setItems([]);
@@ -202,29 +212,6 @@ export default function AcaAgentsView() {
       setLoading(false);
     }
   };
-
-  // const fetchAgents = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const res: any = await apiClient.get(
-  //       apiClient.URLS.user,
-  //       { page, limit: LIMIT, q: q.trim() },
-  //       true
-  //     );
-  //     const body = res?.body ?? res;
-
-  //     const list = body?.data?.items || body?.items || body || [];
-  //     const totalCount = body?.data?.total || body?.total || list.length;
-  //     setItems(Array.isArray(list) ? list : []);
-  //     setTotal(totalCount);
-  //   } catch (e) {
-  //     console.error(e);
-  //     setItems([]);
-  //     setTotal(0);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   useEffect(() => {
     fetchAgents();
@@ -240,10 +227,21 @@ export default function AcaAgentsView() {
     setSortKey(key);
     setSortOrder(order);
   };
-  const sortedItems = useMemo(() => {
-    if (!sortKey) return items;
+  const filteredItems = useMemo(() => {
+    if (!q.trim()) return items;
+    const query = q.toLowerCase();
 
-    return [...items].sort((a, b) => {
+    return items.filter((a) => {
+      const f = a.firstName?.toLowerCase() || "";
+      const l = a.lastName?.toLowerCase() || "";
+      return f.includes(query) || l.includes(query);
+    });
+  }, [items, q]);
+
+  const sortedItems = useMemo(() => {
+    if (!sortKey) return filteredItems;
+
+    return [...filteredItems].sort((a, b) => {
       const aVal = (a[sortKey as keyof AgentsRow] ?? "")
         .toString()
         .toLowerCase();
@@ -255,8 +253,8 @@ export default function AcaAgentsView() {
       if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
       return 0;
     });
-  }, [items, sortKey, sortOrder]);
-
+  }, [filteredItems, sortKey, sortOrder]);
+  console.log(sortedItems);
 
   const openEdit = (agent: any) => {
     setEditing(agent);
@@ -271,17 +269,14 @@ export default function AcaAgentsView() {
       phone: agent.phone || "",
       password: agent.password || "",
 
-
-      designation: agent.employee?.designation?.name || "",
-      reportsTo: agent.reportsTo || "",
-
+      designation: agent.employee?.designation?.id ?? "",
+      reportsTo: agent.employee?.reportsTo?.id ?? "",
 
       npn: agent.agentProfile?.npm || "",
       yearsOfExperience: agent.agentProfile?.yearsOfExperience ?? "",
       ahipCertified: Boolean(agent.agentProfile?.ahipCertified),
       stateLicensed: Boolean(agent.agentProfile?.stateLicensed),
       access: agent.agentProfile?.accessLevel || "",
-
 
       chaseExt: agent.chaseExt || "",
       chaseDataUsername: agent.chaseDataUsername || "",
@@ -299,34 +294,6 @@ export default function AcaAgentsView() {
 
     setOpenModal(true);
   };
-
-  // const openEdit = async (agent: AgentsRow) => {
-  //   setEditing(agent);
-  //   setErrors({});
-
-  //   try {
-
-  //     setForm((p) => ({
-  //       ...p,
-  //       firstName: agent.firstName || "",
-  //       lastName: agent.lastName || "",
-  //       email: agent.email || "",
-
-  //     }));
-  //   } catch (e) {
-  //     console.error(e);
-
-  //     setForm((p) => ({
-  //       ...p,
-  //       firstName: agent.firstName || "",
-  //       lastName: agent.lastName || "",
-  //       email: agent.email || "",
-  //       // role: (agent.role as any) || "",
-  //     }));
-  //   }
-
-  //   setOpenModal(true);
-  // };
 
   const isDirty = useMemo(() => {
     const snap = isEditMode ? { ...emptyForm(), ...form } : form;
@@ -369,7 +336,7 @@ export default function AcaAgentsView() {
     }
 
     if (!form.designation) e.role = "designation is required";
-    // if (!form.reportsTo) e.reportsTo = "Reportsto is required";
+    if (!form.reportsTo) e.reportsTo = "Reportsto is required";
     if (!form.access) e.access = "Access is required";
     if (!form.apps || form.apps.length === 0)
       e.apps = "Select at least one app";
@@ -395,11 +362,11 @@ export default function AcaAgentsView() {
       a.phone ?? "-",
       a.employee?.designation?.name ?? "-",
       a.agentProfile?.accessLevel ?? "-",
-      a.userStatus === "Active"
-        ? "Active ✅"
-        : a.userStatus === "In-Active"
-          ? "In-Active ❌"
-          : "-",
+      a.agentProfile.isActive === true
+        ? "Active "
+        : a.agentProfile.isActive === false
+        ? "In-Active"
+        : "-",
     ]);
 
     const csvContent = [headers, ...rows].map((e) => e.join(",")).join("\n");
@@ -432,11 +399,17 @@ export default function AcaAgentsView() {
 
     fetchDesignations();
   }, []);
+
   useEffect(() => {
-    const fetchReportsTo = async (designationId: number) => {
+    if (!form.designation) {
+      setReportsToOptions([]);
+      return;
+    }
+
+    const fetchReportsTo = async () => {
       try {
         const res = await apiClient.get(
-          `${apiClient.URLS.employee}/report-to/${designationId}`,
+          `${apiClient.URLS.employee}/report-to/${form.designation}`,
           {},
           true
         );
@@ -454,11 +427,8 @@ export default function AcaAgentsView() {
       }
     };
 
-    if (form.designation) {
-      fetchReportsTo(Number(form.designation));
-    }
+    fetchReportsTo();
   }, [form.designation]);
-
 
   const handlePasswordChange = (
     field: "password" | "confirmPassword",
@@ -468,34 +438,40 @@ export default function AcaAgentsView() {
   };
 
   const submitPassword = async () => {
-    if (!selectedAgent) return;
-    if (!passwordForm.password || !passwordForm.confirmPassword) {
-      toast.error("Both fields are required");
-      return;
-    }
+    if (!selectedAgent?.id) return;
 
-    if (passwordForm.password !== passwordForm.confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
+    // if (!passwordForm.password || !passwordForm.confirmPassword) {
+    //   toast.error("Both fields are required ❌");
+    //   return;
+    // }
+
+    // if (passwordForm.password !== passwordForm.confirmPassword) {
+    //   toast.error("Passwords do not match ❌");
+    //   return;
+    // }
+
+    const dto = {
+      newPassword: passwordForm.password,
+      confirmNewPassword: passwordForm.confirmPassword,
+    };
 
     try {
       setUpdating(true);
       const res = await apiClient.patch(
-        `${apiClient.URLS.user}/${selectedAgent.id}`,
-        {
-          user: { password: passwordForm.password },
-        }
+        `${apiClient.URLS.user}/admin/${selectedAgent.id}/password`,
+        dto,
+
+        true
       );
+
       if (res.status === 200 || res.status === 201) {
-        toast.success("Password updated successfully");
+        toast.success("Password updated successfully 🔐");
       }
 
       setPasswordModalOpen(false);
       setPasswordForm({ password: "", confirmPassword: "" });
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to update password");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update password");
     } finally {
       setUpdating(false);
     }
@@ -576,7 +552,6 @@ export default function AcaAgentsView() {
     setConfirmOpen(true);
   };
 
-
   const deactivateAgent = async () => {
     if (!selectedAgent) return;
 
@@ -612,7 +587,6 @@ export default function AcaAgentsView() {
       toast.error("Failed to reactivate agent");
     }
   };
-
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -743,7 +717,7 @@ export default function AcaAgentsView() {
   if (loading || isAgentsLoading) {
     return (
       <div className="w-full h-full items-center flex justify-center">
-        <Loader  />
+        <Loader />
       </div>
     );
   }
@@ -768,19 +742,21 @@ export default function AcaAgentsView() {
           <div className="flex flex-row opacity-0 group-hover:opacity-100 transition">
             <ArrowUp
               size={16}
-              className={`cursor-pointer ${active && sortOrder === "asc"
+              className={`cursor-pointer ${
+                active && sortOrder === "asc"
                   ? "text-blue-600"
                   : "text-gray-400 hover:text-black"
-                }`}
+              }`}
               onClick={() => sortData(column, "asc")}
             />
 
             <ArrowDown
               size={16}
-              className={`cursor-pointer ${active && sortOrder === "desc"
+              className={`cursor-pointer ${
+                active && sortOrder === "desc"
                   ? "text-blue-600"
                   : "text-gray-400 hover:text-black"
-                }`}
+              }`}
               onClick={() => sortData(column, "desc")}
             />
           </div>
@@ -791,8 +767,8 @@ export default function AcaAgentsView() {
 
   return (
     <>
-      <div className="p-4">
-        <div className="overflow-hidden rounded-md shadow-2xl p-4 bg-white">
+      <div className="w-full   mx-auto space-y-6">
+        <div className=" rounded-md shadow-2xl p-4 bg-white">
           <TableToolbar
             search={{
               value: q,
@@ -804,22 +780,22 @@ export default function AcaAgentsView() {
               <>
                 <button
                   onClick={() => setOpenFileModal(true)}
-                  className="flex items-center gap-2 rounded-xl px-4 py-2 cursor-pointer  text-sm bg-indigo-600 font-semibold text-white hover:bg-indigo-700"
+                  className="flex items-center gap-2 rounded-xl md:px-4 px-2 md:py-2 py-1.5 cursor-pointer text-[12px] md:text-sm text-nowrap bg-indigo-600 font-semibold text-white hover:bg-indigo-700"
                 >
-                  <FileSpreadsheet className="w-4 h-4" />
+                  <FileSpreadsheet className="md:w-4 w-3 md:h-4 h-3" />
                   Import CSV
                 </button>
                 <button
-                  className="flex items-center gap-2 rounded-xl px-4 py-2 cursor-pointer  text-sm bg-[#80d26e] font-semibold text-white hover:bg-emerald-600"
+                  className="flex items-center gap-2 rounded-xl md:px-4 px-2 md:py-2 py-1.5 cursor-pointer  text-[12px] md:text-sm bg-[#80d26e] font-semibold text-white hover:bg-emerald-600"
                   onClick={() => exportToCSV(items)}
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="md:w-4 w-3 md:h-4 h-3" />
                   Excel
                 </button>
 
                 <button
                   onClick={openCreate}
-                  className="rounded-xl bg-[#477891] cursor-pointer  px-4 py-2 text-sm font-semibold text-white hover:bg-[#3d677c]"
+                  className="rounded-xl bg-[#477891] cursor-pointer md:px-4 px-2 md:py-2 py-1.5 text-[12px] md:text-sm font-semibold text-white hover:bg-[#3d677c]"
                 >
                   + Add New Agent
                 </button>
@@ -872,53 +848,61 @@ export default function AcaAgentsView() {
                         {a?.employee?.designation?.name ?? "-"}
                       </td>
 
-                      <td className="px-3 md:py-1 py-1 border text-nowrap border-gray-300 ">
+                      <td className="px-4 py-1 border text-nowrap border-gray-300  whitespace-nowrap">
                         <span
-                          className={`px-2 py-1 rounded-full text-white text-nowrap text-sm font-semibold ${a.agentProfile.isActive === true
-                              ? "bg-green-500"
-                              : "bg-[#ff7f41]"
-                            }`}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition ${
+                            a.agentProfile.isActive
+                              ? "bg-green-500/15 text-green-700"
+                              : "bg-orange-500/15 text-orange-700"
+                          }`}
                         >
-                          {a.agentProfile.isActive ? "Active" : "In-active"}
+                          {a.agentProfile.isActive ? (
+                            <CheckCircle size={14} />
+                          ) : (
+                            <XCircle size={14} />
+                          )}
+                          {a.agentProfile.isActive ? "Active" : "Inactive"}
                         </span>
                       </td>
 
-                      <td className="px-4 md:py-1 py-1 border border-gray-300 font-medium ">
-                        <div className="flex flex-nowrap items-center justify-center gap-2">
+                      <td className="px-4 py-1">
+                        <div className="flex justify-center items-center gap-3">
                           <button
-                            className="rounded-md bg-indigo-600 p-2 text-white hover:bg-indigo-700"
+                            className="p-2.5 rounded-lg bg-indigo-600/10 text-indigo-700 hover:bg-indigo-600 hover:text-white transition"
                             title="Edit"
                             onClick={() => openEdit(a)}
                           >
-                            <Pencil size={16} />
+                            <Pencil size={15} />
                           </button>
+
                           <button
-                            className="rounded-md bg-yellow-500 p-2 text-white hover:bg-yellow-600"
+                            className="p-2.5 rounded-lg bg-yellow-500/10 text-yellow-700 hover:bg-yellow-500 hover:text-white transition"
                             title="Reset / View Password"
                             onClick={() => {
                               setSelectedAgent(a);
                               setPasswordModalOpen(true);
                             }}
                           >
-                            <Key size={16} />
+                            <Key size={15} />
                           </button>
+
                           {a.agentProfile.isActive ? (
                             <button
-                              className="rounded-md bg-orange-500 p-2 text-white hover:bg-orange-600"
+                              className="p-2.5 rounded-lg bg-red-500/10 text-red-700 hover:bg-red-500 hover:text-white transition"
                               title="Deactivate"
                               onClick={() => openDeactivate(a)}
                             >
-                              <Trash2 size={16} />
+                              <Trash2 size={15} />
                             </button>
                           ) : (
                             <button
-                              className="rounded-md bg-green-600 p-2 text-white hover:bg-green-700"
+                              className="p-2.5 rounded-lg bg-green-600/10 text-green-700 hover:bg-green-600 hover:text-white transition"
                               title="Activate"
                               onClick={() => openActivate(a)}
                             >
-                              <Check size={16} />
+                              <Check size={15} />
                             </button>
-                          )}{" "}
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -938,40 +922,100 @@ export default function AcaAgentsView() {
           </div>
           {confirmOpen && (
             <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-              <div className="p-6 text-center space-y-4">
-                <h3 className="text-lg font-semibold text-slate-900">
-                  {confirmType === "DEACTIVATE"
-                    ? "Deactivate Agent?"
-                    : "Reactivate Agent?"}
-                </h3>
+              <div className="relative p-6 w-[92%] max-w-md mx-auto bg-white rounded-3xl shadow-2xl border border-slate-200 animate-scaleIn overflow-hidden">
+                <div
+                  className={`absolute top-0 left-0 w-full h-1.5 ${
+                    confirmType === "DEACTIVATE"
+                      ? "bg-orange-500"
+                      : "bg-green-500"
+                  }`}
+                ></div>
 
-                <p className="text-sm text-slate-500">
-                  {confirmType === "DEACTIVATE"
-                    ? "This agent will be marked as inactive."
-                    : "This agent will be reactivated and regain access."}
-                </p>
+                <div className="flex justify-center mt-2">
+                  <div
+                    className={`w-18 h-18 flex items-center justify-center rounded-full border-4 bg-white shadow-lg ${
+                      confirmType === "DEACTIVATE"
+                        ? "border-orange-200 shadow-orange-400/30"
+                        : "border-green-200 shadow-green-400/30"
+                    }`}
+                  >
+                    {confirmType === "DEACTIVATE" ? (
+                      <Trash2 className="w-8 h-8 text-orange-600 animate-pulse" />
+                    ) : (
+                      <Check className="w-8 h-8 text-green-600 animate-bounce" />
+                    )}
+                  </div>
+                </div>
 
-                <div className="flex justify-center gap-3 pt-4">
+                <div className="text-center mt-4 space-y-2">
+                  <h3 className="text-[12px] md:text-[20px] font-extrabold text-slate-900 tracking-tight">
+                    {confirmType === "DEACTIVATE"
+                      ? "Deactivate Agent?"
+                      : "Reactivate Agent?"}
+                  </h3>
+
+                  <p className="text-sm text-slate-500 font-medium">
+                    {confirmType === "DEACTIVATE"
+                      ? "This agent will lose access and go offline."
+                      : "Agent will regain access and return to active duty."}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-center gap-2 mt-5">
+                  <span className="text-xs font-bold text-slate-400">
+                    Power
+                  </span>
+                  <div className="w-40 h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all duration-700 ${
+                        confirmType === "DEACTIVATE"
+                          ? "w-[35%] bg-orange-600"
+                          : "w-full bg-green-600"
+                      }`}
+                    ></div>
+                  </div>
+                  <span className="text-xs font-bold text-slate-400">
+                    {confirmType === "DEACTIVATE" ? "35%" : "100%"}
+                  </span>
+                </div>
+
+                <div className="flex justify-center gap-4 mt-7">
                   <button
-                    className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200"
+                    className="md:px-5 px-3 md:py-2.5 py-1.5 md:text-[14px] text-[12px] rounded-2xl bg-slate-100 text-slate-700 font-semibold hover:scale-105 active:scale-95 transition-all"
                     onClick={() => setConfirmOpen(false)}
                   >
                     Cancel
                   </button>
 
                   <button
-                    className={`px-5 py-2 rounded-lg text-white font-medium ${confirmType === "DEACTIVATE"
-                        ? "bg-orange-600 hover:bg-orange-700"
-                        : "bg-green-600 hover:bg-green-700"
-                      }`}
+                    className={`md:px-6 px-3 md:py-2.5 py-1.5 md:text-[14px] text-[12px] rounded-2xl text-white font-bold flex items-center gap-2 shadow-lg hover:scale-110 active:scale-95 transition-all ${
+                      confirmType === "DEACTIVATE"
+                        ? "bg-linear-to-r from-orange-600 to-red-600 shadow-red-400/40"
+                        : "bg-linear-to-r from-green-600 to-emerald-600 shadow-green-400/40"
+                    }`}
                     onClick={
                       confirmType === "DEACTIVATE"
                         ? deactivateAgent
                         : reactivateAgent
                     }
                   >
-                    {confirmType === "DEACTIVATE" ? "Deactivate" : "Reactivate"}
+                    {confirmType === "DEACTIVATE" ? (
+                      <>
+                        <Trash2 className="w-4 h-4" /> Deactivate
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-4 h-4" /> Reactivate
+                      </>
+                    )}
                   </button>
+                </div>
+
+                <div className="pointer-events-none absolute inset-0 opacity-10">
+                  <Eye className="absolute top-8 left-10 w-6 h-6" />
+                  <Download className="absolute top-16 right-12 w-5 h-5 animate-ping" />
+                  <Pencil className="absolute bottom-10 left-16 w-5 h-5 animate-bounce" />
+                  <Plus className="absolute bottom-16 right-20 w-7 h-7 animate-spin-slow" />
                 </div>
               </div>
             </Modal>
@@ -980,24 +1024,27 @@ export default function AcaAgentsView() {
           {passwordModalOpen && (
             <Modal
               open={passwordModalOpen}
-              onClose={() => setPasswordModalOpen(false)}
+              onClose={() => {
+                setPasswordForm({ password: "", confirmPassword: "" });
+                setPasswordModalOpen(false);
+              }}
               title="Reset Password"
-            // subtitle="Enter a new password for this agent"
-            // primaryAction={{
-            //   label: updating ? "Updating..." : "Submit",
-            //   onClick: submitPassword,
-            //   disabled: updating,
-            //   loading: updating,
-            // }}
-            // secondaryAction={{
-            //   label: "Cancel",
-            //   onClick: () => setPasswordModalOpen(false),
-            // }}
+              // subtitle="Enter a new password for this agent"
+              // primaryAction={{
+              //   label: updating ? "Updating..." : "Submit",
+              //   onClick: submitPassword,
+              //   disabled: updating,
+              //   loading: updating,
+              // }}
+              // secondaryAction={{
+              //   label: "Cancel",
+              //   onClick: () => setPasswordModalOpen(false),
+              // }}
             >
               <div className="space-y-4 mt-2">
                 <Field label="Password" required>
                   <TextInput
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={passwordForm.password}
                     onChange={(e) =>
                       handlePasswordChange("password", e.target.value)
@@ -1009,7 +1056,7 @@ export default function AcaAgentsView() {
 
                 <Field label="Confirm Password" required>
                   <TextInput
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={passwordForm.confirmPassword}
                     onChange={(e) =>
                       handlePasswordChange("confirmPassword", e.target.value)
@@ -1018,11 +1065,26 @@ export default function AcaAgentsView() {
                     leftIcon={<Lock size={18} />}
                   />
                 </Field>
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="flex items-center gap-2 text-indigo-600 font-semibold hover:scale-105 transition"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showPassword ? "Hide Password" : "Show Password"}
+                  </button>
+                </div>
               </div>
+
               <div className="flex items-end justify-end gap-3 pt-4">
                 <button
                   className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200"
-                  onClick={() => setPasswordModalOpen(false)}
+                  onClick={() => {
+                    setPasswordForm({ password: "", confirmPassword: "" });
+                    setPasswordModalOpen(false);
+                  }}
                 >
                   Cancel
                 </button>
@@ -1169,6 +1231,7 @@ export default function AcaAgentsView() {
                     options={designationOptions}
                     placeholder="Select Designation"
                     placement="auto"
+                    searchable
                   />
                 </Field>
 
@@ -1179,6 +1242,7 @@ export default function AcaAgentsView() {
                     options={reportsToOptions}
                     placeholder="Select Manager"
                     placement="auto"
+                    searchable
                   />
                 </Field>
 

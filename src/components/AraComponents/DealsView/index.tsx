@@ -7,19 +7,28 @@ import CreateDealModal from "./CreateDealModal.tsx";
 import Loader from "@/commonComponents/Loader/";
 import Pagination from "@/commonComponents/Pagination";
 import toast from "react-hot-toast";
+import DealViewModal from "./DealViewModal";
 
 type DealRow = {
   id: string | number;
   dealNo: string;
-  firstName: string;
-  lastName: string;
+
+  applicantLastName: string;
+  typeOfCoverage: any;
+
+  applicantFirstName: string;
   fullName?: string;
-  applicantsCount: number;
+  numberOfApplicants: number;
   career: string;
+  carrier: any;
   closedAt: string;
   agentId: string;
+  agent: any;
   agentName: string;
   createdByName: string;
+
+  socialProvider: any;
+  closedDate: any;
   createdAt: string;
   coverageTypes?: string[];
   ffm?: string;
@@ -70,10 +79,18 @@ const LIMIT = 10;
 
 const AraDealsView = () => {
   const [q, setQ] = useState("");
-  const [from, setFrom] = useState(
-    toDateOnly(new Date(Date.now() - 19 * 24 * 3600 * 1000))
-  );
-  const [to, setTo] = useState(toDateOnly(new Date()));
+  // const [from, setFrom] = useState(
+  //   toDateOnly(new Date(Date.now() - 19 * 24 * 3600 * 1000))
+  // );
+
+  // const [to, setTo] = useState(toDateOnly(new Date()));
+  const [selectedDeal, setSelectedDeal] = useState(null);
+  const [viewOpen, setViewOpen] = useState(false);
+
+  const handleView = (deal: any) => {
+    setSelectedDeal(deal);
+    setViewOpen(true);
+  };
 
   const [page, setPage] = useState(1);
 
@@ -81,9 +98,7 @@ const AraDealsView = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const [agents, setAgents] = useState<
-    { label: string; value: string }[]
-  >([]);
+  const [agents, setAgents] = useState<{ label: string; value: string }[]>([]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [mode, setMode] = useState<"CREATE" | "EDIT">("CREATE");
@@ -98,13 +113,16 @@ const AraDealsView = () => {
   const fetchDeals = async () => {
     setLoading(true);
     try {
-      const res: any = await apiClient.get(apiClient.URLS.deals, {}, true);
+      const res: any = await apiClient.get(
+        apiClient.URLS.deals,
+        { page, limit: LIMIT },
+        true
+      );
 
-
-      const list = Array.isArray(res.body) ? res.body : [];
+      const list = Array.isArray(res.body.data) ? res.body.data : [];
 
       setItems(list);
-      setTotal(list.length);
+      setTotal(list.meta?.total);
     } catch (e) {
       console.error(e);
       setItems([]);
@@ -113,13 +131,38 @@ const AraDealsView = () => {
       setLoading(false);
     }
   };
+  console.log(items);
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+
+  const filteredItems = useMemo(() => {
+    const query = q.toLowerCase().trim();
+
+    return items.filter((d) => {
+      const fullName =
+        d.fullName?.toLowerCase() ||
+        `${d.applicantFirstName} ${d.applicantLastName}`.toLowerCase();
+
+      const matchSearch =
+        fullName.includes(query) ||
+        d.agent?.user?.firstName?.toLowerCase().includes(query) ||
+        d.createdByName?.toLowerCase().includes(query) ||
+        d.carrier?.toLowerCase().includes(query);
+
+      const closedDate = d.closedDate ? d.closedDate.split("T")[0] : "";
+
+      const matchDate =
+        (!from || closedDate >= from) && (!to || closedDate <= to);
+
+      return matchSearch && matchDate;
+    });
+  }, [items, q, from, to]);
 
   const fetchAgents = async () => {
     setLoading(true);
 
     try {
       const res = await apiClient.get(apiClient.URLS.user, {}, true);
-
 
       if (res.body && Array.isArray(res.body)) {
         console.log("Agents options:", res.body);
@@ -128,13 +171,10 @@ const AraDealsView = () => {
           value: d.id,
         }));
 
-
         setAgents(options);
       }
     } catch (e) {
       console.error(e);
-
-
     } finally {
       setLoading(false);
     }
@@ -143,10 +183,10 @@ const AraDealsView = () => {
   const createDeal = async (dto: any) => {
     await apiClient.post(apiClient.URLS.deals, dto);
   };
-  console.log(agents)
+  console.log(agents);
 
   const updateDeal = async (id: string | number, dto: any) => {
-    await apiClient.put(`${apiClient.URLS.deals}/${id}`, dto);
+    await apiClient.patch(`${apiClient.URLS.deals}/${id}`, dto);
   };
 
   const removeDeal = async (id: string | number) => {
@@ -183,25 +223,73 @@ const AraDealsView = () => {
     setEditing(deal);
     setModalOpen(true);
   };
+  const exportToCSV = () => {
+    const headers = [
+      "Deal #",
+      "Full Name",
+      "Applicants",
+      "Carrier",
+      "Closed Date",
+      "Agent",
+      "Created By",
+      "Created At",
+    ];
+
+    const rows = items.map((d, i) => [
+      d.dealNo || i + 1,
+      d.fullName?.trim() || `${d.applicantFirstName} ${d.applicantLastName}`,
+      d.numberOfApplicants,
+      d.carrier || "-",
+      formatDateTime(d.closedDate),
+      d.agent?.user?.firstName || "-",
+      d.createdByName || "-",
+      formatDateTime(d.createdAt),
+    ]);
+
+    const csvContent = [headers, ...rows].map((r) => r.join(",")).join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "deals.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   /** ---- edit prefill (map row -> modal form) ---- */
-  const initialValues = useMemo(() => {
+  const initialValues = useMemo<Partial<any> | undefined>(() => {
     if (!editing) return undefined;
 
     return {
-      coverageTypes: editing.coverageTypes ?? [],
-      firstName: editing.firstName ?? "",
-      lastName: editing.lastName ?? "",
-      numberOfApplicants: String(editing.applicantsCount ?? ""),
-      ffm: editing.ffm ?? "",
-      career: editing.career ?? "",
+      coverageTypes: editing.typeOfCoverage ?? [],
+
+      firstName: editing.applicantFirstName ?? "",
+      lastName: editing.applicantLastName ?? "",
+
+      numberOfApplicants: String(editing.numberOfApplicants ?? ""),
+
+      ffm: editing.ffm !== undefined ? String(editing.ffm) : "",
+
+      career: editing.carrier ?? "",
       typeOfWork: editing.typeOfWork ?? "",
-      monthlyIncome: editing.monthlyIncome ? String(editing.monthlyIncome) : "",
+
+      monthlyIncome:
+        editing.monthlyIncome !== undefined
+          ? String(editing.monthlyIncome)
+          : "",
+
       documentsNeeded: editing.documentsNeeded ?? "",
-      socialProvided: editing.socialProvided ?? "",
+      socialProvided: editing.socialProvider ?? "",
       customerLanguage: editing.customerLanguage ?? "",
-      closedDate: editing.closedAt ? isoToDateTimeLocal(editing.closedAt) : "",
-      agentId: editing.agentId ? String(editing.agentId) : "",
+
+      closedDate: editing.closedDate
+        ? isoToDateTimeLocal(editing.closedDate)
+        : "",
+
+      agentId: editing.agent?.user?.id ?? "",
+
       notes: editing.notes ?? "",
       files: [],
     };
@@ -246,11 +334,13 @@ const AraDealsView = () => {
     }
   };
 
-
-
   const handleDelete = async (deal: DealRow) => {
     try {
-      const res = await apiClient.delete(`${apiClient.URLS.deals}/${deal.id}`, {}, true);
+      const res = await apiClient.delete(
+        `${apiClient.URLS.deals}/${deal.id}`,
+        {},
+        true
+      );
       if (res.status === 200) {
         toast.success("Agent deleted successfully");
       }
@@ -276,8 +366,8 @@ const AraDealsView = () => {
   }
 
   return (
-    <div className="p-4">
-      <div className="overflow-hidden rounded-md shadow-2xl p-4 bg-white">
+    <div className="md:p-4 p-1">
+      <div className=" rounded-md shadow-2xl md:p-4 p-1 bg-white">
         <TableToolbar
           search={{
             value: q,
@@ -294,7 +384,10 @@ const AraDealsView = () => {
           }}
           actionsSlot={
             <>
-              <button className="rounded-xl flex items-center gap-2  px-4 py-2 text-sm bg-[#80d26e] font-semibold text-white hover:bg-emerald-600">
+              <button
+                className="rounded-xl flex items-center gap-2  px-4 py-2 text-sm bg-[#80d26e] font-semibold text-white hover:bg-emerald-600"
+                onClick={exportToCSV}
+              >
                 <Download className="w-4 h-4" />
                 Excel
               </button>
@@ -308,77 +401,98 @@ const AraDealsView = () => {
           }
         />
 
-        {/* Table */}
-
-        <div className="overflow-auto rounded-md shadow-2xl  min-h-full border border-slate-200  bg-white">
-          <table className="min-w-275 min-h-100 w-full text-sm">
-            <thead className="bg-slate-50  dark:bg-gray-300 ">
+        <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+          <table className="min-w-275 w-full text-sm text-black dark:text-slate-200 border-collapse">
+            <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
               <tr>
-                <th className="px-4 py-3 text-left">Deal #</th>
-                <th className="px-4 py-3 text-left">Full Name</th>
-                <th className="px-4 py-3 text-left"># Applicants</th>
-                <th className="px-4 py-3 text-left">Career</th>
-                <th className="px-4 py-3 text-left">Closed Date</th>
-                <th className="px-4 py-3 text-left">Agent</th>
-                <th className="px-4 py-3 text-left">Created By</th>
-                <th className="px-4 py-3 text-center">Action</th>
+                <th className="px-4 py-1 text-left font-bold border border-slate-200 dark:border-slate-700">
+                  Deal #
+                </th>
+                <th className="px-4 py-1 text-left font-bold border border-slate-200 dark:border-slate-700">
+                  Full Name
+                </th>
+                <th className="px-4 py-1 text-center font-bold border border-slate-200 dark:border-slate-700">
+                  Applicants
+                </th>
+                <th className="px-4 py-1 text-left font-bold border border-slate-200 dark:border-slate-700">
+                  Carrier
+                </th>
+                <th className="px-4 py-1 text-left font-bold border border-slate-200 dark:border-slate-700">
+                  Closed Date
+                </th>
+                <th className="px-4 py-1 text-left font-bold border border-slate-200 dark:border-slate-700">
+                  Agent
+                </th>
+                <th className="px-4 py-1 text-left font-bold border border-slate-200 dark:border-slate-700">
+                  Created By
+                </th>
+                <th className="px-4 py-1 text-center font-bold border border-slate-200 dark:border-slate-700">
+                  Actions
+                </th>
               </tr>
             </thead>
 
             <tbody>
-              {items.length === 0 ? (
+              {filteredItems.length === 0 ? (
                 <tr>
                   <td
                     colSpan={8}
-                    className="px-4 py-10 text-center text-slate-500"
+                    className="py-16 text-center text-slate-400 border border-slate-200 dark:border-slate-700"
                   >
                     No deals found
                   </td>
                 </tr>
               ) : (
-                items.map((d) => (
-                  <tr key={d.id} className="border-t dark:border-slate-800">
-                    <td className="px-4 py-3">{d.dealNo}</td>
-                    <td className="px-4 py-3">
-                      {(d.fullName && d.fullName.trim()) ||
-                        `${d.firstName} ${d.lastName}`}
+                filteredItems.map((d, i) => (
+                  <tr
+                    key={d.id}
+                    className="hover:bg-indigo-50/60 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <td className="px-4 py-1 font-medium border border-slate-200 dark:border-slate-700">
+                      {d.dealNo || i + 1}
                     </td>
-                    <td className="px-4 py-3">{d.applicantsCount}</td>
-                    <td className="px-4 py-3">{d.career}</td>
-                    <td className="px-4 py-3">{formatDateTime(d.closedAt)}</td>
-                    <td className="px-4 py-3">{d.agentName}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-1 border border-slate-200 dark:border-slate-700">
+                      {d.fullName?.trim() ||
+                        `${d.applicantFirstName} ${d.applicantLastName}`}
+                    </td>
+                    <td className="px-4 py-1 text-center border border-slate-200 dark:border-slate-700">
+                      {d.numberOfApplicants}
+                    </td>
+                    <td className="px-4 py-1 border border-slate-200 dark:border-slate-700">
+                      {d.carrier || "-"}
+                    </td>
+                    <td className="px-4 py-1 whitespace-nowrap border border-slate-200 dark:border-slate-700">
+                      {formatDateTime(d.closedDate)}
+                    </td>
+                    <td className="px-4 py-1 border border-slate-200 dark:border-slate-700">
+                      {d.agent?.user?.firstName || "-"}
+                    </td>
+                    <td className="px-4 py-1 border border-slate-200 dark:border-slate-700">
                       <div className="font-medium">{d.createdByName}</div>
                       <div className="text-xs text-slate-500">
                         {formatDateTime(d.createdAt)}
                       </div>
                     </td>
-
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-4 py-1 text-center border border-slate-200 dark:border-slate-700">
+                      <div className="inline-flex items-center gap-2">
                         <button
-                          className="rounded-md bg-indigo-600 p-2 text-white hover:bg-indigo-700"
+                          className="p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 transition"
                           title="Edit"
                           onClick={() => openEdit(d)}
                         >
                           <Pencil size={16} />
                         </button>
-
                         <button
-                          className="rounded-md bg-orange-500 p-2 text-white hover:bg-orange-600"
+                          className="p-2 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-100 dark:bg-orange-500/10 dark:hover:bg-orange-500/20 transition"
                           title="Delete"
                           onClick={() => handleDelete(d)}
                         >
                           <Trash2 size={16} />
                         </button>
-
                         <button
-                          className="rounded-md bg-cyan-500 p-2 text-white hover:bg-cyan-600"
+                          className="p-2 rounded-lg bg-cyan-50 text-cyan-600 hover:bg-cyan-100 dark:bg-cyan-500/10 dark:hover:bg-cyan-500/20 transition"
                           title="View"
-                          onClick={() => {
-                            // You can route to details page later
-                            alert(`View deal ${d.dealNo}`);
-                          }}
+                          onClick={() => handleView(d)}
                         >
                           <Eye size={16} />
                         </button>
@@ -390,6 +504,7 @@ const AraDealsView = () => {
             </tbody>
           </table>
         </div>
+
         <div className="">
           <Pagination
             page={page}
@@ -400,6 +515,11 @@ const AraDealsView = () => {
           />
         </div>
       </div>
+      <DealViewModal
+        open={viewOpen}
+        onClose={() => setViewOpen(false)}
+        deal={selectedDeal}
+      />
 
       <CreateDealModal
         open={modalOpen}
