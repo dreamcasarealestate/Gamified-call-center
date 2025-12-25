@@ -38,14 +38,13 @@ export default function Topbar({
           <div className="text-[15px] font-semibold text-[#111827]">{title}</div>
         </div>
       </div>
-       <ThemeToggle />
-
       <div className="flex items-center gap-3">
         <AppsMenu
           onNavigate={(href: any) => {
             router.push(href);
           }}
         />
+        <ThemeToggle />
 
         <button
           className="relative h-10 w-10 rounded-full grid place-items-center bg-[#F3F4F6] hover:bg-[#EDEFF3] transition"
@@ -66,7 +65,7 @@ export default function Topbar({
         </div>
 
         <div className="sm:hidden">
-          <AvatarMenu name={name} role={role}/>
+          <AvatarMenu name={name} role={role} />
         </div>
       </div>
     </header>

@@ -39,6 +39,11 @@ export default function AvatarMenu({
     };
   }, []);
 
+  const handleClick = () => {
+    setOpen(false);
+    router.push("/userprofile");
+  };
+
   return (
     <div className="relative" ref={ref}>
       <button
@@ -57,17 +62,16 @@ export default function AvatarMenu({
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-xl border border-black/10 z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-56 rounded-[10px] py-2 bg-white shadow-xl border border-black/10 z-50 overflow-hidden">
           <button
-            className="w-full flex items-center gap-2 text-black px-4 py-3 text-sm hover:bg-black/5"
-            onClick={() => {
-              setOpen(false)}}
+            className="w-full flex items-center gap-2 font-semibold text-gray-700 px-4 md:py-2 py-1 text-sm hover:bg-black/5"
+            onClick={handleClick}
           >
             <User2 className="h-4 w-4" />
             Profile
           </button>
           <button
-            className="w-full flex items-center text-black gap-2 px-4 py-3 text-sm hover:bg-black/5"
+            className="w-full flex items-center text-gray-700 font-semibold gap-2 px-4 md:py-2 py-1 text-sm hover:bg-black/5"
             onClick={() => setOpen(false)}
           >
             <Settings className="h-4 w-4" />
@@ -78,10 +82,10 @@ export default function AvatarMenu({
 
           <button
             className={clsx(
-              "w-full flex items-center gap-2 px-4 py-3 text-sm",
+              "w-full flex items-center gap-2 px-4 py-3 font-bold text-sm",
               "hover:bg-red-50 text-red-600"
             )}
-            onClick={() => {handleLogout()}}
+            onClick={() => { handleLogout() }}
           >
             <LogOut className="h-4 w-4" />
             Logout
