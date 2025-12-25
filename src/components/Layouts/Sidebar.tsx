@@ -158,20 +158,25 @@ export default function Sidebar({
     <div className="h-full flex flex-col bg-linear-to-b from-[#080c16] via-[#1e293b] to-[#060a14] border-r border-white/10">
       {/* Brand */}
       <div className="p-6 border-b border-white/10">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="relative">
-            <div className="absolute inset-0 bg-linear-to-br from-blue-500 to-purple-500 rounded-xl blur opacity-30" />
-            <div className="relative h-12 w-12 rounded-xl bg-linear-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg">
-              <Shield className="h-6 w-6 text-white" />
+        <Link href="/medicare/dashboard">
+          <div className="flex items-center  cursor-pointer gap-3 mb-2">
+
+            <div className="relative">
+              <div className="absolute inset-0 bg-linear-to-br from-blue-500 to-purple-500 rounded-xl blur opacity-30" />
+              <div className="relative h-12 w-12 rounded-xl bg-linear-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg">
+                <Shield className="h-6 w-6 text-white" />
+              </div>
+            </div>
+            <div>
+              <div className="text-white cursor-pointer font-bold text-xl bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text">
+                ThinkFirst
+              </div>
+              <div className="text-white/50 text-xs">Insurance Platform</div>
+
             </div>
           </div>
-          <div>
-            <div className="text-white font-bold text-xl bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text">
-              ThinkFirst
-            </div>
-            <div className="text-white/50 text-xs">Insurance Platform</div>
-          </div>
-        </div>
+        </Link>
+
 
         <div className="mt-4 p-3 rounded-xl bg-linear-to-br from-blue-900/30 to-purple-900/30 border border-white/10">
           <div className="flex items-center justify-between">

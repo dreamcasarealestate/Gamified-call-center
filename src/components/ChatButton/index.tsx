@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Button from "@/commonComponents/Button";
 
 type Props = {
   size?: number;
@@ -83,7 +84,7 @@ export default function FloatingChatButton({
         }
       `}</style>
 
-      <button
+      <Button
         className="chat-fab"
         onClick={() => handleChatClick()}
         aria-label={title}
@@ -98,7 +99,7 @@ export default function FloatingChatButton({
           <path d="M20 3H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h3v3.2a.8.8 0 0 0 1.37.57L12.14 18H20a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm0 13H11.6a1 1 0 0 0-.7.29L9 18.2V17a1 1 0 0 0-1-1H4V5h16v11Z" />
           <path d="M7 8h10v2H7V8Zm0 4h7v2H7v-2Z" />
         </svg>
-      </button>
+      </Button>
     </>
   );
 }

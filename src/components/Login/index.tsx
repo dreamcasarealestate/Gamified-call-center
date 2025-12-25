@@ -99,7 +99,6 @@ export default function PremiumLogin({ resetSuccess }: { resetSuccess?: boolean 
         { email }
       );
 
-      // Backend might return message; we show a stable UX message regardless.
       setInfo(
         "Check your email for a verification link to reset your password."
       );
@@ -125,7 +124,7 @@ export default function PremiumLogin({ resetSuccess }: { resetSuccess?: boolean 
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen flex items-center justify-center p-4   bg-gradient-to-br from-gray-50 to-gray-100">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -346,9 +345,8 @@ export default function PremiumLogin({ resetSuccess }: { resetSuccess?: boolean 
                         className="sr-only"
                       />
                       <div
-                        className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
-                          rememberMe ? "border-transparent" : "border-gray-300"
-                        }`}
+                        className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${rememberMe ? "border-transparent" : "border-gray-300"
+                          }`}
                         style={{
                           backgroundColor: rememberMe
                             ? COLORS.primary
