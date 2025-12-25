@@ -22,7 +22,7 @@ const SIDEBAR_WIDTH = 280;
 
 type NavItemType = {
   label: string;
-  href: string; // can be relative like "/dashboard" or absolute like "/chat-history"
+  href: string; 
   icon: any;
   badge?: string;
   absolute?: boolean; // if true => don't prefix with base
@@ -65,10 +65,8 @@ function getSections(base: string): SectionType[] {
         { label: "Leader Board", href: "/leaderboard", icon: Trophy },
 
         // ✅ OPTION A (Common route for all modules)
-        { label: "Chat History", href: "/chat-history", icon: MessageSquareText, absolute: true },
+        { label: "Chat History", href: "/chat", icon: MessageSquareText, absolute: true },
 
-        // ✅ OPTION B (If you want Chat History per module, use this instead)
-        // { label: "Chat History", href: "/chat-history", icon: MessageSquareText },
       ],
     },
     {

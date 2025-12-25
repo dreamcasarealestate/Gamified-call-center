@@ -21,7 +21,7 @@ export default function FloatingChatButton({
   const router = useRouter();
 
   const handleChatClick = () => {
-    router.push("/chat-history");
+    router.push("/chat");
   };
 
   return (

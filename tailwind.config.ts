@@ -11,6 +11,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens:{
+        'x1-chat':'1250px',
+      },
       colors: {
        bgPrimary: "#0b0f19",
         cardDark: "#111827",
@@ -47,8 +50,8 @@ fontFamily: {
           "50%": { clipPath: "inset(0% 0 0 0)" },
         },
       },
-      
-       animation: {
+
+      animation: {
         loaderProgress: "loaderProgress 2s ease-in-out infinite",
         loaderFill: "loaderFill 2.2s ease-in-out infinite",
       },
