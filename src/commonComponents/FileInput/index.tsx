@@ -1,8 +1,9 @@
 import { deleteFile, uploadFile } from "../../Utils/uploadFile";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { VscClose } from "react-icons/vsc";
-
+import Button from "../Button";
+import Image from "next/image";
+ 
 export interface FileInputProps {
   label?: string;
   type: "file";
@@ -19,7 +20,7 @@ export interface FileInputProps {
   folderName?: string;
   initialFileUrl?: string;
 }
-
+ 
 const FileInput = ({
   label,
   labelCls,
@@ -35,145 +36,161 @@ const FileInput = ({
   initialFileUrl,
   onFileChange,
 }: FileInputProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const [fileName, setFileName] = useState("No file selected");
-  const [preview, setPreview] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string>("No file chosen");
+  const [uploading, setUploading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
+ 
+  const inputRef = useRef<HTMLInputElement>(null);
+ 
   useEffect(() => {
     if (initialFileUrl) {
-      setPreview(initialFileUrl);
+      setSelectedFile(null);
+      setImagePreview(initialFileUrl);
       setFileName(initialFileUrl.split("/").pop() || "Uploaded file");
     }
   }, [initialFileUrl]);
-
-  const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || uploading) return;
-
+ 
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    if (uploading) return;
     setError(null);
-    setFileName(file.name);
-    setPreview(URL.createObjectURL(file));
-
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setFileName(file.name);
+      setImagePreview(URL.createObjectURL(file));
+ 
+      try {
+        setUploading(true);
+        const uploadedURL = await uploadFile(file, folderName);
+ 
+        if (uploadedURL) {
+          setImagePreview(uploadedURL);
+          if (onFileChange) {
+            onFileChange(uploadedURL);
+          }
+        } else {
+          throw new Error("File upload failed.");
+        }
+      } catch (error) {
+        console.error("Upload error:", error);
+        setError("Failed to upload file.");
+      } finally {
+        setUploading(false);
+      }
+    }
+  };
+ 
+  const handleDeleteFile = async () => {
+    if (!imagePreview) return;
+    setUploading(true);
     try {
-      setUploading(true);
-      const url = await uploadFile(file, folderName);
-      if (!url) throw new Error("Upload failed");
-      setPreview(url);
-      onFileChange?.(url);
-    } catch {
-      setError("Failed to upload file");
+      const success = await deleteFile(imagePreview);
+ 
+      if (success) {
+        resetFileInput();
+      } else {
+        throw new Error("Failed to delete file.");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      setError("Failed to delete file.");
     } finally {
       setUploading(false);
     }
   };
-
-  const handleDelete = async () => {
-    if (!preview) return;
-    try {
-      setUploading(true);
-      await deleteFile(preview);
-      reset();
-    } catch {
-      setError("Failed to delete file");
-    } finally {
-      setUploading(false);
+ 
+  const resetFileInput = () => {
+    setSelectedFile(null);
+    setImagePreview(null);
+    setFileName("No file chosen");
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+    if (onFileChange) {
+      onFileChange("");
     }
   };
-
-  const reset = () => {
-    setPreview(null);
-    setFileName("No file selected");
-    onFileChange?.("");
-    if (inputRef.current) inputRef.current.value = "";
-  };
-
+ 
   return (
-    <div className={twMerge("space-y-2", className)}>
-      {/* Label */}
-      {label && (
-        <label
-          className={twMerge("block text-sm font-medium text-white", labelCls)}
-        >
-          {label}
-          {required && (
-            <span className={twMerge("ml-1 text-red-400", requiredClass)}>
-              {required}
-            </span>
-          )}
-        </label>
-      )}
-
-      {/* Sub Label */}
-      {sublabel && (
-        <p className={twMerge("text-sm text-slate-400", sublabelClass)}>
-          {sublabel}
-        </p>
-      )}
-
-      {/* Input Row */}
-      <div className="flex items-center gap-3">
-        <label
-          htmlFor={name}
-          className={twMerge(
-            "px-4 py-2 rounded-xl cursor-pointer text-sm font-medium",
-            "bg-blue-500/20 border border-blue-500/30 text-blue-400",
-            "hover:bg-blue-500/30 transition-all",
-            uploading && "opacity-60 cursor-not-allowed"
-          )}
-        >
-          {uploading ? "Uploading..." : "Choose File"}
-        </label>
-
-        <span className="text-slate-400 text-sm truncate max-w-45">
-          {fileName}
-        </span>
-
-        <input
-          ref={inputRef}
-          id={name}
-          type="file"
-          className="hidden"
-          onChange={handleChange}
-          disabled={uploading}
-        />
-      </div>
-
-      {/* Error */}
-      {(error || errorMessage) && (
-        <p className={twMerge("text-sm text-red-400", errorTextClass)}>
-          {error || errorMessage}
-        </p>
-      )}
-
-      {/* Preview */}
-      {preview && (
-        <div className="relative w-24 h-24 mt-3 rounded-xl overflow-hidden border border-white/10">
-          <img
-            src={preview}
-            alt="Selected file"
-            className="w-full h-full object-cover"
-          />
-
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={uploading}
-            aria-label="Remove uploaded file"
-            title="Remove uploaded file"
-            className="absolute top-1 right-1 w-6 h-6 rounded-full
-             bg-red-500/20 border border-red-500/30
-             text-red-400 flex items-center justify-center
-             hover:bg-red-500/30 transition-all"
+    <div className="flex flex-wrap md:flex-nowrap gap-4">
+      <div className="space-y-2">
+        {label && (
+          <label
+            className={twMerge(
+              "block text-sm font-medium text-gray-700",
+              labelCls
+            )}
           >
-            <VscClose aria-hidden="true" />
-          </button>
+            {label}
+            {required && (
+              <span className={twMerge("text-red-400", requiredClass)}>
+                {required}
+              </span>
+            )}
+          </label>
+        )}
+        {sublabel && (
+          <p className={twMerge("text-sm text-gray-500", sublabelClass)}>
+            {sublabel}
+          </p>
+        )}
+ 
+        <div className="relative flex items-center space-x-2">
+          <label
+            htmlFor={name}
+            className="bg-[#3586FF]hover:bg-blue-700 text-white px-3 py-2 rounded-md cursor-pointer"
+          >
+            {uploading ? "Uploading..." : "Choose File"}
+          </label>
+ 
+          <span className="text-gray-700 truncate max-w-37.5">
+            {fileName}
+          </span>
+          <input
+            className="hidden"
+            id={name}
+            name={name}
+            ref={inputRef}
+            type="file"
+            onChange={handleFileChange}
+            disabled={uploading}
+          />
+ 
+          {errorMessage && (
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-red-500">
+              {errorMessage}
+            </div>
+          )}
+        </div>
+ 
+        {error && (
+          <p className={twMerge("mt-2 text-sm text-red-600", errorTextClass)}>
+            {error}
+          </p>
+        )}
+      </div>
+ 
+      {imagePreview && (
+        <div className="mt-4 relative w-20 h-20">
+          <Image
+            src={imagePreview}
+            alt="Selected file preview"
+            className="w-full h-full object-cover rounded-md"
+          />
+          <Button
+            onClick={handleDeleteFile}
+            disabled={uploading}
+            className="absolute top-1 right-1 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm hover:bg-red-600 focus:outline-none"
+          >
+            ✕
+          </Button>
         </div>
       )}
     </div>
   );
 };
-
+ 
 export default FileInput;
+ 
