@@ -1,5 +1,4 @@
 @import "tailwindcss/preflight";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -59,22 +58,22 @@
   }
 
   .label-text {
-    @apply text-[12px] md:text-[14px] font-Gordita-Medium;
+    @apply text-[12px] md:text-[14px] font-medium;
   }
   .key-text {
-    @apply text-[12px] md:text-[14px] font-Gordita-Medium;
+    @apply text-[12px] md:text-[14px] font-medium;
   }
   .sub-heading {
-    @apply text-[14px] md:text-[16px] font-Gordita-Medium;
+    @apply text-[14px] md:text-[16px] font-medium;
   }
   .btn-text {
-    @apply text-[12px] md:text-[14px] font-Gordita-Medium;
+    @apply text-[12px] md:text-[14px] font-medium;
   }
   .heading-text {
-    @apply text-[16px] md:text-[18px] font-Gordita-Bold;
+    @apply text-[16px] md:text-[18px] font-bold;
   }
   .text-medium {
-    @apply text-[14px] md:text-[16px] font-Gordita-Medium;
+    @apply text-[14px] md:text-[16px] font-medium;
   }
   .sublabel-text {
     @apply text-[10px] md:text-[12px];

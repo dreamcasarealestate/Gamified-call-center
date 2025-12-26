@@ -388,7 +388,7 @@ const AraDealsView = () => {
               <Button
                 onClick={exportToCSV}
                 className="
-    rounded-xl flex items-center gap-2 px-4 py-2 text-sm  font-Gordita-Bold
+    rounded-xl flex items-center gap-2 px-4 py-2 text-sm  font-bold
     bg-emerald-500 text-white
     hover:bg-emerald-600
     dark:bg-emerald-400/90 dark:hover:bg-emerald-400
@@ -402,7 +402,7 @@ const AraDealsView = () => {
               <Button
                 onClick={openCreate}
                 className="
-    rounded-xl px-4 py-2 text-sm  font-Gordita-Bold
+    rounded-xl px-4 py-2 text-sm  font-bold
     bg-indigo-600 text-white
     hover:bg-indigo-700
     dark:bg-indigo-500 dark:hover:bg-indigo-400
@@ -419,28 +419,28 @@ const AraDealsView = () => {
           <table className="min-w-275 w-full text-sm app-text  border-collapse">
             <thead className="sticky top-0 z-10 app-table-head   ">
               <tr>
-                <th className="px-4 py-1 text-left  font-Gordita-Bold border app-border ">
+                <th className="px-4 py-1 text-left  font-bold border app-border ">
                   Deal #
                 </th>
-                <th className="px-4 py-1 text-left  font-Gordita-Bold border app-border ">
+                <th className="px-4 py-1 text-left  font-bold border app-border ">
                   Full Name
                 </th>
-                <th className="px-4 py-1 text-center  font-Gordita-Bold border app-border ">
+                <th className="px-4 py-1 text-center  font-bold border app-border ">
                   Applicants
                 </th>
-                <th className="px-4 py-1 text-left  font-Gordita-Bold border app-border ">
+                <th className="px-4 py-1 text-left  font-bold border app-border ">
                   Carrier
                 </th>
-                <th className="px-4 py-1 text-left  font-Gordita-Bold border app-border ">
+                <th className="px-4 py-1 text-left  font-bold border app-border ">
                   Closed Date
                 </th>
-                <th className="px-4 py-1 text-left  font-Gordita-Bold border app-border ">
+                <th className="px-4 py-1 text-left  font-bold border app-border ">
                   Agent
                 </th>
-                <th className="px-4 py-1 text-left  font-Gordita-Bold border app-border ">
+                <th className="px-4 py-1 text-left  font-bold border app-border ">
                   Created By
                 </th>
-                <th className="px-4 py-1 text-center  font-Gordita-Bold border app-border ">
+                <th className="px-4 py-1 text-center  font-bold border app-border ">
                   Actions
                 </th>
               </tr>
@@ -459,7 +459,7 @@ const AraDealsView = () => {
               ) : (
                 filteredItems.map((d, i) => (
                   <tr key={d.id} className="app-row-hover  transition-colors">
-                    <td className="px-4 py-1  font-Gordita-Medium border app-border ">
+                    <td className="px-4 py-1  font-medium border app-border ">
                       {d.dealNo || i + 1}
                     </td>
                     <td className="px-4 py-1 border app-border ">

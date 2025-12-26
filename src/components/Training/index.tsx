@@ -482,17 +482,17 @@ export default function TrainingPage() {
 
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-lg sm:text-xl md:text-2xl  font-Gordita-Bold app-text">
+                  <h1 className="text-lg sm:text-xl md:text-2xl  font-bold app-text">
                     Training Portal
                   </h1>
                   <div className="px-2 py-1 bg-linear-to-r from-purple-100 to-pink-100 rounded-lg">
-                    <span className="text-xs  font-Gordita-Bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    <span className="text-xs  font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                       TRAINING
                     </span>
                   </div>
 
                 </div>
-                <p className="text-xs sm:text-sm app-text mt-1">
+                <p className="text-xs sm:label-text app-text mt-1">
                   Interactive learning materials and resources
                 </p>
               </div>
@@ -505,7 +505,7 @@ export default function TrainingPage() {
                 className="flex items-center gap-2 app-text hover:text-purple-600 transition-colors duration-100 group"
               >
                 <Home className="w-4 h-4 group-hover:scale-110 transition-transform duration-100" />
-                <span className="text-sm  font-Gordita-Medium group-hover:text-purple-600 transition-colors duration-100">
+                <span className="label-text  font-medium group-hover:text-purple-600 transition-colors duration-100">
                   Home
                 </span>
               </Link>
@@ -514,7 +514,7 @@ export default function TrainingPage() {
 
               <div className="flex items-center gap-2 text-purple-600">
                 <BookOpen className="w-4 h-4" />
-                <span className="text-sm  font-Gordita-Bold">Training</span>
+                <span className="label-text  font-bold">Training</span>
               </div>
             </div>
           </div>
@@ -524,16 +524,16 @@ export default function TrainingPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2">
                 <Target className="w-5 h-5 text-purple-600" />
-                <h3 className=" font-Gordita-Bold app-text">
+                <h3 className=" font-bold app-text">
                   Learning Progress
                 </h3>
               </div>
-              <div className="text-sm app-text">
-                <span className=" font-Gordita-Bold text-purple-600">
+              <div className="label-text app-text">
+                <span className=" font-bold text-purple-600">
                   {completedChapters}
                 </span>{" "}
                 of{" "}
-                <span className=" font-Gordita-Bold app-text">
+                <span className=" font-bold app-text">
                   {totalChapters}
                 </span>{" "}
                 chapters
@@ -599,7 +599,7 @@ export default function TrainingPage() {
                 <div className="text-xs text-slate-500">Total</div>
                 <BookOpen className="w-4 h-4 text-blue-500" />
               </div>
-              <div className="text-xl sm:text-2xl  font-Gordita-Bold text-slate-900 mt-1 sm:mt-2">
+              <div className="text-xl sm:text-2xl  font-bold text-slate-900 mt-1 sm:mt-2">
                 {data.length}
               </div>
             </div>
@@ -608,7 +608,7 @@ export default function TrainingPage() {
                 <div className="text-xs text-slate-500">Completed</div>
                 <CheckCircle className="w-4 h-4 text-purple-500" />
               </div>
-              <div className="text-xl sm:text-2xl  font-Gordita-Bold text-slate-900 mt-1 sm:mt-2">
+              <div className="text-xl sm:text-2xl  font-bold text-slate-900 mt-1 sm:mt-2">
                 {completedChapters}
               </div>
             </div>
@@ -617,7 +617,7 @@ export default function TrainingPage() {
                 <div className="text-xs text-slate-500">Time Spent</div>
                 <Clock className="w-4 h-4 text-emerald-500" />
               </div>
-              <div className="text-xl sm:text-2xl  font-Gordita-Bold text-slate-900 mt-1 sm:mt-2">
+              <div className="text-xl sm:text-2xl  font-bold text-slate-900 mt-1 sm:mt-2">
                 {userProgress.totalTimeSpent}m
               </div>
             </div>
@@ -626,7 +626,7 @@ export default function TrainingPage() {
                 <div className="text-xs text-slate-500">Streak</div>
                 <Award className="w-4 h-4 text-amber-500" />
               </div>
-              <div className="text-xl sm:text-2xl  font-Gordita-Bold text-slate-900 mt-1 sm:mt-2">
+              <div className="text-xl sm:text-2xl  font-bold text-slate-900 mt-1 sm:mt-2">
                 {userProgress.streakDays} days
               </div>
             </div>
@@ -649,10 +649,10 @@ export default function TrainingPage() {
                 <BookOpen className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-lg sm:text-xl md:text-2xl  font-Gordita-Bold app-text">
+                <h2 className="text-lg sm:text-xl md:text-2xl  font-bold app-text">
                   Training Materials
                 </h2>
-                <p className="text-xs sm:text-sm app-text mt-1">
+                <p className="text-xs sm:label-text app-text mt-1">
                   {filteredData.length} chapters • {completedChapters} completed
                 </p>
               </div>
@@ -674,7 +674,7 @@ export default function TrainingPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowCompleted(!showCompleted)}
-                  className={`px-3 sm:px-4 py-2.5 rounded-xl  font-Gordita-Medium transition-all duration-100 flex items-center gap-2 flex-1 sm:flex-none justify-center ${showCompleted
+                  className={`px-3 sm:px-4 py-2.5 rounded-xl  font-medium transition-all duration-100 flex items-center gap-2 flex-1 sm:flex-none justify-center ${showCompleted
                     ? "bg-linear-to-r from-purple-50 to-pink-50 text-purple-700 border border-purple-200"
                     : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                     }`}
@@ -693,7 +693,7 @@ export default function TrainingPage() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={openAddModal}
-                    className="px-4 sm:px-6 py-2.5 rounded-xl  font-Gordita-Medium bg-linear-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-200 transition-all duration-100 flex items-center gap-2 flex-1 sm:flex-none justify-center"
+                    className="px-4 sm:px-6 py-2.5 rounded-xl  font-medium bg-linear-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-200 transition-all duration-100 flex items-center gap-2 flex-1 sm:flex-none justify-center"
                   >
                     <Plus size={18} />
                     <span className="hidden sm:inline">Add Chapter</span>
@@ -717,10 +717,10 @@ export default function TrainingPage() {
                     <Award className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className=" font-Gordita-Bold text-emerald-900 text-sm sm:text-base">
+                    <h3 className=" font-bold text-emerald-900 label-text sm:text-base">
                       🎉 Training Completed!
                     </h3>
-                    <p className="text-xs sm:text-sm text-emerald-700">
+                    <p className="text-xs sm:label-text text-emerald-700">
                       All {totalChapters} chapters completed
                     </p>
                   </div>
@@ -729,10 +729,10 @@ export default function TrainingPage() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleCompleteAll}
-                  className="px-4 sm:px-6 py-2 sm:py-3 bg-linear-to-r from-emerald-600 to-teal-600 text-white rounded-xl  font-Gordita-Medium hover:shadow-lg hover:shadow-emerald-200 transition-all duration-100 flex items-center gap-2 w-full sm:w-auto justify-center"
+                  className="px-4 sm:px-6 py-2 sm:py-3 bg-linear-to-r from-emerald-600 to-teal-600 text-white rounded-xl  font-medium hover:shadow-lg hover:shadow-emerald-200 transition-all duration-100 flex items-center gap-2 w-full sm:w-auto justify-center"
                 >
                   <Download className="w-4 sm:w-5 h-4 sm:h-5" />
-                  <span className="text-sm">Get Certificate</span>
+                  <span className="label-text">Get Certificate</span>
                 </motion.button>
               </div>
             </motion.div>
@@ -821,7 +821,7 @@ export default function TrainingPage() {
 
                           <div className="flex items-center gap-3 sm:gap-4 flex-1">
                             <div
-                              className={`hidden xs:flex w-8 h-8 sm:w-10 sm:h-10 items-center justify-center rounded-xl  font-Gordita-Bold shadow-sm ${item.completed
+                              className={`hidden xs:flex w-8 h-8 sm:w-10 sm:h-10 items-center justify-center rounded-xl  font-bold shadow-sm ${item.completed
                                 ? "bg-linear-to-br from-emerald-100 to-teal-100 text-emerald-700"
                                 : "bg-linear-to-br from-purple-100 to-pink-100 text-purple-700"
                                 }`}
@@ -831,18 +831,18 @@ export default function TrainingPage() {
 
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="text-slate-800  font-Gordita-Bold text-base sm:text-[16px] text-[14px] truncate">
+                                <span className="text-slate-800  font-bold text-base sm:text-[16px] text-[14px] truncate">
                                   {item.title}
                                 </span>
                                 {item.completed && (
-                                  <span className="hidden sm:inline px-2 py-0.5 bg-linear-to-r from-emerald-100 to-teal-100 text-emerald-700 text-xs  font-Gordita-Medium rounded-lg">
+                                  <span className="hidden sm:inline px-2 py-0.5 bg-linear-to-r from-emerald-100 to-teal-100 text-emerald-700 text-xs  font-medium rounded-lg">
                                     COMPLETED
                                   </span>
                                 )}
                               </div>
                               <div className="flex items-center gap-2 mt-1">
                                 <div
-                                  className={`px-2 py-0.5 rounded-lg text-xs  font-Gordita-Medium ${item.type === "video"
+                                  className={`px-2 py-0.5 rounded-lg text-xs  font-medium ${item.type === "video"
                                     ? "bg-red-50 text-red-700"
                                     : item.type === "pdf"
                                       ? "bg-blue-50 text-blue-700"
@@ -852,7 +852,7 @@ export default function TrainingPage() {
                                   {item.type.toUpperCase()}
                                 </div>
                                 {item.completed && (
-                                  <span className="sm:hidden px-2 py-0.5 bg-linear-to-r from-emerald-100 to-teal-100 text-emerald-700 text-xs  font-Gordita-Medium rounded-lg">
+                                  <span className="sm:hidden px-2 py-0.5 bg-linear-to-r from-emerald-100 to-teal-100 text-emerald-700 text-xs  font-medium rounded-lg">
                                     DONE
                                   </span>
                                 )}
@@ -869,7 +869,7 @@ export default function TrainingPage() {
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={() => markAsWatched(item.id)}
-                            className="px-3 py-2 rounded-lg bg-linear-to-r from-blue-50 to-cyan-50 text-blue-700 hover:shadow transition-all duration-100 text-sm  font-Gordita-Medium flex-1 sm:flex-none"
+                            className="px-3 py-2 rounded-lg bg-linear-to-r from-blue-50 to-cyan-50 text-blue-700 hover:shadow transition-all duration-100 label-text  font-medium flex-1 sm:flex-none"
                           >
                             <span className="hidden sm:inline">
                               Mark as Watched
@@ -954,7 +954,7 @@ export default function TrainingPage() {
                           <div className="mt-4 p-3 bg-linear-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
                             <div className="flex items-start gap-2">
                               <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-                              <p className="text-sm text-amber-700">
+                              <p className="label-text text-amber-700">
                                 {item.type === "video"
                                   ? "Watch 90% of the video to complete this chapter."
                                   : item.type === "pdf"
@@ -978,10 +978,10 @@ export default function TrainingPage() {
                 <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-linear-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
                   <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 app-muted" />
                 </div>
-                <h3 className="text-lg sm:text-xl  font-Gordita-Bold app-text mb-2">
+                <h3 className="text-lg sm:text-xl  font-bold app-text mb-2">
                   No Training Materials Found
                 </h3>
-                <p className="text-sm app-muted mb-6">
+                <p className="label-text app-muted mb-6">
                   Try adjusting your search or filters
                 </p>
                 <button
@@ -989,7 +989,7 @@ export default function TrainingPage() {
                     setSearchQuery("");
                     setShowCompleted(true);
                   }}
-                  className="px-6 py-3 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-xl  font-Gordita-Medium hover:shadow-lg hover:shadow-purple-200 transition-all duration-100 text-sm sm:text-base"
+                  className="px-6 py-3 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-xl  font-medium hover:shadow-lg hover:shadow-purple-200 transition-all duration-100 label-text sm:text-base"
                 >
                   Clear Filters
                 </button>
@@ -1003,20 +1003,20 @@ export default function TrainingPage() {
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-linear-to-r from-emerald-500 to-teal-500"></div>
-                  <span className="text-sm app-text">Completed</span>
+                  <span className="label-text app-text">Completed</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-linear-to-r from-purple-500 to-pink-500"></div>
-                  <span className="text-sm app-text">In Progress</span>
+                  <span className="label-text app-text">In Progress</span>
                 </div>
               </div>
 
-              <div className="text-sm app-text text-center sm:text-right">
-                <span className=" font-Gordita-Bold app-text">
+              <div className="label-text app-text text-center sm:text-right">
+                <span className=" font-bold app-text">
                   {userProgress.totalTimeSpent}m
                 </span>{" "}
                 total •
-                <span className=" font-Gordita-Bold app-text ml-2">
+                <span className=" font-bold app-text ml-2">
                   {userProgress.streakDays} day
                 </span>{" "}
                 streak
@@ -1048,7 +1048,7 @@ export default function TrainingPage() {
                     <Plus className="w-5 h-5 text-white" />
                   )}
                 </div>
-                <h3 className="text-lg sm:text-xl  font-Gordita-Bold text-slate-900">
+                <h3 className="text-lg sm:text-xl  font-bold text-slate-900">
                   {editingItem ? "Edit Chapter" : "Add Chapter"}
                 </h3>
               </div>
@@ -1062,7 +1062,7 @@ export default function TrainingPage() {
 
             <div className="space-y-4 sm:space-y-5">
               <div>
-                <label className="block text-sm  font-Gordita-Medium app-text mb-2">
+                <label className="block label-text  font-medium app-text mb-2">
                   Chapter Title
                 </label>
                 <input
@@ -1074,7 +1074,7 @@ export default function TrainingPage() {
               </div>
 
               <div>
-                <label className="block text-sm  font-Gordita-Medium text-slate-700 mb-2">
+                <label className="block label-text  font-medium text-slate-700 mb-2">
                   Content Type
                 </label>
                 <select
@@ -1091,7 +1091,7 @@ export default function TrainingPage() {
               </div>
 
               <div>
-                <label className="block text-sm  font-Gordita-Medium text-slate-700 mb-2">
+                <label className="block label-text  font-medium text-slate-700 mb-2">
                   Enter URL
                 </label>
                 <div className="border-2 border-dashed border-slate-300 rounded-xl p-4 sm:p-6 text-center hover:border-purple-400 hover:bg-purple-50/50 transition-all duration-100">
@@ -1107,13 +1107,13 @@ export default function TrainingPage() {
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-3 text-sm rounded-xl  font-Gordita-Medium border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all duration-100"
+                  className="flex-1 px-4 py-3 label-text rounded-xl  font-medium border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all duration-100"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
-                  className="flex-1 px-4 py-3 text-sm rounded-xl  font-Gordita-Medium bg-linear-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-200 transition-all duration-100"
+                  className="flex-1 px-4 py-3 label-text rounded-xl  font-medium bg-linear-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-200 transition-all duration-100"
                 >
                   {editingItem ? "Update" : "Add"}
                 </button>
@@ -1140,14 +1140,14 @@ export default function TrainingPage() {
               <div className="mx-auto w-14 h-14 sm:w-16 sm:h-16 bg-linear-to-br from-red-100 to-orange-100 rounded-2xl flex items-center justify-center mb-3 sm:mb-4">
                 <Trash2 className="w-7 h-7 sm:w-8 sm:h-8 text-red-500" />
               </div>
-              <h3 className="text-lg sm:text-xl  font-Gordita-Bold text-slate-900 mb-2">
+              <h3 className="text-lg sm:text-xl  font-bold text-slate-900 mb-2">
                 Delete Chapter
               </h3>
             </div>
 
-            <p className="text-sm text-slate-600 text-center mb-6">
+            <p className="label-text text-slate-600 text-center mb-6">
               Delete{" "}
-              <span className=" font-Gordita-Bold text-slate-900">
+              <span className=" font-bold text-slate-900">
                 {deleteTarget.title}
               </span>
               ?
@@ -1158,14 +1158,14 @@ export default function TrainingPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteTarget(null)}
-                className="flex-1 px-4 py-3 text-sm rounded-xl  font-Gordita-Medium border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all duration-100"
+                className="flex-1 px-4 py-3 label-text rounded-xl  font-medium border border-slate-300 text-slate-700 hover:bg-slate-100 transition-all duration-100"
               >
                 Cancel
               </button>
 
               <button
                 onClick={confirmDelete}
-                className="flex-1 px-4 py-3 text-sm rounded-xl  font-Gordita-Medium bg-linear-to-r from-red-600 to-orange-600 text-white hover:shadow-lg hover:shadow-red-200 transition-all duration-100"
+                className="flex-1 px-4 py-3 label-text rounded-xl  font-medium bg-linear-to-r from-red-600 to-orange-600 text-white hover:shadow-lg hover:shadow-red-200 transition-all duration-100"
               >
                 Delete
               </button>

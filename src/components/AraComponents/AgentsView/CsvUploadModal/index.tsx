@@ -34,7 +34,7 @@ export default function CSVUploadModal({
     >
       {isLoading ? (
         <div className="p-8 text-center">
-          <p className="mt-4 text-sm text-gray-600 font-Gordita-Medium">
+          <p className="mt-4 label-text text-gray-600 font-medium">
             Uploading CSV...
           </p>
         </div>
@@ -46,10 +46,10 @@ export default function CSVUploadModal({
               <FaFileCsv className="text-blue-600 text-lg" />
             </div>
             <div>
-              <h3 className="text-base font-Gordita-Bold text-gray-800">
+              <h3 className="text-base font-bold text-gray-800">
                 Upload CSV
               </h3>
-              <p className="text-xs text-gray-500 font-Gordita-Medium">
+              <p className="text-xs text-gray-500 font-medium">
                 Import data in bulk
               </p>
             </div>
@@ -70,7 +70,7 @@ export default function CSVUploadModal({
               <FaUpload className="mx-auto text-gray-400 text-2xl mb-2" />
               {selectedFile ? (
                 <>
-                  <p className="text-sm font-Gordita-Bold text-gray-700">
+                  <p className="label-text font-bold text-gray-700">
                     {selectedFile.name}
                   </p>
                   <p className="text-xs text-gray-500">
@@ -78,7 +78,7 @@ export default function CSVUploadModal({
                   </p>
                 </>
               ) : (
-                <p className="text-sm text-gray-600 font-Gordita-Medium">
+                <p className="label-text text-gray-600 font-medium">
                   Click to select CSV file
                 </p>
               )}
@@ -89,7 +89,7 @@ export default function CSVUploadModal({
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 py-2 border rounded-lg cursor-pointer text-sm"
+              className="flex-1 py-2 border  font-medium rounded-lg cursor-pointer label-text"
             >
               Cancel
             </button>
@@ -97,7 +97,7 @@ export default function CSVUploadModal({
             <button
               onClick={onUpload}
               disabled={!selectedFile}
-              className={`flex-1 py-2 rounded-lg text-sm cursor-pointer  flex items-center justify-center gap-2 ${
+              className={`flex-1 py-2 rounded-lg label-text cursor-pointer  flex items-center justify-center gap-2 ${
                 selectedFile
                   ? "bg-blue-600 text-white"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"

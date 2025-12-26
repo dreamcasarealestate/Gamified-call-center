@@ -222,7 +222,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
           </div>
 
           <div>
-            <h2 className="text-2xl  font-Gordita-Bold app-text">
+            <h2 className="text-2xl  font-bold app-text">
               {`${deal?.applicantFirstName || ""} ${
                 deal?.applicantLastName || ""
               }`.trim() || "Unnamed Deal"}
@@ -230,7 +230,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
 
             <div className="flex items-center gap-3 mt-2 flex-wrap">
               <span
-                className={`px-3 py-1 rounded-full text-sm  font-Gordita-Bold ${statusConfig.bg} ${statusConfig.color}`}
+                className={`px-3 py-1 rounded-full text-sm  font-bold ${statusConfig.bg} ${statusConfig.color}`}
               >
                 {statusConfig.label}
               </span>
@@ -240,7 +240,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
               </span>
 
               {deal?.ffm && (
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200 text-xs  font-Gordita-Bold rounded-full">
+                <span className="px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200 text-xs  font-bold rounded-full">
                   FFM
                 </span>
               )}
@@ -290,7 +290,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
             </div>
           </div>
 
-          <div className="text-2xl  font-Gordita-Bold app-text">{stat.value}</div>
+          <div className="text-2xl  font-bold app-text">{stat.value}</div>
           <div className="text-sm app-muted mt-1">{stat.label}</div>
         </div>
       ))}
@@ -305,7 +305,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
             <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
               <Tag className="w-5 h-5 text-blue-600 dark:text-blue-200" />
             </div>
-            <h3 className=" font-Gordita-Bold app-text">Deal Information</h3>
+            <h3 className=" font-bold app-text">Deal Information</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -370,10 +370,10 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
                   <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-700/60 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/25 transition-colors">
                     {item.icon}
                   </div>
-                  <span className="text-sm  font-Gordita-Medium app-muted">{item.label}</span>
+                  <span className="text-sm  font-medium app-muted">{item.label}</span>
                 </div>
 
-                <div className="text-sm  font-Gordita-Medium app-text pl-12">{item.value}</div>
+                <div className="text-sm  font-medium app-text pl-12">{item.value}</div>
               </div>
             ))}
           </div>
@@ -386,7 +386,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
               <div className="p-2 app-surface rounded-lg">
                 <MessageSquare className="w-5 h-5 text-blue-600 dark:text-blue-200" />
               </div>
-              <h3 className=" font-Gordita-Bold app-text">Notes</h3>
+              <h3 className=" font-bold app-text">Notes</h3>
             </div>
 
             <div className="p-4 rounded-xl border app-card app-card">
@@ -399,7 +399,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
               <div className="p-2 app-card rounded-lg">
                 <MessageSquare className="w-5 h-5 text-slate-400 dark:text-slate-300" />
               </div>
-              <h3 className=" font-Gordita-Bold app-muted">Notes</h3>
+              <h3 className=" font-bold app-muted">Notes</h3>
             </div>
             <p className="app-muted italic">No notes added for this deal</p>
           </div>
@@ -414,7 +414,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
             <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
               <Calendar className="w-5 h-5 text-purple-600 dark:text-purple-200" />
             </div>
-            <h3 className=" font-Gordita-Bold app-text">Timeline</h3>
+            <h3 className=" font-bold app-text">Timeline</h3>
           </div>
 
           <div className="space-y-4 relative before:absolute before:left-7 before:top-8 before:bottom-8 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-700">
@@ -443,7 +443,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
                   {item.icon}
                 </div>
                 <div className="flex-1 pt-1">
-                  <h4 className=" font-Gordita-Medium app-text group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
+                  <h4 className=" font-medium app-text group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
                     {item.event}
                   </h4>
                   <p className="text-sm app-muted group-hover:opacity-90 transition-colors">
@@ -463,11 +463,11 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
                 <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
                   <User className="w-5 h-5 text-emerald-600 dark:text-emerald-200" />
                 </div>
-                <h3 className=" font-Gordita-Bold app-text">Assigned Agent</h3>
+                <h3 className=" font-bold app-text">Assigned Agent</h3>
               </div>
 
               <span
-                className={`px-2 py-1 text-xs  font-Gordita-Bold rounded-full ${agentStatusConfig.bg} ${agentStatusConfig.color}`}
+                className={`px-2 py-1 text-xs  font-bold rounded-full ${agentStatusConfig.bg} ${agentStatusConfig.color}`}
               >
                 {agentStatusConfig.label}
               </span>
@@ -475,14 +475,14 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
 
             <div className="flex items-center gap-4 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/30 mb-4 bg-linear-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20">
               <div className="w-14 h-14 rounded-full bg-linear-to-br from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg">
-                <span className=" app-text  font-Gordita-Bold text-lg">
+                <span className=" app-text  font-bold text-lg">
                   {deal.agent.user?.firstName?.charAt(0)}
                   {deal.agent.user?.lastName?.charAt(0)}
                 </span>
               </div>
 
               <div className="flex-1">
-                <h4 className=" font-Gordita-Bold app-heading text-gray-600">
+                <h4 className=" font-bold app-heading text-gray-600">
                   {deal.agent.user?.firstName} {deal.agent.user?.lastName}
                 </h4>
                 <p className="text-sm app-muted">Primary Agent</p>
@@ -516,12 +516,12 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
 
               <div className="flex items-center justify-between p-2">
                 <span className="text-sm app-muted">Experience</span>
-                <span className=" font-Gordita-Medium app-text">{deal.agent.yearsOfExperience} years</span>
+                <span className=" font-medium app-text">{deal.agent.yearsOfExperience} years</span>
               </div>
 
               <div className="flex items-center justify-between p-2">
                 <span className="text-sm app-muted">Access Level</span>
-                <span className=" font-Gordita-Medium app-text">{deal.agent.accessLevel}</span>
+                <span className=" font-medium app-text">{deal.agent.accessLevel}</span>
               </div>
             </div>
           </div>
@@ -542,7 +542,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
                 <div className="w-20 h-20 rounded-full bg-linear-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 flex items-center justify-center mx-auto mb-6">
                   <Users className="w-10 h-10 text-blue-500" />
                 </div>
-                <h3 className="text-2xl  font-Gordita-Bold app-text">
+                <h3 className="text-2xl  font-bold app-text">
                   {deal?.numberOfApplicants || 0} Applicants
                 </h3>
                 <p className="text-slate-500 dark:text-slate-400 mb-8">
@@ -551,10 +551,10 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
 
                 <div className="max-w-md mx-auto app-card rounded-xl p-6 borderapp-border">
                 {deal.agent.stateLicenseNumber && <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm  font-Gordita-Medium app-text">
+                    <span className="text-sm  font-medium app-text">
                       stateLicenseNumber
                     </span>
-                    <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm  font-Gordita-Medium rounded-full">
+                    <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm  font-medium rounded-full">
                       {deal.agent.stateLicenseNumber}
                     </span>
                   </div>}
@@ -564,7 +564,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
                       <span className="app-text">
                         Name
                       </span>
-                      <span className=" font-Gordita-Medium app-text">
+                      <span className=" font-medium app-text">
                         {deal?.applicantFirstName} {deal?.applicantLastName}
                       </span>
                     </div>
@@ -572,7 +572,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
                       <span className="app-text">
                         Coverage Type
                       </span>
-                      <span className=" font-Gordita-Medium app-text">
+                      <span className=" font-medium app-text">
                         {Array.isArray(deal?.typeOfCoverage)
                           ? deal.typeOfCoverage[0]
                           : "Not specified"}
@@ -593,20 +593,20 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
           <div className="flex items-start justify-between mb-8">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-linear-to-br from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg">
-                <span className="app-inverse  font-Gordita-Bold text-xl">
+                <span className="app-inverse  font-bold text-xl">
                   {deal.agent.user?.firstName?.charAt(0)}
                   {deal.agent.user?.lastName?.charAt(0)}
                 </span>
               </div>
 
               <div>
-                <h2 className="text-2xl  font-Gordita-Bold app-text">
+                <h2 className="text-2xl  font-bold app-text">
                   {deal.agent.user?.firstName} {deal.agent.user?.lastName}
                 </h2>
 
                 <div className="flex items-center gap-3 mt-2 flex-wrap">
                   <span
-                    className={`px-3 py-1 rounded-full text-sm  font-Gordita-Bold ${agentStatusConfig.bg} ${agentStatusConfig.color}`}
+                    className={`px-3 py-1 rounded-full text-sm  font-bold ${agentStatusConfig.bg} ${agentStatusConfig.color}`}
                   >
                     {agentStatusConfig.label}
                   </span>
@@ -614,7 +614,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
                   <span className="text-sm app-text">NPM: {deal.agent.npm}</span>
 
                   {deal.agent.ahipCertified && (
-                    <span className="px-2 py-1 text-xs  font-Gordita-Bold rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-200">
+                    <span className="px-2 py-1 text-xs  font-bold rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-200">
                       AHIP Certified
                     </span>
                   )}
@@ -626,7 +626,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-6">
               <div className="app-card rounded-xl p-6 border app-border">
-                <h3 className=" font-Gordita-Bold app-text mb-4">
+                <h3 className=" font-bold app-text mb-4">
                   Contact Information
                 </h3>
 
@@ -635,7 +635,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
                     <Mail className="w-5 h-5 app-text" />
                     <div>
                       <p className="text-sm app-muted">Email</p>
-                      <p className=" font-Gordita-Medium app-text">
+                      <p className=" font-medium app-text">
                         {deal.agent.user?.email}
                       </p>
                     </div>
@@ -645,7 +645,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
                     <Phone className="w-5 h-5 app-text" />
                     <div>
                       <p className="text-sm app-muted">Phone</p>
-                      <p className=" font-Gordita-Medium app-text">
+                      <p className=" font-medium app-text">
                         {deal.agent.user?.phone}
                       </p>
                     </div>
@@ -654,7 +654,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
               </div>
 
               <div className="rounded-xl p-6 border app-border app-card">
-                <h3 className=" font-Gordita-Bold app-text mb-4">
+                <h3 className=" font-bold app-text mb-4">
                   Professional Details
                 </h3>
 
@@ -682,7 +682,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
                       className="flex items-center justify-between"
                     >
                       <span className="text-sm app-muted">{item.label}</span>
-                      <span className=" font-Gordita-Medium app-text">{item.value}</span>
+                      <span className=" font-medium app-text">{item.value}</span>
                     </div>
                   ))}
                 </div>
@@ -691,7 +691,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
 
             <div className="space-y-6">
               <div className="rounded-xl p-6 border app-border app-card">
-                <h3 className=" font-Gordita-Bold app-text mb-4">
+                <h3 className=" font-bold app-text mb-4">
                   System Information
                 </h3>
 
@@ -726,7 +726,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
 
                       <button
                         onClick={() => copyToClipboard(item.raw ?? item.value, item.label)}
-                        className=" font-Gordita-Medium app-text hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1"
+                        className=" font-medium app-text hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1"
                         title="Copy"
                       >
                         {item.value}
@@ -742,7 +742,7 @@ const DealViewModal = ({ open, onClose, deal }: DealViewModalProps) => {
       ) : (
         <div className="text-center py-12">
           <User className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-          <h3 className="text-lg  font-Gordita-Bold app-text">No Agent Assigned</h3>
+          <h3 className="text-lg  font-bold app-text">No Agent Assigned</h3>
           <p className="app-muted mt-2">
             This deal doesn't have an assigned agent yet
           </p>

@@ -3,30 +3,30 @@
 
 @layer base {
   :root {
-    --bg: 248 250 252;        /* page bg (slate-50) */
-    --card: 255 255 255;      /* card bg */
-    --text: 15 23 42;         /* text (slate-900) */
-    --muted: 100 116 139;     /* muted (slate-500) */
-    --border: 226 232 240;    /* border (slate-200) */
-    --head: 241 245 249;      /* table head bg (slate-100) */
-    --hover: 239 246 255; 
-        /* row hover (blue-50-ish) */
-          --soft: 241 245 249;        /* subtle surface (slate-100) */
-  --softHover: 226 232 240; 
+    --bg: 248 250 252; /* page bg (slate-50) */
+    --card: 255 255 255; /* card bg */
+    --text: 15 23 42; /* text (slate-900) */
+    --muted: 100 116 139; /* muted (slate-500) */
+    --border: 226 232 240; /* border (slate-200) */
+    --head: 241 245 249; /* table head bg (slate-100) */
+    --hover: 239 246 255;
+    /* row hover (blue-50-ish) */
+    --soft: 241 245 249; /* subtle surface (slate-100) */
+    --softHover: 226 232 240;
     --btnHover: 241 245 249;
   }
 
   .dark {
-    --bg: 9 12 20;            /* deep navy bg */
-    --card: 17 24 39;         /* slate-900 card */
-    --text: 226 232 240;      /* slate-200 text */
-    --muted: 148 163 184;     /* slate-400 muted */
-    --border: 51 65 85;       /* slate-700 border */
-   --head: 36 48 70;         /* slate-800 table head */
-    --hover: 30 41 59; 
-    --soft: 30 41 59;           /* subtle surface (slate-800) */
-  --softHover: 36 48 70;        /* slate-900 hover */
-    --btnHover: 30 41 59; 
+    --bg: 9 12 20; /* deep navy bg */
+    --card: 17 24 39; /* slate-900 card */
+    --text: 226 232 240; /* slate-200 text */
+    --muted: 148 163 184; /* slate-400 muted */
+    --border: 51 65 85; /* slate-700 border */
+    --head: 36 48 70; /* slate-800 table head */
+    --hover: 30 41 59;
+    --soft: 30 41 59; /* subtle surface (slate-800) */
+    --softHover: 36 48 70; /* slate-900 hover */
+    --btnHover: 30 41 59;
   }
 
   html,
@@ -65,7 +65,7 @@
   }
 
   /* Muted text */
- .app-muted {
+  .app-muted {
     color: rgb(var(--muted));
   }
 
@@ -78,7 +78,7 @@
     background: rgb(var(--hover));
   }
   .app-text {
-    color: rgb(var(--text))!important;
+    color: rgb(var(--text)) !important;
   }
   .app-heading {
     color: rgb(var(--text));
@@ -132,49 +132,48 @@
     background: rgb(79 70 229); /* indigo-600 */
     color: #fff;
     border: 1px solid rgb(79 70 229);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
   }
   .app-btn-active:hover {
     background: rgb(67 56 202); /* indigo-700 */
     border-color: rgb(67 56 202);
   }
- .app-input {
+  .app-input {
     background: rgb(var(--card));
     color: rgb(var(--text));
-    
   }
   .app-input::placeholder {
     color: rgb(var(--muted));
   }
   /* Action Buttons (Edit, Delete, View) */
-.app-btn-action {
-  /* @apply p-2 rounded-lg border transition-all; */
-  background: rgb(var(--soft));
-  color: rgb(var(--text));
-  border-color: rgb(var(--border));
-}
+  .app-btn-action {
+    /* @apply p-2 rounded-lg border transition-all; */
+    background: rgb(var(--soft));
+    color: rgb(var(--text));
+    border-color: rgb(var(--border));
+  }
 
-.app-btn-action:hover {
-  background: rgb(var(--softHover));
-}
+  .app-btn-action:hover {
+    background: rgb(var(--softHover));
+  }
 
-.app-btn-action-danger {
-  /* @apply p-2 rounded-lg border transition-all; */
-  background: rgb(254 242 242); /* red-50 */
-  color: rgb(239 68 68);       /* red-500 */
-  border-color: rgb(239 68 68);
-}
+  .app-btn-action-danger {
+    /* @apply p-2 rounded-lg border transition-all; */
+    background: rgb(254 242 242); /* red-50 */
+    color: rgb(239 68 68); /* red-500 */
+    border-color: rgb(239 68 68);
+  }
 
-.dark .app-btn-action-danger {
-  background: rgb(239 68 68 / 0.1);
-  color: rgb(248 113 113); /* red-300 */
-  border-color: rgb(248 113 113);
-}
+  .dark .app-btn-action-danger {
+    background: rgb(239 68 68 / 0.1);
+    color: rgb(248 113 113); /* red-300 */
+    border-color: rgb(248 113 113);
+  }
 
-.dark .app-btn-action-danger:hover {
-  background: rgb(239 68 68 / 0.2);
-}
- .app-menu-item:hover {
+  .dark .app-btn-action-danger:hover {
+    background: rgb(239 68 68 / 0.2);
+  }
+  .app-menu-item:hover {
     background: rgb(var(--btnHover));
   }
 
@@ -193,5 +192,57 @@
     color: rgb(199, 210, 254); /* indigo-200 */
   }
 
+  .custom-scrollbar {
+    overflow: auto; /* handles both x and y */
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  .dark .custom-scrollbar::-webkit-scrollbar-track {
+    background: #111827;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #d9dadd;
+    border-radius: 10px;
+  }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #374151;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+   .label-text {
+    @apply text-[12px] md:text-[14px] font-medium;
+  }
+  .key-text {
+    @apply text-[12px] md:text-[14px] font-medium;
+  }
+  .sub-heading {
+    @apply text-[14px] md:text-[16px] font-medium;
+  }
+  .btn-text {
+    @apply text-[12px] md:text-[14px] font-medium;
+  }
+  .heading-text {
+    @apply text-[16px] md:text-[18px] font-bold;
+  }
+  .text-medium {
+    @apply text-[14px] md:text-[16px] font-medium;
+  }
+  .sublabel-text {
+    @apply text-[10px] md:text-[12px];
+  }
 }

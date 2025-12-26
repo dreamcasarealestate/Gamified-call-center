@@ -29,14 +29,14 @@ export default function ProgressSection({
             </div>
 
             <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-white border-2 border-amber-500 flex items-center justify-center shadow-sm">
-              <span className="text-xs  font-Gordita-Bold text-amber-600">
+              <span className="text-xs  font-bold text-amber-600">
                 {level}
               </span>
             </div>
           </div>
 
           <div>
-            <h3 className="text-3xl  font-Gordita-Bold app-text">
+            <h3 className="text-3xl  font-bold app-text">
               Level {level}
             </h3>
             <p className="text-sm app-text mt-1">
@@ -52,7 +52,7 @@ export default function ProgressSection({
               <span className="app-text">
                 Progress to Level {level + 1}
               </span>
-              <span className="text-emerald-600  font-Gordita-Bold">
+              <span className="text-emerald-600  font-bold">
                 {Math.round(progressPercentage)}%
               </span>
             </div>
@@ -79,7 +79,7 @@ export default function ProgressSection({
             </div>
 
             <div>
-              <p className="text-3xl  font-Gordita-Bold text-slate-900">
+              <p className="text-3xl  font-bold text-slate-900">
                 {dailyStreak}
               </p>
               <p className="text-sm text-orange-600">

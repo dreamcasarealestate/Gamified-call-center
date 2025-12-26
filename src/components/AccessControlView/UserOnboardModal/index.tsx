@@ -50,32 +50,68 @@ const STEPS = [
 const ErrorText = ({ text }: { text?: string }) =>
   text ? <p className="text-xs text-rose-600 mt-1">{text}</p> : null;
 
-const SectionCard = ({
-  title,
-  subTitle,
-  right,
-  children,
-}: {
+type SectionCardProps = {
   title: string;
   subTitle?: string;
   right?: React.ReactNode;
+  icon?: React.ReactNode; // optional (ex: <User size={16} />)
   children: React.ReactNode;
-}) => (
-  <div className="app-card border app-border rounded-2xl p-4 space-y-3">
-    <div className="flex items-start justify-between gap-3">
-      <div>
-        <p className="app-text md:text-[12px] text-[10px] font-Gordita-Bold">
-          {title}
-        </p>
-        {subTitle ? (
-          <p className="app-muted md:text-xs text-[10px]  mt-1">{subTitle}</p>
-        ) : null}
+  className?: string;
+};
+
+export const SectionCard = ({
+  title,
+  subTitle,
+  right,
+  icon,
+  children,
+  className = "",
+}: SectionCardProps) => {
+  return (
+    <div
+      className={[
+        "rounded-2xl border overflow-hidden",
+        "bg-white/95 dark:bg-slate-900/70",
+        "border-slate-200/70 dark:border-slate-700/60",
+        "shadow-[0_12px_30px_-18px_rgba(0,0,0,0.25)]",
+        className,
+      ].join(" ")}
+    >
+      <div className="px-5 py-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-3">
+            {icon ? (
+              <div className="mt-0.5 grid place-items-center w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60">
+                {icon}
+              </div>
+            ) : null}
+
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
+                {title}
+              </p>
+              {subTitle ? (
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  {subTitle}
+                </p>
+              ) : null}
+            </div>
+          </div>
+
+          {right ? (
+            <div className="shrink-0 flex items-center gap-2">{right}</div>
+          ) : null}
+        </div>
       </div>
-      {right}
+
+      {/* Divider */}
+      <div className="h-px bg-slate-200/70 dark:bg-slate-700/60" />
+
+      {/* Body */}
+      <div className="px-5 py-4">{children}</div>
     </div>
-    {children}
-  </div>
-);
+  );
+};
 const defaultAddress = (isDefault = true) => ({
   id: undefined,
   address1: "",
@@ -141,7 +177,7 @@ function normalizeAddresses(list: any[]) {
 
   if (!foundDefault) normalized[0].isDefault = true;
 
-  let firstDefaultIdx = normalized.findIndex((x) => x.isDefault);
+  const firstDefaultIdx = normalized.findIndex((x) => x.isDefault);
   normalized.forEach((x, i) => {
     if (i !== firstDefaultIdx) x.isDefault = false;
   });
@@ -209,6 +245,7 @@ export default function UserOnboardModal({
     if (hydratedKeyRef.current === key) return;
     hydratedKeyRef.current = key;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStep(1);
     setErrors({});
     setAddressesTouched(false);
@@ -344,7 +381,7 @@ export default function UserOnboardModal({
     setErrors((p) => ({ ...p, ...e }));
     return Object.keys(e).length === 0;
   };
-  
+
 
   const validateStep3 = () => {
     const e: Record<string, string> = {};
@@ -498,38 +535,37 @@ export default function UserOnboardModal({
 
     return dto;
   };
-  const [reportsToOptions, setReportsToOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
+  const [reportsToOptions, setReportsToOptions] = useState<{ label: string; value: string }[]>([]);
+
   useEffect(() => {
-  if (!employee.designationId) {
-    setReportsToOptions([]);
-    return;
-  }
-
-  const fetchReportsTo = async () => {
-    try {
-      const res = await apiClient.get(
-        `${apiClient.URLS.employee}/report-to/${employee.designationId}`,
-        {},
-        true
-      );
-
-      if (Array.isArray(res.body)) {
-        const options = res.body.map((emp: any) => ({
-          label: `${emp.name} (${emp.designation})`, // what user sees
-          value: String(emp.id), // what gets submitted
-        }));
-
-        setReportsToOptions(options);
-      }
-    } catch (err) {
-      console.error("Failed to fetch reports-to employees", err);
+    if (!employee.designationId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setReportsToOptions([]);
+      return;
     }
-  };
 
-  fetchReportsTo();
-}, [employee.designationId]);
+    const fetchReportsTo = async () => {
+      try {
+        const res = await apiClient.get(
+          `${apiClient.URLS.employee}/report-to/${employee.designationId}`,
+          {},
+          true
+        );
+        if (Array.isArray(res.body)) {
+          const options = res.body.map((emp: any) => ({
+            label: `${emp.name} (${emp.designation})`,
+            value: String(emp.id),
+          }));
+
+          setReportsToOptions(options);
+        }
+      } catch (err) {
+        console.error("Failed to fetch reports-to employees", err);
+      }
+    };
+
+    fetchReportsTo();
+  }, [employee.designationId]);
 
 
   const title = useMemo(() => {
@@ -598,12 +634,12 @@ export default function UserOnboardModal({
                   <div className="flex items-center gap-3">
                     <div
                       className={[
-                        "w-9 h-9 rounded-xl flex items-center justify-center border font-Gordita-Bold text-sm",
+                        "w-9 h-9 rounded-xl flex items-center justify-center border font-bold text-sm",
                         active
                           ? "bg-blue-600 text-white border-blue-600"
                           : done
-                          ? "bg-emerald-500/10 text-emerald-700 border-emerald-300"
-                          : "app-card app-text app-border",
+                            ? "bg-emerald-500/10 text-emerald-700 border-emerald-300"
+                            : "app-card app-text app-border",
                       ].join(" ")}
                     >
                       {done ? "✓" : s.id}
@@ -611,7 +647,7 @@ export default function UserOnboardModal({
                     <div className="min-w-0">
                       <p
                         className={[
-                          "text-sm font-Gordita-Bold",
+                          "text-sm font-bold",
                           active ? "text-blue-600" : "app-text",
                         ].join(" ")}
                       >
@@ -793,7 +829,7 @@ export default function UserOnboardModal({
             {!isAdmin ? (
               <div className="rounded-2xl border app-border p-4 flex items-center justify-between gap-4">
                 <div>
-                  <p className="app-text font-Gordita-Bold text-sm">
+                  <p className="app-text font-bold text-sm">
                     Agent User
                   </p>
                   <p className="app-muted text-xs mt-1">
@@ -805,7 +841,7 @@ export default function UserOnboardModal({
                   type="button"
                   onClick={() => setIsAgent((p) => !p)}
                   className={[
-                    "px-4 py-2 rounded-xl text-sm font-Gordita-Bold transition border",
+                    "px-4 py-2 rounded-xl text-sm font-bold transition border",
                     isAgent
                       ? "bg-emerald-600 text-white border-emerald-600"
                       : "app-btn",
@@ -825,7 +861,7 @@ export default function UserOnboardModal({
           >
             {isAdmin ? (
               <div className="rounded-xl border app-border p-3 app-card">
-                <p className="app-text font-Gordita-Bold text-sm">Admin user</p>
+                <p className="app-text font-bold text-sm">Admin user</p>
                 <p className="app-muted text-xs mt-1">
                   Employee details are skipped for ADMIN.
                 </p>
@@ -867,26 +903,26 @@ export default function UserOnboardModal({
                   />
                 </Field>
 
-               <Field label="Reports To (optional)" error={errors.reportsToId}>
-  <SingleSelect
-    value={employee.reportsToId || ""}
-    onChange={(v: any) => {
-      setEmployee((p: any) => ({
-        ...p,
-        reportsToId: v || undefined,
-      }));
-      if (errors.reportsToId)
-        setErrors((p) => ({ ...p, reportsToId: "" }));
-    }}
-    options={[
-      { label: "None", value: "" },
-      ...reportsToOptions, // <-- Correct source
-    ]}
-    placeholder="Select Reports To"
-    searchable
-    error={!!errors.reportsToId}
-  />
-</Field>
+                <Field label="Reports To (optional)" error={errors.reportsToId}>
+                  <SingleSelect
+                    value={employee.reportsToId || ""}
+                    onChange={(v: any) => {
+                      setEmployee((p: any) => ({
+                        ...p,
+                        reportsToId: v || undefined,
+                      }));
+                      if (errors.reportsToId)
+                        setErrors((p) => ({ ...p, reportsToId: "" }));
+                    }}
+                    options={[
+                      { label: "None", value: "" },
+                      ...reportsToOptions, // <-- Correct source
+                    ]}
+                    placeholder="Select Reports To"
+                    searchable
+                    error={!!errors.reportsToId}
+                  />
+                </Field>
 
               </>
             )}
@@ -911,7 +947,7 @@ export default function UserOnboardModal({
                           className="rounded-2xl border app-border p-4 space-y-3"
                         >
                           <div className="flex items-center justify-between">
-                            <p className="text-sm font-Gordita-Bold app-text">
+                            <p className="text-sm font-bold app-text">
                               Address #{idx + 1}
                             </p>
 
@@ -1155,7 +1191,7 @@ export default function UserOnboardModal({
                     <div className="grid md:grid-cols-2 grid-cols-1 gap-3 pt-2">
                       <div className="rounded-2xl border app-border p-4 flex items-center justify-between">
                         <div>
-                          <p className="app-text font-Gordita-Bold text-sm">
+                          <p className="app-text font-bold text-sm">
                             AHIP Certified
                           </p>
                           <p className="app-muted text-xs mt-1">
@@ -1175,7 +1211,7 @@ export default function UserOnboardModal({
 
                       <div className="rounded-2xl border app-border p-4 flex items-center justify-between">
                         <div>
-                          <p className="app-text font-Gordita-Bold text-sm">
+                          <p className="app-text font-bold text-sm">
                             State Licensed
                           </p>
                           <p className="app-muted text-xs mt-1">
@@ -1344,7 +1380,7 @@ export default function UserOnboardModal({
                 subTitle="Employee/Address/Agent steps are skipped"
               >
                 <div className="rounded-xl border app-border p-3 app-card">
-                  <p className="app-text font-Gordita-Bold text-sm">
+                  <p className="app-text font-bold text-sm">
                     ADMIN user
                   </p>
                   <p className="app-muted text-xs mt-1">
@@ -1368,22 +1404,22 @@ export default function UserOnboardModal({
             <div className="flex items-center gap-2">
               {step !== 3 ? (
                 <Button
-                  className="md:px-4 px-2 md:py-2 py-1 md:text-[14px] text-[12px] font-Gordita-Medium  rounded-xl app-card app-text hover:app-surface"
+                  className="md:px-4 px-2 md:py-2 py-1 md:text-[14px] text-[12px] font-medium  rounded-xl app-card app-text hover:app-surface"
                   onClick={handleNext}
                 >
                   Next →
                 </Button>
               ) : (
                 <Button
-                  className="md:px-4 px-2 md:py-2 py-1 md:text-[14px] text-[12px] rounded-xl bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+                  className="md:px-4 px-2 md:py-2 py-1 md:text-[14px] text-[12px] rounded-xl font-medium bg-[#541796] text-white hover:bg-green-700 disabled:opacity-50"
                   disabled={saving}
                   onClick={handleSubmit}
                 >
                   {saving
                     ? "Saving..."
                     : mode === "add"
-                    ? "Create User"
-                    : "Update User"}
+                      ? "Create User"
+                      : "Update User"}
                 </Button>
               )}
             </div>

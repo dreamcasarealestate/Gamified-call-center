@@ -40,7 +40,7 @@ const Button = forwardRef<ButtonRef, ButtonProps>((props, ref) => {
       className={twMerge(
         clsx(
           {
-            "cursor-not-allowed btn-text font-Gordita-Medium btn-text ": disabled,
+            "cursor-not-allowed btn-text font-medium btn-text ": disabled,
           }),
         className
       )}

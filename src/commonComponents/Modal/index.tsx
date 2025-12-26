@@ -174,7 +174,7 @@ export default function Modal({
                                     >
                                         <div className="min-w-0">
                                             {title ? (
-                                                <Dialog.Title className="text-base  font-Gordita-Bold app-text ">
+                                                <Dialog.Title className="text-base  font-bold app-text ">
                                                     {title}
                                                 </Dialog.Title>
                                             ) : null}
@@ -234,7 +234,7 @@ export default function Modal({
                                                         onClick={secondaryAction.onClick ?? handleRequestClose}
                                                         disabled={secondaryAction.disabled}
                                                         className={cn(
-                                                            "rounded-xl cursor-pointer border px-4 py-2 text-sm  font-Gordita-Medium",
+                                                            "rounded-xl cursor-pointer border px-4 py-2 text-sm  font-medium",
                                                             "border-slate-200 text-slate-700 hover:bg-slate-50",
                                                             "dark:border-slate-700  dark:hover:bg-slate-800",
                                                             secondaryAction.disabled && "opacity-60 cursor-not-allowed"
@@ -250,7 +250,7 @@ export default function Modal({
                                                         onClick={primaryAction.onClick}
                                                         disabled={primaryAction.disabled || primaryAction.loading}
                                                         className={cn(
-                                                            "rounded-xl cursor-pointer bg-indigo-600 px-4 py-2 text-sm  font-Gordita-Bold text-white hover:bg-indigo-700",
+                                                            "rounded-xl cursor-pointer bg-indigo-600 px-4 py-2 text-sm  font-bold text-white hover:bg-indigo-700",
                                                             "disabled:opacity-60 disabled:cursor-not-allowed"
                                                         )}
                                                     >

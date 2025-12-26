@@ -46,7 +46,7 @@ export default function Drawer({
     <Transition.Root show={open} appear as={Fragment}>
       <Dialog
         as="div"
-        className={twMerge("relative z-50", className)}
+        className={twMerge("relative z-50 ", className)}
         initialFocus={initialFocusRef}
         onClose={outSideClickEvent}
       >
@@ -72,7 +72,6 @@ export default function Drawer({
         <div className="fixed inset-0 overflow-hidden">
           <div className="relative w-full h-full">
 
-            {/* Drawer Panel */}
             <Transition.Child
               as={Fragment}
               enter="transform transition ease-in-out duration-500"
@@ -90,7 +89,7 @@ export default function Drawer({
                     openVariant === "left" ? "left-0" : "right-0"
                   ),
                   // 🔥 GLASS PANEL
-                  "bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-l-3xl shadow-xl",
+                  "bg-slate-800/40 backdrop-blur-xl border border-white/10  shadow-xl",
                   panelCls
                 )}
               >
@@ -113,7 +112,7 @@ export default function Drawer({
                       {title && (
                         <Dialog.Title
                           className={twMerge(
-                            "text-lg  font-Gordita-Bold text-white",
+                            "text-lg  font-bold text-white",
                             titleCls
                           )}
                         >

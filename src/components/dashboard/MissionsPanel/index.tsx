@@ -49,7 +49,7 @@ export default function Missions({ missions }: MissionsProps) {
             </motion.div>
             
             <div>
-              <h2 className="text-xl md:text-2xl  font-Gordita-Bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
+              <h2 className="text-xl md:text-2xl  font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
                 Daily Missions
               </h2>
               <p className="text-sm app-muted mt-1">
@@ -70,7 +70,7 @@ export default function Missions({ missions }: MissionsProps) {
               </div>
               <div className="text-right">
                 <div className="text-xs text-slate-600">Progress</div>
-                <div className="text-sm  font-Gordita-Bold text-emerald-700">
+                <div className="text-sm  font-bold text-emerald-700">
                   {completedMissions.length}/{missions.length}
                 </div>
               </div>
@@ -83,9 +83,9 @@ export default function Missions({ missions }: MissionsProps) {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-emerald-600" />
-              <span className="text-sm  font-Gordita-Bold text-slate-900">Daily Progress</span>
+              <span className="text-sm  font-bold text-slate-900">Daily Progress</span>
             </div>
-            <span className="text-sm  font-Gordita-Bold text-emerald-700">{completionPercentage}%</span>
+            <span className="text-sm  font-bold text-emerald-700">{completionPercentage}%</span>
           </div>
           
           <div className="relative">
@@ -127,7 +127,7 @@ export default function Missions({ missions }: MissionsProps) {
                 <span>Available: <strong className="app-text">{totalXpReward} XP</strong></span>
               </div>
             </div>
-            <span className="text-emerald-700  font-Gordita-Medium">
+            <span className="text-emerald-700  font-medium">
               {totalXpReward - earnedXp} XP remaining
             </span>
           </div>
@@ -137,7 +137,7 @@ export default function Missions({ missions }: MissionsProps) {
         <div className="space-y-4 mb-8">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-            <h3 className="text-sm  font-Gordita-Bold app-text">
+            <h3 className="text-sm  font-bold app-text">
               Active Missions ({activeMissions.length})
             </h3>
           </div>
@@ -171,11 +171,11 @@ export default function Missions({ missions }: MissionsProps) {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                <h3 className="text-sm  font-Gordita-Bold app-text">
+                <h3 className="text-sm  font-bold app-text">
                   Completed ({completedMissions.length})
                 </h3>
               </div>
-              <span className="text-xs text-emerald-700  font-Gordita-Medium">
+              <span className="text-xs text-emerald-700  font-medium">
                 +{earnedXp} XP earned
               </span>
             </div>
@@ -195,7 +195,7 @@ export default function Missions({ missions }: MissionsProps) {
                         <div className="absolute inset-0 bg-emerald-500 rounded-full blur opacity-20" />
                       </div>
                       <div>
-                        <div className="text-sm  font-Gordita-Bold app-text line-through">
+                        <div className="text-sm  font-bold app-text line-through">
                           {mission.title}
                         </div>
                         {mission.description && (
@@ -207,7 +207,7 @@ export default function Missions({ missions }: MissionsProps) {
                     </div>
                     
                     <div className="flex items-center gap-2">
-                      <div className="px-2.5 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs  font-Gordita-Bold rounded-lg shadow-sm">
+                      <div className="px-2.5 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs  font-bold rounded-lg shadow-sm">
                         +{mission.xpReward} XP
                       </div>
                       <ChevronRight className="w-4 h-4 text-slate-400" />
@@ -234,7 +234,7 @@ export default function Missions({ missions }: MissionsProps) {
             </div>
             <div className="flex items-center gap-2">
               <Timer className="w-4 h-4 text-blue-500" />
-              <span className="text-sm  font-Gordita-Bold app-text">23:45:12</span>
+              <span className="text-sm  font-bold app-text">23:45:12</span>
             </div>
           </div>
         </div>
@@ -307,9 +307,9 @@ function MissionRow({ mission, index, isSelected, onSelect }: MissionRowProps) {
             
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <h4 className=" font-Gordita-Bold app-text">{mission.title}</h4>
+                <h4 className=" font-bold app-text">{mission.title}</h4>
                 {isExpiringSoon && (
-                  <span className="px-2 py-0.5 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 text-xs  font-Gordita-Bold rounded-full animate-pulse">
+                  <span className="px-2 py-0.5 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 text-xs  font-bold rounded-full animate-pulse">
                     SOON
                   </span>
                 )}
@@ -326,7 +326,7 @@ function MissionRow({ mission, index, isSelected, onSelect }: MissionRowProps) {
           {/* XP Reward Badge */}
           <motion.div
             whileHover={{ scale: 1.1 }}
-            className="px-3 py-1.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-700 text-sm  font-Gordita-Bold rounded-lg shadow-sm min-w-[70px] text-center"
+            className="px-3 py-1.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-700 text-sm  font-bold rounded-lg shadow-sm min-w-[70px] text-center"
           >
             +{mission.xpReward} XP
           </motion.div>
@@ -340,9 +340,9 @@ function MissionRow({ mission, index, isSelected, onSelect }: MissionRowProps) {
               <span>Progress: {mission.progress}/{mission.target}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm  font-Gordita-Bold text-emerald-700">{progressPercentage}%</span>
+              <span className="text-sm  font-bold text-emerald-700">{progressPercentage}%</span>
               {progressPercentage >= 100 && (
-                <div className="px-2 py-0.5 bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 text-xs  font-Gordita-Bold rounded-full">
+                <div className="px-2 py-0.5 bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 text-xs  font-bold rounded-full">
                   READY
                 </div>
               )}
@@ -387,7 +387,7 @@ function MissionRow({ mission, index, isSelected, onSelect }: MissionRowProps) {
                 minute: '2-digit' 
               })}</span>
             </div>
-            <span className={isExpiringSoon ? 'text-amber-600  font-Gordita-Medium' : 'text-slate-500'}>
+            <span className={isExpiringSoon ? 'text-amber-600  font-medium' : 'text-slate-500'}>
               {isExpiringSoon ? 'Expiring soon!' : `${Math.ceil((timeRemaining.getTime() - Date.now()) / (1000 * 60 * 60))}h left`}
             </span>
           </div>

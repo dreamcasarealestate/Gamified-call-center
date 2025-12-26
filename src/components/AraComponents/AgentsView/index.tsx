@@ -255,7 +255,7 @@ export default function AcaAgentsView() {
       return 0;
     });
   }, [filteredItems, sortKey, sortOrder]);
- 
+
 
   const openEdit = (agent: any) => {
     setEditing(agent);
@@ -366,8 +366,8 @@ export default function AcaAgentsView() {
       a.agentProfile.isActive === true
         ? "Active "
         : a.agentProfile.isActive === false
-        ? "In-Active"
-        : "-",
+          ? "In-Active"
+          : "-",
     ]);
 
     const csvContent = [headers, ...rows].map((e) => e.join(",")).join("\n");
@@ -738,26 +738,24 @@ export default function AcaAgentsView() {
         className={`px-4 md:py-1 py-1 text-left border app-border ${className}`}
       >
         <div className="flex items-center gap-1 group">
-          <span className=" font-Gordita-Bold app-table-head text-nowrap app-border ">{label}</span>
+          <span className=" font-bold app-table-head text-nowrap app-border ">{label}</span>
 
           <div className="flex flex-row opacity-0 group-hover:opacity-100 transition">
             <ArrowUp
               size={16}
-              className={`cursor-pointer ${
-                active && sortOrder === "asc"
-                  ? "text-blue-600"
-                  : "app-border"
-              }`}
+              className={`cursor-pointer ${active && sortOrder === "asc"
+                ? "text-blue-600"
+                : "app-border"
+                }`}
               onClick={() => sortData(column, "asc")}
             />
 
             <ArrowDown
               size={16}
-              className={`cursor-pointer ${
-                active && sortOrder === "desc"
-                  ? "text-blue-600"
-                  : "app-border"
-              }`}
+              className={`cursor-pointer ${active && sortOrder === "desc"
+                ? "text-blue-600"
+                : "app-border"
+                }`}
               onClick={() => sortData(column, "desc")}
             />
           </div>
@@ -781,13 +779,13 @@ export default function AcaAgentsView() {
               <>
                 <Button
                   onClick={() => setOpenFileModal(true)}
-                  className="flex items-center gap-2 rounded-xl md:px-4 px-2 md:py-2 py-1.5 cursor-pointer text-[12px] md:text-sm text-nowrap bg-indigo-600  font-Gordita-Bold text-white hover:bg-indigo-700"
+                  className="flex items-center gap-2 rounded-xl md:px-4 px-2 md:py-2 py-1.5 cursor-pointer text-[12px] md:text-sm text-nowrap bg-indigo-600  font-bold text-white hover:bg-indigo-700"
                 >
                   <FileSpreadsheet className="md:w-4 w-3 md:h-4 h-3" />
                   Import CSV
                 </Button>
                 <Button
-                  className="flex items-center gap-2 rounded-xl md:px-4 px-2 md:py-2 py-1.5 cursor-pointer  text-[12px] md:text-sm bg-[#80d26e]  font-Gordita-Bold text-white hover:bg-emerald-600"
+                  className="flex items-center gap-2 rounded-xl md:px-4 px-2 md:py-2 py-1.5 cursor-pointer  text-[12px] md:text-sm bg-[#80d26e]  font-bold text-white hover:bg-emerald-600"
                   onClick={() => exportToCSV(items)}
                 >
                   <Download className="md:w-4 w-3 md:h-4 h-3" />
@@ -796,7 +794,7 @@ export default function AcaAgentsView() {
 
                 <Button
                   onClick={openCreate}
-                  className="rounded-xl bg-[#477891] cursor-pointer md:px-4 px-2 md:py-2 py-1.5 text-[12px] md:text-sm  font-Gordita-Bold text-white hover:bg-[#3d677c]"
+                  className="rounded-xl bg-[#477891] cursor-pointer md:px-4 px-2 md:py-2 py-1.5 text-[12px] md:text-sm  font-bold text-white hover:bg-[#3d677c]"
                 >
                   + Add New Agent
                 </Button>
@@ -805,7 +803,7 @@ export default function AcaAgentsView() {
           />
 
           <div className="overflow-auto   rounded-md shadow-2xl border app-border app-card">
-           <table className="w-full text-sm border app-border dark:border-gray-700">
+            <table className="w-full text-sm border app-border ">
 
               <thead className="app-table-head">
                 <tr>
@@ -818,7 +816,7 @@ export default function AcaAgentsView() {
                   />
                   <SortableTh label="Role" column="role" />
                   <SortableTh label="Status" column="userStatus" />
-                  <th className="px-4 py-1 border app-border text-nowrap  font-Gordita-Medium dark:!border-gray-700">
+                  <th className="px-4 py-1 border app-border text-nowrap  font-medium ">
 
                     Actions
                   </th>
@@ -830,7 +828,7 @@ export default function AcaAgentsView() {
                   <tr>
                     <td
                       colSpan={6}
-                      className="px-4 py-10 text-center app-text  font-Gordita-Bold"
+                      className="px-4 py-10 text-center app-text  font-bold"
                     >
                       No Agents found
                     </td>
@@ -838,26 +836,25 @@ export default function AcaAgentsView() {
                 ) : (
                   sortedItems.map((a) => (
                     <tr key={a.id} className="border-t app-text">
-                      <td className="px-3 md:py-1 py-1  font-Gordita-Medium  text-nowrap border app-border">
+                      <td className="px-3 md:py-1 py-1  font-medium  text-nowrap border app-border">
                         {a.firstName}
                       </td>
-                      <td className="px-3 md:py-1 py-1  font-Gordita-Medium text-nowrap border app-border ">
+                      <td className="px-3 md:py-1 py-1  font-medium text-nowrap border app-border ">
                         {a.lastName}
                       </td>
-                      <td className="px-6 md:py-1 py-1  font-Gordita-Medium text-nowrap border app-border ">
+                      <td className="px-6 md:py-1 py-1  font-medium text-nowrap border app-border ">
                         {a.email}
                       </td>
-                      <td className="px-3 md:py-1 py-1 border text-nowrap app-border  font-Gordita-Medium ">
+                      <td className="px-3 md:py-1 py-1 border text-nowrap app-border  font-medium ">
                         {a?.employee?.designation?.name ?? "-"}
                       </td>
 
                       <td className="px-4 py-1 border text-nowrap app-border  whitespace-nowrap">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs  font-Gordita-Bold transition ${
-                            a.agentProfile.isActive
-                              ? "bg-green-500/15 text-green-700"
-                              : "bg-orange-500/15 text-orange-700"
-                          }`}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs  font-bold transition ${a.agentProfile.isActive
+                            ? "bg-green-500/15 text-green-700"
+                            : "bg-orange-500/15 text-orange-700"
+                            }`}
                         >
                           {a.agentProfile.isActive ? (
                             <CheckCircle size={14} />
@@ -868,7 +865,7 @@ export default function AcaAgentsView() {
                         </span>
                       </td>
 
-                     <td className="px-4 py-1 border app-border text-nowrap  font-Gordita-Medium dark:!border-gray-700">
+                      <td className="px-4 py-1 border app-border text-nowrap  font-medium dark:!border-gray-700">
 
                         <div className="flex justify-center items-center gap-3">
                           <Button
@@ -928,20 +925,18 @@ export default function AcaAgentsView() {
             <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)}>
               <div className="relative p-6 w-[92%] max-w-md mx-auto app-card rounded-3xl shadow-2xl border app-border animate-scaleIn overflow-hidden">
                 <div
-                  className={`absolute top-0 left-0 w-full h-1.5 ${
-                    confirmType === "DEACTIVATE"
-                      ? "bg-orange-500"
-                      : "bg-green-500"
-                  }`}
+                  className={`absolute top-0 left-0 w-full h-1.5 ${confirmType === "DEACTIVATE"
+                    ? "bg-orange-500"
+                    : "bg-green-500"
+                    }`}
                 ></div>
 
                 <div className="flex justify-center mt-2">
                   <div
-                    className={`w-18 h-18 flex items-center justify-center rounded-full border-4 app-card shadow-lg ${
-                      confirmType === "DEACTIVATE"
-                        ? "border-orange-200 shadow-orange-400/30"
-                        : "border-green-200 shadow-green-400/30"
-                    }`}
+                    className={`w-16 h-16 flex items-center justify-center rounded-full border-4 app-card shadow-lg ${confirmType === "DEACTIVATE"
+                      ? "border-orange-200 shadow-orange-400/30"
+                      : "border-green-200 shadow-green-400/30"
+                      }`}
                   >
                     {confirmType === "DEACTIVATE" ? (
                       <Trash2 className="w-8 h-8 text-orange-600 animate-pulse" />
@@ -958,7 +953,7 @@ export default function AcaAgentsView() {
                       : "Reactivate Agent?"}
                   </h3>
 
-                  <p className="text-sm app-text  font-Gordita-Medium">
+                  <p className="text-sm app-text  font-medium">
                     {confirmType === "DEACTIVATE"
                       ? "This agent will lose access and go offline."
                       : "Agent will regain access and return to active duty."}
@@ -966,37 +961,35 @@ export default function AcaAgentsView() {
                 </div>
 
                 <div className="flex items-center justify-center gap-2 mt-5">
-                  <span className="text-xs  font-Gordita-Bold text-slate-400">
+                  <span className="text-xs  font-bold text-slate-400">
                     Power
                   </span>
                   <div className="w-40 h-2 bg-slate-100 rounded-full overflow-hidden">
                     <div
-                      className={`h-full transition-all duration-700 ${
-                        confirmType === "DEACTIVATE"
-                          ? "w-[35%] bg-orange-600"
-                          : "w-full bg-green-600"
-                      }`}
+                      className={`h-full transition-all duration-700 ${confirmType === "DEACTIVATE"
+                        ? "w-[35%] bg-orange-600"
+                        : "w-full bg-green-600"
+                        }`}
                     ></div>
                   </div>
-                  <span className="text-xs  font-Gordita-Bold text-slate-400">
+                  <span className="text-xs  font-bold text-slate-400">
                     {confirmType === "DEACTIVATE" ? "35%" : "100%"}
                   </span>
                 </div>
 
                 <div className="flex justify-center gap-4 mt-7">
                   <Button
-                    className="md:px-5 px-3 md:py-2.5 py-1.5 md:text-[14px] text-[12px] rounded-2xl app-card app-text  font-Gordita-Bold hover:scale-105 active:scale-95 transition-all"
+                    className="md:px-5 px-3 md:py-2.5 py-1.5 md:text-[14px] text-[12px] rounded-2xl app-card app-text  font-bold hover:scale-105 active:scale-95 transition-all"
                     onClick={() => setConfirmOpen(false)}
                   >
                     Cancel
                   </Button>
 
                   <Button
-                    className={`md:px-6 px-3 md:py-2.5 py-1.5 md:text-[14px] text-[12px] rounded-2xl text-white  font-Gordita-Bold flex items-center gap-2 shadow-lg hover:scale-110 active:scale-95 transition-all ${
-                      confirmType === "DEACTIVATE"
-                        ? "bg-linear-to-r from-orange-600 to-red-600 shadow-red-400/40"
-                        : "bg-linear-to-r from-green-600 to-emerald-600 shadow-green-400/40"
-                    }`}
+                    className={`md:px-6 px-3 md:py-2.5 py-1.5 md:text-[14px] text-[12px] rounded-2xl text-white  font-bold flex items-center gap-2 shadow-lg hover:scale-110 active:scale-95 transition-all ${confirmType === "DEACTIVATE"
+                      ? "bg-linear-to-r from-orange-600 to-red-600 shadow-red-400/40"
+                      : "bg-linear-to-r from-green-600 to-emerald-600 shadow-green-400/40"
+                      }`}
                     onClick={
                       confirmType === "DEACTIVATE"
                         ? deactivateAgent
@@ -1034,17 +1027,17 @@ export default function AcaAgentsView() {
               }}
               title="Reset Password"
               className="app-text"
-              // subtitle="Enter a new password for this agent"
-              // primaryAction={{
-              //   label: updating ? "Updating..." : "Submit",
-              //   onClick: submitPassword,
-              //   disabled: updating,
-              //   loading: updating,
-              // }}
-              // secondaryAction={{
-              //   label: "Cancel",
-              //   onClick: () => setPasswordModalOpen(false),
-              // }}
+            // subtitle="Enter a new password for this agent"
+            // primaryAction={{
+            //   label: updating ? "Updating..." : "Submit",
+            //   onClick: submitPassword,
+            //   disabled: updating,
+            //   loading: updating,
+            // }}
+            // secondaryAction={{
+            //   label: "Cancel",
+            //   onClick: () => setPasswordModalOpen(false),
+            // }}
             >
               <div className="space-y-4 p-2 mt-2 app-card">
                 <Field label="Password" required>
@@ -1055,7 +1048,7 @@ export default function AcaAgentsView() {
                       handlePasswordChange("password", e.target.value)
                     }
                     placeholder="Password"
-                    leftIcon={<Lock size={18} />}
+                    leftIcon={<Lock size={16} />}
                   />
                 </Field>
 
@@ -1067,7 +1060,7 @@ export default function AcaAgentsView() {
                       handlePasswordChange("confirmPassword", e.target.value)
                     }
                     placeholder="Confirm Password"
-                    leftIcon={<Lock size={18} />}
+                    leftIcon={<Lock size={16} />}
                   />
                 </Field>
 
@@ -1075,9 +1068,9 @@ export default function AcaAgentsView() {
                   <Button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="flex items-center gap-2 text-indigo-600 dark:text-white  font-Gordita-Bold hover:scale-105 transition"
+                    className="flex items-center gap-2 text-indigo-600 dark:text-white  font-bold hover:scale-105 transition"
                   >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     {showPassword ? "Hide Password" : "Show Password"}
                   </Button>
                 </div>
@@ -1085,7 +1078,7 @@ export default function AcaAgentsView() {
 
               <div className="flex items-end justify-end gap-3 pt-4">
                 <Button
-                  className="px-4 py-2 rounded-lg app-btn   app-btn:hover"
+                  className="px-4 py-2 rounded-lg app-btn   font-medium  app-btn:hover"
                   onClick={() => {
                     setPasswordForm({ password: "", confirmPassword: "" });
                     setPasswordModalOpen(false);
@@ -1096,7 +1089,7 @@ export default function AcaAgentsView() {
 
                 <Button
                   type="submit"
-                  className="bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-Gordita-Medium px-5 py-2 rounded-lg shadow-lg transition duration-200 ease-in-out  disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium px-5 py-2 rounded-lg shadow-lg transition duration-200 ease-in-out  disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={submitPassword}
                 >
                   update
@@ -1109,17 +1102,18 @@ export default function AcaAgentsView() {
             open={OpenModal}
             handleDrawerToggle={() => setOpenModal(false)}
             panelCls="w-[95%] md:w-[80%] lg:w-[calc(82%-190px)] overflow-x-hidden app-card shadow-xl z-[9999999]"
-            panelInnerCls=" app-surface md:px-8 px-3 py-6" overLayCls="bg-slate-900/40  backdrop-blur-sm"
+            panelInnerCls="app-surface md:px-8 px-3 py-6"
+            overLayCls="bg-slate-900/40  backdrop-blur-sm"
           >
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2 app-text font-Gordita-Bold text-lg">
+              <div className="flex items-center gap-2 app-text font-bold text-lg">
                 {isEditMode ? (
-                  <Pencil size={18} className=" text-purple-600" />
+                  <Pencil size={16} className=" text-purple-600" />
                 ) : (
-                  <UserPlus size={18} className=" text-purple-600" />
+                  <UserPlus size={16} className=" text-purple-600" />
                 )}
                 <span
-                  className="flex items-center gap-2 font-Gordita-Bold text-lg
+                  className="flex items-center gap-2 font-bold text-lg
     bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600
     bg-clip-text text-transparent"
                 >
@@ -1128,7 +1122,7 @@ export default function AcaAgentsView() {
               </div>
             </div>
 
-            <div className="mb-6 text-sm font-Gordita-Medium app-text">
+            <div className="mb-6 text-sm font-medium app-text">
               {isEditMode
                 ? "Update agent details and save changes."
                 : "Fill details to create a new agent."}
@@ -1136,7 +1130,7 @@ export default function AcaAgentsView() {
 
             <div className="flex flex-col md:gap-3 gap-2 border app-border shadow-sm rounded-md md:p-4 p-2 md:mb-6 mb-3 app-btn-action ">
               <h2
-                className="font-Gordita-Bold text-[12px] md:text-[16px] tracking-wide 
+                className="font-bold text-[12px] md:text-[16px] tracking-wide 
   app-text flex items-center gap-2"
               >
                 <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
@@ -1149,8 +1143,9 @@ export default function AcaAgentsView() {
                     value={form.firstName}
                     onChange={(e: any) => update("firstName", e.target.value)}
                     placeholder="First Name"
-                    leftIcon={<User size={18} />}
+                    leftIcon={<User size={16} />}
                     error={!!errors.firstName}
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1159,8 +1154,9 @@ export default function AcaAgentsView() {
                     value={form.lastName}
                     onChange={(e: any) => update("lastName", e.target.value)}
                     placeholder="Last Name"
-                    leftIcon={<User size={18} />}
+                    leftIcon={<User size={16} />}
                     error={!!errors.lastName}
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1170,8 +1166,9 @@ export default function AcaAgentsView() {
                     value={form.email}
                     onChange={(e: any) => update("email", e.target.value)}
                     placeholder="Login Username"
-                    leftIcon={<Mail size={18} />}
+                    leftIcon={<Mail size={16} />}
                     error={!!errors.email}
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1181,7 +1178,8 @@ export default function AcaAgentsView() {
                     value={form.password}
                     onChange={(e: any) => update("password", e.target.value)}
                     placeholder="Password"
-                    leftIcon={<Lock size={18} />}
+                    leftIcon={<Lock size={16} />}
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1191,8 +1189,9 @@ export default function AcaAgentsView() {
                     value={form.dob}
                     onChange={(e: any) => update("dob", e.target.value)}
                     placeholder="Select DOB"
-                    leftIcon={<Calendar size={18} />}
+                    leftIcon={<Calendar size={16} />}
                     error={!!errors.dob}
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1203,6 +1202,7 @@ export default function AcaAgentsView() {
                       update("ssn", normalizeSSN(e.target.value))
                     }
                     placeholder="SSN"
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1213,8 +1213,9 @@ export default function AcaAgentsView() {
                       update("phone", normalizePhone(e.target.value))
                     }
                     placeholder="Contact Number"
-                    leftIcon={<Phone size={18} />}
+                    leftIcon={<Phone size={16} />}
                     error={!!errors.phone}
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
               </div>
@@ -1222,8 +1223,7 @@ export default function AcaAgentsView() {
 
             <div className="flex flex-col md:gap-3 gap-2 app-border border-gray-200 shadow-sm rounded-md md:p-4 p-2 md:mb-6 mb-3 app-btn-action">
               <h2
-                className="font-Gordita-Bold text-[12px] md:text-[16px] tracking-wide 
-  app-text flex items-center gap-2"
+                className="font-bold text-[12px] md:text-[16px] tracking-wide app-text flex items-center gap-2"
               >
                 <span className="w-2 h-2 rounded-full bg-indigo-600"></span>Work
                 Details
@@ -1237,6 +1237,7 @@ export default function AcaAgentsView() {
                     placeholder="Select Designation"
                     placement="auto"
                     searchable
+
                   />
                 </Field>
 
@@ -1256,6 +1257,7 @@ export default function AcaAgentsView() {
                     value={form.npn}
                     onChange={(e: any) => update("npn", e.target.value)}
                     placeholder="NPN"
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1264,6 +1266,7 @@ export default function AcaAgentsView() {
                     value={form.chaseExt}
                     onChange={(e: any) => update("chaseExt", e.target.value)}
                     placeholder="Chase Ext."
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
               </div>
@@ -1271,7 +1274,7 @@ export default function AcaAgentsView() {
 
             <div className="flex flex-col md:gap-3 gap-2 border app-border shadow-sm rounded-md md:p-4 p-2 md:mb-6 mb-3 app-btn-action">
               <h2
-                className="font-Gordita-Bold text-[12px] md:text-[16px] tracking-wide 
+                className="font-bold text-[12px] md:text-[16px] tracking-wide 
   text-indigo-700 flex items-center gap-2"
               >
                 <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
@@ -1285,6 +1288,7 @@ export default function AcaAgentsView() {
                       update("chaseDataUsername", e.target.value)
                     }
                     placeholder="Chase Data Login"
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1296,7 +1300,8 @@ export default function AcaAgentsView() {
                       update("chaseDataPassword", e.target.value)
                     }
                     placeholder="Chase Data Password"
-                    leftIcon={<Lock size={18} />}
+                    leftIcon={<Lock size={16} />}
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1307,6 +1312,7 @@ export default function AcaAgentsView() {
                       update("healthSherpaUsername", e.target.value)
                     }
                     placeholder="HealthSherpa Login"
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1318,7 +1324,8 @@ export default function AcaAgentsView() {
                       update("healthSherpaPassword", e.target.value)
                     }
                     placeholder="HealthSherpa Password"
-                    leftIcon={<Lock size={18} />}
+                    leftIcon={<Lock size={16} />}
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1329,6 +1336,7 @@ export default function AcaAgentsView() {
                       update("myMfgUsername", e.target.value)
                     }
                     placeholder="MyMFG Username"
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1340,7 +1348,8 @@ export default function AcaAgentsView() {
                       update("myMfgPassword", e.target.value)
                     }
                     placeholder="MyMFG Password"
-                    leftIcon={<Lock size={18} />}
+                    leftIcon={<Lock size={16} />}
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1349,6 +1358,7 @@ export default function AcaAgentsView() {
                     value={form.ffmUsername}
                     onChange={(e: any) => update("ffmUsername", e.target.value)}
                     placeholder="FFM Username"
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
               </div>
@@ -1356,7 +1366,7 @@ export default function AcaAgentsView() {
 
             <div className="flex flex-col md:gap-3 gap-2 border app-border shadow-sm rounded-md md:p-4 p-2 md:mb-6 mb-3 app-btn-action">
               <h2
-                className="font-Gordita-Bold text-[12px] md:text-[16px] tracking-wide 
+                className="font-bold text-[12px] md:text-[16px] tracking-wide 
   app-text flex items-center gap-2"
               >
                 <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
@@ -1368,6 +1378,7 @@ export default function AcaAgentsView() {
                     value={form.forwarding}
                     onChange={(e: any) => update("forwarding", e.target.value)}
                     placeholder="Forwarding"
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
 
@@ -1378,6 +1389,7 @@ export default function AcaAgentsView() {
                       update("payStructure", e.target.value)
                     }
                     placeholder="Pay Structure"
+                    containerClassName="md:py-[6px] py-1"
                   />
                 </Field>
               </div>
@@ -1385,7 +1397,7 @@ export default function AcaAgentsView() {
 
             <div className="flex flex-col md:gap-3 gap-2 border app-border shadow-sm rounded-md md:p-4 p-2 md:mb-6 mb-3 app-btn-action">
               <h2
-                className="font-Gordita-Bold text-[12px] md:text-[16px] tracking-wide 
+                className="font-bold text-[12px] md:text-[16px] tracking-wide 
   app-text flex items-center gap-2"
               >
                 <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
@@ -1417,14 +1429,14 @@ export default function AcaAgentsView() {
 
             <div className="mt-6 mb-2 md:mb-4 flex justify-end gap-3">
               <Button
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-Gordita-Medium px-5 py-2 rounded-lg shadow-sm transition duration-200 ease-in-out cursor-pointer "
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-5 py-2 rounded-lg shadow-sm transition duration-200 ease-in-out cursor-pointer "
                 onClick={() => setOpenModal(false)}
               >
                 Cancel
               </Button>
 
               <Button
-                className="bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-Gordita-Medium px-5 py-2 rounded-lg shadow-lg transition duration-200 ease-in-out  disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium px-5 py-2 rounded-lg shadow-lg transition duration-200 ease-in-out  disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleSubmit}
                 disabled={saving}
               >

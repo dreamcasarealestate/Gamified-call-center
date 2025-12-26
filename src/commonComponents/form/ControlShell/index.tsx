@@ -22,9 +22,9 @@ export function ControlShell({
   return (
     <div
       className={cn(
-        "group relative flex w-full items-center gap-2 rounded-xl border app-card px-3 py-2.5 shadow-sm transition",
+        "group relative flex w-full items-center gap-2 md:rounded-md rounded-[4px] border app-card px-3 py-2 shadow-sm transition",
         "border-slate-200 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-200",
-        " dark:border-slate-700 dark:focus-within:border-indigo-400 dark:focus-within:ring-indigo-900/40",
+        "  dark:focus-within:border-indigo-400 dark:focus-within:ring-indigo-900/40",
         disabled && "opacity-60 pointer-events-none",
         error &&
           "border-rose-300 focus-within:border-rose-500 focus-within:ring-rose-200 dark:border-rose-900/50 dark:focus-within:ring-rose-900/40",

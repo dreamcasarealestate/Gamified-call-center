@@ -61,16 +61,16 @@ export default function AppsMenu({
       {open && (
         <div
           className={clsx(
-            "absolute right-0 mt-3 w-85 rounded-xl bg-white shadow-xl border border-black/10 z-50",
+            "absolute right-0 mt-3 md:w-85 w-60 rounded-xl bg-white shadow-xl border border-black/10 z-50",
             "p-4"
           )}
           role="menu"
         >
-          <div className="text-sm  font-Gordita-Bold text-[#111827] mb-3">
+          <div className="text-sm  font-bold text-[#111827] mb-3">
             Applications
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 ">
             {APPS.map((app) => {
               const Icon = app.icon;
               return (
@@ -94,14 +94,14 @@ export default function AppsMenu({
                 >
                   <div
                     className={clsx(
-                      "h-12 w-12 rounded-lg grid place-items-center",
+                      "md:h-12 md:w-12 w-8 h-8 rounded-lg grid place-items-center",
                       app.disabled ? "bg-black/5" : "bg-black/5"
                     )}
                   >
                     <Icon className="h-6 w-6 text-[#111827]" />
                   </div>
 
-                  <div className="text-sm  font-Gordita-Medium text-[#111827]">
+                  <div className="md:text-[12px] text-[10px] font-bold md:leading-[15px]  text-[#111827]">
                     {app.title}
                   </div>
                 </button>

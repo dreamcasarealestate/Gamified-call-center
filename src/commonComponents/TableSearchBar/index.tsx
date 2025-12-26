@@ -1,35 +1,25 @@
-// src/components/common/TableToolbar.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { cn } from "@/Utils/common/cn";
 
 type DateRange = { from: string; to: string };
 
 type TableToolbarProps = {
-  // Search
   search?: {
     value: string;
     onChange: (value: string) => void;
     placeholder?: string;
     debounceMs?: number;
-    widthClassName?: string; // ex: "w-72"
+    widthClassName?: string;
   };
-
-  // Date Range (optional)
   dateRange?: {
     value: DateRange;
     onChange: (value: DateRange) => void;
     min?: string;
     max?: string;
-    label?: string; // optional label text
+    label?: string;
   };
-
-  // Optional filters block (custom JSX: selects, toggles, chips etc.)
   filtersSlot?: React.ReactNode;
-
-  // Right action buttons block
   actionsSlot?: React.ReactNode;
-
-  // Layout / styling
   className?: string;
 };
 
@@ -43,6 +33,7 @@ export default function TableToolbar({
   const [localSearch, setLocalSearch] = useState(search?.value ?? "");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocalSearch(search?.value ?? "");
   }, [search?.value]);
 
@@ -57,7 +48,7 @@ export default function TableToolbar({
   }, [localSearch, debounceMs]); // eslint-disable-line
 
   const searchWidth = useMemo(
-    () => search?.widthClassName ?? "w-72",
+    () => search?.widthClassName ?? "min-w-full",
     [search?.widthClassName]
   );
 
@@ -68,27 +59,26 @@ export default function TableToolbar({
         className
       )}
     >
-      {/* LEFT */}
-      <div className="flex flex-col gap-3 md:flex-row md:items-center">
-        {/* Search */}
+      <div className="flex flex-col gap-3 md:flex-row md:items-center w-full border-[2px] border-gray-200 dark:border-gray-200 rounded-xl">
         {search ? (
-          <div
-            className={cn(
-              "flex items-center gap-2 rounded-xl px-3 py-2 border dark:border-white app-input",
-              searchWidth
-            )}
-          >
-            <input
-              value={localSearch}
-              onChange={(e) => setLocalSearch(e.target.value)}
-              placeholder={search.placeholder ?? "Search..."}
-              className="w-full bg-transparent text-sm outline-none app-text"
-            />
-            <span className="app-muted text-sm">⌕</span>
-          </div>
+          <>
+            <div
+              className={cn(
+                "flex items-center justify-between gap-2 rounded-xl px-3 md:py-[6px] py-1 border dark:border-white   w-full app-input",
+                searchWidth
+              )}
+            >
+              <input
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
+                placeholder={search.placeholder ?? "Search..."}
+                className="w-full bg-transparent  text-sm outline-none app-text"
+              />
+            </div>
+          </>
         ) : null}
 
-        {/* Date Range */}
+
         {dateRange ? (
           <div className="flex items-center gap-2 rounded-xl px-3 py-2 border dark:border-white app-input">
             {dateRange.label ? (
@@ -135,12 +125,14 @@ export default function TableToolbar({
         ) : null}
       </div>
 
+
       {/* RIGHT */}
       {actionsSlot ? (
         <div className="flex items-center gap-2 justify-end">
           {actionsSlot}
         </div>
       ) : null}
+
     </div>
   );
 }

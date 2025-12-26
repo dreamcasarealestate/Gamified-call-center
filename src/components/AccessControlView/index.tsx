@@ -309,7 +309,7 @@ export default function DesignationsPermissionsPage() {
       levelOrder: Number(form.levelOrder),
     };
 
-   
+
     const res = await apiClient.put(
       `${apiClient.URLS.designation}/${id}`,
       payload,
@@ -397,7 +397,7 @@ export default function DesignationsPermissionsPage() {
     <Button
       onClick={onClick}
       className={[
-        "flex items-center gap-2 md:px-4 px-2 md:py-2 py-1 rounded-xl border transition-all text-[12px] md:text-[14px] font-Gordita-Medium",
+        "flex items-center gap-2 md:px-4 px-2 md:py-2 py-1 rounded-xl border transition-all text-[12px] md:text-[14px] font-medium",
         active ? "app-btn-active" : "app-btn hover:shadow-sm",
       ].join(" ")}
       type="button"
@@ -647,7 +647,7 @@ export default function DesignationsPermissionsPage() {
       setSavingUser(false);
     }
   };
- const totalPages = Math.ceil(total / LIMIT);
+  const totalPages = Math.ceil(total / LIMIT);
   const deactivateUser = async (u: UserEntity) => {
     if (!u) return;
 
@@ -699,14 +699,15 @@ export default function DesignationsPermissionsPage() {
                   onChange: setTableSearch,
                   placeholder:
                     "Search users by name, email, phone, role, designation...",
-                  widthClassName: "md:w-[360px] w-full rounded-xl",
+                  widthClassName: "min-w-full  rounded-xl",
                   debounceMs: 300,
+
                 }}
                 actionsSlot={
                   <>
                     <div className="flex items-center gap-2">
                       <Button
-                        className="bg-linear-to-r from-emerald-500 to-teal-600 text-white md:px-5 px-3 md:text-[16px] text-[12px] md:py-2.5 py-1.5 rounded-xl  font-Gordita-Medium shadow-md hover:shadow-lg hover:scale-[1.02] transition disabled:opacity-50"
+                        className="bg-linear-to-r from-emerald-500 to-teal-600 text-nowrap text-white md:px-5 px-3 btn-text md:py-2 py-1 rounded-xl  font-medium shadow-md hover:shadow-lg hover:scale-[1.02] transition disabled:opacity-50"
                         onClick={openAddUser}
                         disabled={loadingUsers || savingUser}
                       >
@@ -714,7 +715,7 @@ export default function DesignationsPermissionsPage() {
                       </Button>
 
                       <Button
-                        className="bg-linear-to-r from-blue-500 to-indigo-600 text-white md:px-5 px-3 md:text-[16px] text-[12px] md:py-2.5 py-1.5 rounded-xl  font-Gordita-Medium shadow-md hover:shadow-lg hover:scale-[1.02] transition disabled:opacity-50"
+                        className="bg-linear-to-r from-blue-500 to-indigo-600 text-white md:px-5 md:py-2 py-1 px-3 btn-text  rounded-xl  font-medium shadow-md hover:shadow-lg hover:scale-[1.02] transition disabled:opacity-50"
                         onClick={fetchUsers}
                         disabled={loading}
                       >
@@ -726,9 +727,9 @@ export default function DesignationsPermissionsPage() {
               />
             </div>
 
-           
+
             {filteredUsers.length === 0 ? (
-              <div className="py-12 text-center app-text">No users found</div>
+              <div className="py-12 text-center label-text font-medium app-text">No users found</div>
             ) : (
               <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
                 {filteredUsers.map((u) => (
@@ -738,34 +739,34 @@ export default function DesignationsPermissionsPage() {
                   >
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                       <div className="space-y-1 md:space-y-1.5">
-                        <p className="font-Gordita-Bold app-text text-sm md:text-base">
+                        <p className="font-bold app-text text-sm md:text-base">
                           {u.firstName} {u.lastName}
                         </p>
 
-                        <p className="font-Gordita-Medium app-muted text-[11px] md:text-xs">
+                        <p className="font-medium app-muted text-[11px] md:text-xs">
                           {u.email}
                         </p>
 
-                        <p className="font-Gordita-Medium app-muted text-[11px] md:text-xs">
+                        <p className="font-medium app-muted text-[11px] md:text-xs">
                           {u.phone}
                         </p>
 
                         <div className="flex flex-wrap gap-2 pt-1 md:pt-2">
-                          <span className="px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-Gordita-Medium app-card app-text border app-border">
+                          <span className="px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-medium app-card app-text border app-border">
                             {u.systemRole}
                           </span>
-                          <span className="px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-Gordita-Medium app-card app-text border app-border">
+                          <span className="px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-medium app-card app-text border app-border">
                             {u.userStatus}
                           </span>
 
                           {u.employee?.designation?.name && (
-                            <span className="px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-Gordita-Medium app-card app-text border app-border">
+                            <span className="px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-medium app-card app-text border app-border">
                               {u.employee.designation.name}
                             </span>
                           )}
 
                           {u.agentProfile && (
-                            <span className="px-3 py-1 rounded-full text-[10px] md:text-[11px] font-Gordita-Medium border app-border bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-200">
+                            <span className="px-3 py-1 rounded-full text-[10px] md:text-[11px] font-medium border app-border bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-200">
                               Agent
                             </span>
                           )}
@@ -811,7 +812,7 @@ export default function DesignationsPermissionsPage() {
                     </div>
 
                     {u.agentProfile && (
-                      <div className="mt-3 md:mt-4 text-[11px] md:text-xs font-Gordita-Medium app-muted border-t app-border pt-2 md:pt-3">
+                      <div className="mt-3 md:mt-4 text-[11px] md:text-xs font-medium app-muted border-t app-border pt-2 md:pt-3">
                         Agent Access:
                         <span className="app-text ml-1">
                           {u.agentProfile.accessLevel}
@@ -828,17 +829,17 @@ export default function DesignationsPermissionsPage() {
               </div>
             )}
             <div className="">
-            <Pagination
-              page={page}
-              totalPages={totalPages}
-              totalItems={filteredUsers.length}
-              limit={LIMIT}
-              onPageChange={setPage}
-            />
-          </div>
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                totalItems={filteredUsers.length}
+                limit={LIMIT}
+                onPageChange={setPage}
+              />
+            </div>
           </div>
         ) : null}
-         
+
         {confirmOpen && (
           <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)}>
             <div className="relative p-6 w-[92%] max-w-md mx-auto app-card rounded-3xl shadow-2xl border app-border animate-scaleIn overflow-hidden">
@@ -854,20 +855,20 @@ export default function DesignationsPermissionsPage() {
                 <h3 className="text-[12px] md:text-[20px] font-extrabold app-text tracking-tight">
                   Deactivate User?
                 </h3>
-                <p className="text-sm app-text font-Gordita-Medium">
+                <p className="text-sm app-text font-medium">
                   This user will lose access and go offline.
                 </p>
               </div>
 
               {/* Progress bar */}
               <div className="flex items-center justify-center gap-2 mt-5">
-                <span className="text-xs  font-Gordita-Bold text-slate-400">
+                <span className="text-xs  font-bold text-slate-400">
                   Power
                 </span>
                 <div className="w-40 h-2 bg-slate-100 rounded-full overflow-hidden">
                   <div className="h-full w-[35%] transition-all duration-700 bg-orange-600"></div>
                 </div>
-                <span className="text-xs  font-Gordita-Bold text-slate-400">
+                <span className="text-xs  font-bold text-slate-400">
                   35%
                 </span>
               </div>
@@ -875,14 +876,14 @@ export default function DesignationsPermissionsPage() {
               {/* Buttons */}
               <div className="flex justify-center gap-4 mt-7">
                 <Button
-                  className="md:px-5 px-3 md:py-2.5 py-1.5 md:text-[14px] text-[12px] rounded-2xl app-card app-text font-Gordita-Medium  font-Gordita-Bold hover:scale-105 active:scale-95 transition-all"
+                  className="md:px-5 px-3 md:py-2.5 py-1.5 md:text-[14px] text-[12px] rounded-2xl app-card app-text font-medium   hover:scale-105 active:scale-95 transition-all"
                   onClick={() => setConfirmOpen(false)}
                 >
                   Cancel
                 </Button>
 
                 <Button
-                  className="md:px-6 px-3 md:py-2.5 py-1.5 md:text-[14px] text-[12px] rounded-2xl text-white font-Gordita-Medium  font-Gordita-Bold flex items-center gap-2 shadow-lg hover:scale-110 active:scale-95 transition-all bg-linear-to-r from-orange-600 to-red-600 shadow-red-400/40"
+                  className="md:px-6 px-3 md:py-2.5 py-1.5 md:text-[14px] text-[12px] rounded-2xl text-white font-medium   flex items-center gap-2 shadow-lg hover:scale-110 active:scale-95 transition-all bg-linear-to-r from-orange-600 to-red-600 shadow-red-400/40"
                   onClick={() => {
                     deactivateUser(selectedUser as any);
                     setConfirmOpen(false);
@@ -904,102 +905,119 @@ export default function DesignationsPermissionsPage() {
         )}
 
         {tab === "designations" ? (
-          <div className="pt-5">
-            <TableToolbar
-              search={{
-                value: tableSearch,
-                onChange: setTableSearch,
-                placeholder: "Search designations...",
-                widthClassName: "md:w-[360px] w-full rounded-xl",
-                debounceMs: 300,
-              }}
-              actionsSlot={
-                <div className="flex items-center gap-2">
-                  <Button
-                    className="bg-linear-to-r from-emerald-500 to-teal-600 text-white md:px-5 px-3 md:text-[16px] text-[12px] md:py-2.5 py-1.5 rounded-xl  font-Gordita-Medium shadow-md hover:shadow-lg hover:scale-[1.02] transition disabled:opacity-50"
-                    onClick={openAddDesignation}
-                    disabled={loading || saving}
-                  >
-                    + Add
-                  </Button>
-
-                  <Button
-                    className="bg-linear-to-r from-blue-500 to-indigo-600 text-white md:px-5 px-3 md:text-[16px] text-[12px] md:py-2.5 py-1.5 rounded-xl  font-Gordita-Medium shadow-md hover:shadow-lg hover:scale-[1.02] transition disabled:opacity-50"
-                    onClick={fetchDesignations}
-                    disabled={loading}
-                  >
-                    {loading ? "Refreshing..." : "Refresh"}
-                  </Button>
-                </div>
-              }
-            />
-
-            {/* Designations Grid */}
-            {filteredDesignations.length === 0 ? (
-              <div className="py-12 text-center app-text">
-                No designations available
-              </div>
-            ) : (
-              <div className="md:pt-5 pt-2 grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
-                {filteredDesignations
-                  .slice()
-                  .sort((a, b) => a.levelOrder - b.levelOrder)
-                  .map((d) => (
-                    <div
-                      key={d.id}
-                      onClick={() => openModalForDesignation(d)}
-                      className="group app-card md:p-4 p-2 rounded-2xl border app-border hover:border-blue-500 hover:shadow-xl transition-all"
-                    >
-                      <div className="flex items-center justify-between">
-                        <p className="md:text-base  font-Gordita-Bold app-text group-hover:text-blue-600 transition">
-                          {d.name}
-                        </p>
-
-                        <span className="px-2.5 py-1 text-[10px]  font-Gordita-Bold rounded-full app-card app-text">
-                          Level {d.levelOrder}
-                        </span>
-                      </div>
-
-                      <div className="mt-3 flex items-center justify-between gap-2">
+          <div className="md:pt-5 pt-2 md:space-y-4 space-y-2 app-card">
+            <div className="">
+              <div >
+                <div className="rounded-md shadow-2xl md:p-4  p-2 ">
+                  <TableToolbar
+                    search={{
+                      value: tableSearch,
+                      onChange: setTableSearch,
+                      placeholder: "Search designation name ,order",
+                      widthClassName: "md:w-[360px] w-full rounded-xl",
+                      debounceMs: 300,
+                    }}
+                    actionsSlot={
+                      <div className="flex items-center gap-2">
                         <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openModalForDesignation(d);
-                          }}
-                          className="text-xs text-slate-500 hover:text-slate-700 transition"
+                          className="bg-linear-to-r from-emerald-500 to-teal-600 text-white md:px-5 text-nowrap px-3 label-text md:py-2 py-1.5 rounded-xl  font-medium shadow-md hover:shadow-lg hover:scale-[1.02] transition disabled:opacity-50"
+                          onClick={openAddDesignation}
+                          disabled={loading || saving}
                         >
-                          Manage permissions →
+                          + Add Designation
                         </Button>
 
-                        <div className="flex items-center gap-2">
-                          <Button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openEditDesignation(d);
-                            }}
-                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition"
-                          >
-                            <Pencil size={16} />
-                          </Button>
-
-                          <Button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteDesignation(d);
-                            }}
-                            className="p-2 text-rose-600 hover:bg-rose-100 rounded-full transition disabled:opacity-50"
-                            disabled={saving}
-                          >
-                            <Trash2 size={16} />
-                          </Button>
-                        </div>
+                        <Button
+                          className="bg-linear-to-r from-blue-500 to-indigo-600 text-white md:px-5 px-3 label-text md:py-2 py-1.5 rounded-xl  font-medium shadow-md hover:shadow-lg hover:scale-[1.02] transition disabled:opacity-50"
+                          onClick={fetchDesignations}
+                          disabled={loading}
+                        >
+                          {loading ? "Refreshing..." : "Refresh"}
+                        </Button>
                       </div>
-                    </div>
-                  ))}
+                    }
+                  />
+                </div>
+
+                {/* Designations Grid */}
+                {filteredDesignations.length === 0 ? (
+                  <div className="py-12 text-center font-medium label-text app-text">
+                    No designations available
+                  </div>
+                ) : (
+                  <div className="md:pt-5 pt-2 grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
+                    {filteredDesignations
+                      .slice()
+                      .sort((a, b) => a.levelOrder - b.levelOrder)
+                      .map((d) => (
+                        <div
+                          key={d.id}
+                          onClick={() => openModalForDesignation(d)}
+                          className="group app-card md:p-4 p-2 rounded-2xl border app-border hover:border-blue-500 hover:shadow-xl transition-all"
+                        >
+                          <div className="flex items-center justify-between">
+                            <p className="md:text-base  font-bold app-text group-hover:text-blue-600 transition">
+                              {d.name}
+                            </p>
+
+                            <span className="px-2.5 py-1 text-[10px]  font-bold rounded-full app-card app-text">
+                              Level {d.levelOrder}
+                            </span>
+                          </div>
+
+                          <div className="mt-3 flex items-center justify-between gap-2">
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openModalForDesignation(d);
+                              }}
+                              className="text-xs text-slate-500 hover:text-slate-700 transition"
+                            >
+                              Manage permissions →
+                            </Button>
+
+                            <div className="flex items-center gap-2">
+                              <Button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openEditDesignation(d);
+                                }}
+                                className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition"
+                              >
+                                <Pencil size={16} />
+                              </Button>
+
+                              <Button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteDesignation(d);
+                                }}
+                                className="p-2 text-rose-600 hover:bg-rose-100 rounded-full transition disabled:opacity-50"
+                                disabled={saving}
+                              >
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
+            <div className="">
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                totalItems={filteredDesignations.length}
+                limit={LIMIT}
+                onPageChange={setPage}
+              />
+            </div>
           </div>
+
         ) : null}
+
       </div>
 
       {/* Add/Edit Designation Modal */}
@@ -1041,7 +1059,7 @@ export default function DesignationsPermissionsPage() {
 
           <div className="flex justify-end gap-2 pt-2">
             <Button
-              className="md:px-4 px-2 md:py-2 py-1 md:text-[14px] text-[12px] app-text rounded-xl border"
+              className="md:px-4 px-2 md:py-2 py-1 md:text-[14px] text-[12px] app-text font-medium rounded-xl border"
               onClick={() => setFormOpen(false)}
               disabled={saving}
             >
@@ -1049,7 +1067,7 @@ export default function DesignationsPermissionsPage() {
             </Button>
 
             <Button
-              className="md:px-4 px-2 md:py-2 py-1 font-Gordita-Medium md:text-[14px] text-[12px] rounded-xl bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-50"
+              className="md:px-4 px-2 md:py-2 py-1 font-medium md:text-[14px] text-[12px] rounded-xl bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-50"
               disabled={saving || !form.name.trim() || form.levelOrder < 1}
               onClick={
                 formMode === "add" ? createDesignation : updateDesignation
@@ -1137,7 +1155,7 @@ function DesignationPermissionsCrudModalBody({
           true
         );
         const list = Array.isArray(res?.body) ? res.body : [];
-        
+
         setDesignationOptions(
           list.map((d: any) => ({ label: d.name, value: String(d.id) }))
         );
@@ -1383,7 +1401,7 @@ function DesignationPermissionsCrudModalBody({
       <form onSubmit={handleSubmit} className="md:space-y-4 space-y-2">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-[16px] md:text-[18px] font-Gordita-Medium text-slate-900">
+            <h3 className="text-[16px] md:text-[18px] font-medium text-slate-900">
               Designation Permissions
             </h3>
             <p className="text-[11px] md:text-[12px] app-text mt-1">
@@ -1392,7 +1410,7 @@ function DesignationPermissionsCrudModalBody({
           </div>
 
           <div className="hidden md:flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-full text-[11px] font-Gordita-Medium app-card app-text">
+            <span className="px-2.5 py-1 rounded-full text-[11px] font-medium app-card app-text">
               {filteredTableRows.length} Resources
             </span>
           </div>
@@ -1417,7 +1435,7 @@ function DesignationPermissionsCrudModalBody({
         <div className="rounded-xl border app-border overflow-hidden">
           <div className="flex items-center justify-between px-3 md:px-4 md:py-3 py-1 app-card border-b">
             <div>
-              <p className="text-[13px] md:text-[14px] font-Gordita-Medium app-text">
+              <p className="text-[13px] md:text-[14px] font-medium app-text">
                 {editIndex !== null
                   ? "Edit Resource Permission"
                   : "Add Resource Permission"}
@@ -1430,7 +1448,7 @@ function DesignationPermissionsCrudModalBody({
             <div className="flex items-center gap-2">
               <Button
                 type="button"
-                className="px-3 py-1.5 rounded-lg text-[12px] font-Gordita-Medium border app-border app-card app-text hover:app-surface"
+                className="px-3 py-1.5 rounded-lg text-[12px] font-medium border app-border app-card app-text hover:app-surface"
                 onClick={() => {
                   setEditIndex(null);
                   setNewResource({
@@ -1465,7 +1483,7 @@ function DesignationPermissionsCrudModalBody({
             </div>
 
             <div className="rounded-xl border app-border app-card p-3">
-              <p className="text-[12px] md:text-[13px] font-Gordita-Medium app-text mb-2">
+              <p className="text-[12px] md:text-[13px] font-medium app-text mb-2">
                 Select Required Permissions
               </p>
 
@@ -1486,7 +1504,7 @@ function DesignationPermissionsCrudModalBody({
                       }
                       className="md:h-3.5 h-3 w-3 md:w-3.5"
                     />
-                    <span className="md:text-[12px] text-[10px] font-Gordita-Medium app-text">
+                    <span className="md:text-[12px] text-[10px] font-medium app-text">
                       {perm === "view"
                         ? "Read"
                         : perm.charAt(0).toUpperCase() + perm.slice(1)}
@@ -1510,7 +1528,7 @@ function DesignationPermissionsCrudModalBody({
                   });
                   setResourceSearch("");
                 }}
-                className=" md:px-4 py-2  px-2 rounded-lg md:text-[14px] text-[12px] font-Gordita-Medium
+                className=" md:px-4 py-2  px-2 rounded-lg md:text-[14px] text-[12px] font-medium
                        border app-border app-surface app-text
                        hover:app-surface active:bg-slate-200"
               >
@@ -1521,13 +1539,12 @@ function DesignationPermissionsCrudModalBody({
                 type="button"
                 onClick={handleAddOrUpdateResource}
                 disabled={!designationId}
-                className={` md:px-4 py-2  font-Gordita-Medium  px-2 rounded-lg md:text-[14px] text-[12px] font-Gordita-Medium text-white
+                className={` md:px-4 py-2  font-medium  px-2 rounded-lg md:text-[14px] text-[12px] font-medium text-white
                         shadow-sm transition
-                        ${
-                          !designationId
-                            ? "bg-emerald-300 cursor-not-allowed"
-                            : "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-700"
-                        }`}
+                        ${!designationId
+                    ? "bg-emerald-300 cursor-not-allowed"
+                    : "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-700"
+                  }`}
               >
                 {editIndex !== null ? "Update Permission" : "Save Resource"}
               </Button>
@@ -1547,7 +1564,7 @@ function DesignationPermissionsCrudModalBody({
 
         <div className="rounded-xl border app-border overflow-hidden">
           <div className="px-2 md:px-4 md:py-3 py-1 app-card border-b flex items-center justify-between">
-            <p className="text-[13px] md:text-[14px] font-Gordita-Medium app-text">
+            <p className="text-[13px] md:text-[14px] font-medium app-text">
               Permissions Summary
             </p>
             <span className="text-[11px] app-text">
@@ -1559,18 +1576,18 @@ function DesignationPermissionsCrudModalBody({
             <table className="min-w-full border-collapse">
               <thead className="app-card border-b">
                 <tr>
-                  <th className="text-left py-3 px-4 text-[12px] font-Gordita-Medium app-text">
+                  <th className="text-left py-3 px-4 text-[12px] font-medium app-text">
                     Resource
                   </th>
                   {["Create", "Read", "Update", "Delete"].map((h) => (
                     <th
                       key={h}
-                      className="text-center py-3 px-4 text-[12px] font-Gordita-Medium app-text"
+                      className="text-center py-3 px-4 text-[12px] font-medium app-text"
                     >
                       {h}
                     </th>
                   ))}
-                  <th className="text-center py-3 px-4 text-[12px] font-Gordita-Medium app-text">
+                  <th className="text-center py-3 px-4 text-[12px] font-medium app-text">
                     Actions
                   </th>
                 </tr>
@@ -1598,7 +1615,7 @@ function DesignationPermissionsCrudModalBody({
                 ) : (
                   filteredTableRows.map((perm, idx) => (
                     <tr key={perm.resource} className="border-t hover:app-card">
-                      <td className="py-3 px-4 text-left font-Gordita-Medium text-[#2563eb] text-[12px] md:text-[13px]">
+                      <td className="py-3 px-4 text-left font-medium text-[#2563eb] text-[12px] md:text-[13px]">
                         {formatResourceName(perm.resource)}
                       </td>
 
@@ -1613,11 +1630,10 @@ function DesignationPermissionsCrudModalBody({
                               toggleCell(idx, action as keyof Crud)
                             }
                             className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition
-                          ${
-                            perm[action as keyof ResourceRow]
-                              ? "bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100"
-                              : "bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100"
-                          }`}
+                          ${perm[action as keyof ResourceRow]
+                                ? "bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100"
+                                : "bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100"
+                              }`}
                             title={action}
                           >
                             {perm[action as keyof ResourceRow] ? "✓" : "✕"}
@@ -1663,7 +1679,7 @@ function DesignationPermissionsCrudModalBody({
             type="button"
             onClick={onClose}
             disabled={saving}
-            className="md:px-4   md:py-2  font-Gordita-Medium py-1  px-2 rounded-lg md:text-[14px] text-[12px] font-Gordita-Medium
+            className="md:px-4   md:py-2  font-medium py-1  px-2 rounded-lg md:text-[14px] text-[12px] font-medium
                    border app-border app-card app-text
                    hover:app-surface disabled:opacity-60"
           >
@@ -1673,12 +1689,11 @@ function DesignationPermissionsCrudModalBody({
           <Button
             type="submit"
             disabled={saving || loading || !designationId}
-            className={`md:px-4 md:py-2 py-1  font-Gordita-Medium px-2 rounded-lg md:text-[14px] text-[12px] font-Gordita-Medium text-white shadow-sm
-          ${
-            saving || loading || !designationId
-              ? "bg-violet-300 cursor-not-allowed"
-              : "bg-violet-600 hover:bg-violet-700 active:bg-violet-700"
-          }`}
+            className={`md:px-4 md:py-2 py-1  font-medium px-2 rounded-lg md:text-[14px] text-[12px] font-medium text-white shadow-sm
+          ${saving || loading || !designationId
+                ? "bg-violet-300 cursor-not-allowed"
+                : "bg-violet-600 hover:bg-violet-700 active:bg-violet-700"
+              }`}
           >
             {saving ? "Saving..." : "Save Permissions"}
           </Button>
