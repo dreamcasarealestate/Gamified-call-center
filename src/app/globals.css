@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @import "../styles/fontface/font-family.css";
 
+/* Hide default scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for both vertical and horizontal */
+body {
+  overflow: hidden;
+}
+
 @layer base {
   :root {
     --bg: 248 250 252; /* page bg (slate-50) */
