@@ -49,7 +49,7 @@ export default function Topbar({
   title?: string;
 }) {
   const router = useRouter();
-  const user = useAuthStore((st) => st.user);
+  const user = useAuthStore((st) => st.user) as any;
   const name = user?.firstName ?? "Super Admin";
   const role = user?.employee?.designation?.name ?? "Administrator";
   const [notifOpen, setNotifOpen] = useState(false);

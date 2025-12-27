@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/commonComponents/Button";
 
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+
 type Props = {
   size?: number;
   offsetX?: number;
@@ -19,6 +22,9 @@ export default function FloatingChatButton({
 }: Props) {
   const [isPulsing, setIsPulsing] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
+
+  if (pathname === "/chat") return null;
 
   const handleChatClick = () => {
     router.push("/chat");

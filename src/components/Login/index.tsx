@@ -65,9 +65,10 @@ export default function PremiumLogin({ resetSuccess }: { resetSuccess?: boolean 
         email,
         password,
       });
+      console.log(response)
 
-      const token = response.body?.message;
-      const user = response.body?.data;
+      const token = response.body?.accessToken;
+      const user = response.body?.user;
 
       if (!token || !user) throw new Error("Invalid login response");
 
