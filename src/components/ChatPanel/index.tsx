@@ -72,8 +72,8 @@ export default function ChatPanel() {
   const activeTitle = selectedChat
     ? selectedChat.name
     : selectedChannel
-    ? selectedChannel.name
-    : "";
+      ? selectedChannel.name
+      : "";
 
   const activeThread = useMemo(() => {
     if ((selectedChat as any)?.threadId)
@@ -320,11 +320,11 @@ export default function ChatPanel() {
           prev.map((u) =>
             u.id === t.id
               ? {
-                  ...u,
-                  lastMessage: t.lastMessage ?? u.lastMessage,
-                  timestamp: t.timestamp ?? u.timestamp,
-                  unreadCount: t.unreadCount ?? u.unreadCount,
-                }
+                ...u,
+                lastMessage: t.lastMessage ?? u.lastMessage,
+                timestamp: t.timestamp ?? u.timestamp,
+                unreadCount: t.unreadCount ?? u.unreadCount,
+              }
               : u
           )
         );
@@ -333,11 +333,11 @@ export default function ChatPanel() {
           prev.map((c) =>
             c.id === t.id
               ? {
-                  ...c,
-                  lastMessage: t.lastMessage ?? c.lastMessage,
-                  timestamp: t.timestamp ?? c.timestamp,
-                  unreadCount: t.unreadCount ?? c.unreadCount,
-                }
+                ...c,
+                lastMessage: t.lastMessage ?? c.lastMessage,
+                timestamp: t.timestamp ?? c.timestamp,
+                unreadCount: t.unreadCount ?? c.unreadCount,
+              }
               : c
           )
         );
@@ -468,9 +468,7 @@ export default function ChatPanel() {
 
   return (
     <div className="h-[calc(100vh-theme(spacing.16))] overflow-hidden bg-gradient-to-br from-gray-50/30 via-white to-blue-50/10">
-      {/* Enhanced Top Bar */}
       <div className="px-4 md:px-6 py-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-white/80 backdrop-blur-sm border-b border-gray-200/60 shadow-sm">
-        {/* Left: Icon + Title with enhanced styling */}
         <div className="flex items-center gap-4">
           <div className="rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 p-3 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105">
             <MessageSquare className="h-7 w-7 text-white" />
@@ -478,7 +476,7 @@ export default function ChatPanel() {
 
           <div className="leading-tight">
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
                 Chat Hub
               </h1>
               <div className="h-2 w-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 animate-pulse shadow-[0_0_8px] shadow-green-400/50" />
@@ -491,11 +489,10 @@ export default function ChatPanel() {
           </div>
         </div>
 
-        {/* Right: Enhanced Breadcrumb */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           <a
             href="/aca/dashboard"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/80 backdrop-blur-sm border border-gray-200/80 hover:border-blue-200 hover:bg-gradient-to-r hover:from-white hover:to-blue-50/50 transition-all duration-300 group shadow-sm hover:shadow-md"
+            className="flex items-center gap-2 px-4 py-1 rounded-xl  hover:border-blue-200 hover:bg-gradient-to-r hover:from-white hover:to-blue-50/50 transition-all duration-300 group shadow-sm hover:shadow-md"
           >
             <Home className="w-4 h-4 text-gray-500 group-hover:text-blue-600 transition-colors duration-300" />
             <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-800 transition-colors duration-300">
@@ -505,9 +502,9 @@ export default function ChatPanel() {
 
           <ChevronRight className="w-4 h-4 text-gray-400 mx-1" />
 
-          <div className="flex items-center gap-3 px-5 py-2.5 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 backdrop-blur-sm border border-blue-100/80 rounded-xl shadow-sm">
+          <div className="flex items-center gap-3 px-5 py-1 backdrop-blur-sm border border-blue-100/80 rounded-xl shadow-sm">
             <div className="relative">
-              <MessageSquare className="w-5 h-5 text-blue-600" />
+              <MessageSquare className="w-4 h-4 text-blue-600" />
               <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse shadow-[0_0_6px] shadow-blue-400" />
             </div>
             <span className="text-sm font-bold bg-gradient-to-r from-blue-800 to-indigo-900 bg-clip-text text-transparent">

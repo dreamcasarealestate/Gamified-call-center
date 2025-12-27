@@ -25,7 +25,6 @@ export function SidebarContent({
   onSelectChat,
   onSelectChannel,
   showProfileFooter = true,
-
   isAdmin,
   onClickCreateChannel,
 }: {
@@ -55,11 +54,10 @@ export function SidebarContent({
           <div className="relative">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
               <Search
-                className={`w-5 h-5 transition-all duration-300 ${
-                  isSearchFocused
-                    ? "text-blue-600 transform scale-110"
-                    : "text-gray-400 group-hover:text-gray-600"
-                }`}
+                className={`w-5 h-5 transition-all duration-300 ${isSearchFocused
+                  ? "text-blue-600 transform scale-110"
+                  : "text-gray-400 group-hover:text-gray-600"
+                  }`}
               />
             </div>
             <input
@@ -68,7 +66,7 @@ export function SidebarContent({
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
-              className="w-full pl-12 pr-4 py-3 bg-white/80 backdrop-blur-sm border-2 border-gray-200/60 rounded-2xl outline-none focus:ring-3 focus:ring-blue-500/20 focus:border-blue-400/60 shadow-sm hover:shadow transition-all duration-300 text-gray-700 placeholder-gray-400"
+              className="w-full pl-12 pr-4 py-2 btn-text bg-white/80 backdrop-blur-sm border-2 border-gray-200/60 rounded-2xl outline-none focus:ring-3 focus:ring-blue-500/20 focus:border-blue-400/60 shadow-sm hover:shadow transition-all duration-300 text-gray-700 placeholder-gray-400"
             />
             {searchQuery && (
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-medium px-2.5 py-1 bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 rounded-lg border border-blue-200/50">
@@ -81,17 +79,15 @@ export function SidebarContent({
         </div>
       </div>
 
-      {/* Enhanced Tab Navigation */}
       <div className="flex border-b border-gray-200/60 bg-gradient-to-b from-white to-gray-50/30 backdrop-blur-sm">
         {(["chats", "channels"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-3 flex items-center justify-center gap-2.5 relative overflow-hidden group ${
-              activeTab === tab
-                ? "text-blue-700 font-semibold"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
+            className={`flex-1 py-3 flex items-center justify-center gap-2.5 relative overflow-hidden group ${activeTab === tab
+              ? "text-blue-700 font-semibold"
+              : "text-gray-500 hover:text-gray-700"
+              }`}
             type="button"
           >
             {/* Background highlight */}
@@ -116,11 +112,10 @@ export function SidebarContent({
 
             {/* Icon */}
             <div
-              className={`relative z-10 transition-transform duration-300 ${
-                activeTab === tab
-                  ? "transform scale-110"
-                  : "group-hover:scale-105"
-              }`}
+              className={`relative z-10 transition-transform duration-300 ${activeTab === tab
+                ? "transform scale-110"
+                : "group-hover:scale-105"
+                }`}
             >
               {tab === "chats" ? (
                 <MessageSquare className="w-5 h-5" />
@@ -150,27 +145,38 @@ export function SidebarContent({
       <div className="flex-1 min-h-0 overflow-y-auto">
         {/* Enhanced Header */}
         <div className="sticky top-0 z-10 px-5 py-3 bg-gradient-to-b from-white/95 to-white/80 backdrop-blur-sm border-b border-gray-200/60">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-gray-800 uppercase tracking-wide">
+          <div className="flex  items-center w-full justify-between">
+            <div className="flex items-center justify-between w-full  gap-2">
+              <h2 className="text-sm font-bold text-gray-800 uppercase text-nowrap tracking-wide">
                 {activeTab === "chats" ? "Direct Messages" : "Team Channels"}
               </h2>
-              <div className="px-2 py-1 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200/50">
-                <span className="text-xs font-semibold text-blue-700">
-                  {activeTab === "chats"
-                    ? filteredUsers.length
-                    : filteredChannels.length}
-                </span>
-              </div>
+              {activeTab === "channels" && (
+                <button
+                  type="button"
+                  onClick={onClickCreateChannel}
+                  className="px-4 py-2 rounded-xl text-label text-nowrap bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold hover:shadow-lg transition"
+                >
+                  +  Channel
+                </button>
+              )}
             </div>
-            <div className="text-xs text-gray-400 font-medium">
-              {activeTab === "chats"
-                ? `${filteredUsers.length} contacts`
-                : `${filteredChannels.reduce(
-                    (acc, c) => acc + c.memberCount,
-                    0
-                  )} total members`}
+          </div>
+
+
+          <div className="text-xs flex  items-center justify-start gap-2 text-gray-400 font-medium">
+            <div className="px-2 py-1 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200/50">
+              <span className="text-xs font-semibold text-blue-700">
+                {activeTab === "chats"
+                  ? filteredUsers.length
+                  : filteredChannels.length}
+              </span>
             </div>
+            {activeTab === "chats"
+              ? `${filteredUsers.length} contacts`
+              : `${filteredChannels.reduce(
+                (acc, c) => acc + c.memberCount,
+                0
+              )} total members`}
           </div>
         </div>
 
@@ -187,25 +193,21 @@ export function SidebarContent({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2 }}
                     onClick={() => onSelectChat(user)}
-                    className={`relative p-3 rounded-2xl cursor-pointer transition-all duration-300 group ${
-                      selected
-                        ? "bg-gradient-to-r from-blue-50/80 to-purple-50/80 shadow-md shadow-blue-100/50 border-2 border-blue-100/50"
-                        : "bg-white/80 backdrop-blur-sm hover:bg-gradient-to-r hover:from-gray-50/50 hover:to-gray-50/30 hover:shadow-sm border-2 border-transparent hover:border-gray-200/60"
-                    }`}
+                    className={`relative p-3 rounded-2xl cursor-pointer transition-all duration-300 group ${selected
+                      ? "bg-gradient-to-r from-blue-50/80 to-purple-50/80 shadow-md shadow-blue-100/50 border-2 border-blue-100/50"
+                      : "bg-white/80 backdrop-blur-sm hover:bg-gradient-to-r hover:from-gray-50/50 hover:to-gray-50/30 hover:shadow-sm border-2 border-transparent hover:border-gray-200/60"
+                      }`}
                   >
-                    {/* Selected indicator */}
                     {selected && (
                       <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-1.5 h-12 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full" />
                     )}
 
-                    {/* Hover glow effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 to-purple-500/0 rounded-2xl opacity-0 group-hover:opacity-5 transition-opacity duration-300" />
 
                     <div className="flex items-center gap-3 relative">
-                      {/* Enhanced Avatar */}
                       <div className="relative">
                         <div
-                          className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${user.avatarColor}`}
+                          className={`w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-lg ${user.avatarColor}`}
                           style={{
                             backgroundImage: user.avatarColor.includes(
                               "gradient"
@@ -232,8 +234,8 @@ export function SidebarContent({
                       </div>
 
                       {/* User Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2 mb-1">
+                      <div className="flex-1 min-w-0 ">
+                        <div className="flex items-start justify-between gap-2 ">
                           <div className="flex items-center gap-2 min-w-0">
                             <h3 className="font-bold text-gray-900 truncate text-sm">
                               {user.name}
@@ -246,20 +248,19 @@ export function SidebarContent({
                           )}
                         </div>
 
-                        <p className="text-sm text-gray-600 truncate mb-2 leading-tight">
+                        <p className="sublabel-text text-gray-600 truncate mb-[2px] leading-tight">
                           {user.lastMessage || "Start a conversation..."}
                         </p>
 
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <span
-                              className={`text-[10px] px-2.5 py-1 rounded-full font-medium ${
-                                user.status === "online"
-                                  ? "bg-gradient-to-r from-green-100 to-emerald-100 text-emerald-700 border border-emerald-200/50"
-                                  : user.status === "away"
+                              className={`text-[10px] px-2 py-[2px] rounded-full font-medium ${user.status === "online"
+                                ? "bg-gradient-to-r from-green-100 to-emerald-100 text-emerald-700 border border-emerald-200/50"
+                                : user.status === "away"
                                   ? "bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-700 border border-amber-200/50"
                                   : "bg-gradient-to-r from-gray-100 to-gray-200 text-gray-600 border border-gray-200/50"
-                              }`}
+                                }`}
                             >
                               {getStatusText(user.status)}
                             </span>
@@ -283,18 +284,6 @@ export function SidebarContent({
             </div>
           ) : (
             <div className="space-y-3">
-
-                {activeTab === "channels" && isAdmin && (
-                <button
-                  type="button"
-                  onClick={onClickCreateChannel}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold hover:shadow-lg transition"
-                >
-                  + Create Channel
-                </button>
-              )}
-              
-
               {filteredChannels.map((channel) => {
                 const selected = selectedChannel?.id === channel.id;
                 return (
@@ -304,11 +293,10 @@ export function SidebarContent({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2 }}
                     onClick={() => onSelectChannel(channel)}
-                    className={`relative p-4 rounded-2xl cursor-pointer transition-all duration-300 group ${
-                      selected
-                        ? "bg-gradient-to-r from-blue-50/80 to-purple-50/80 shadow-md shadow-blue-100/50 border-2 border-blue-100/50"
-                        : "bg-white/80 backdrop-blur-sm hover:bg-gradient-to-r hover:from-gray-50/50 hover:to-gray-50/30 hover:shadow-sm border-2 border-transparent hover:border-gray-200/60"
-                    }`}
+                    className={`relative p-4 rounded-2xl cursor-pointer transition-all duration-300 group ${selected
+                      ? "bg-gradient-to-r from-blue-50/80 to-purple-50/80 shadow-md shadow-blue-100/50 border-2 border-blue-100/50"
+                      : "bg-white/80 backdrop-blur-sm hover:bg-gradient-to-r hover:from-gray-50/50 hover:to-gray-50/30 hover:shadow-sm border-2 border-transparent hover:border-gray-200/60"
+                      }`}
                   >
                     {/* Selected indicator */}
                     {selected && (

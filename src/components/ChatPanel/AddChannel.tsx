@@ -147,20 +147,17 @@ export function AddChannel({
               </button>
             </div>
 
-            {/* Body */}
             <div className="p-6 space-y-4">
-              {/* Channel name */}
               <div>
                 <label className="text-xs font-semibold text-gray-700">Channel name</label>
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Sales Team"
-                  className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 md:py-[6px] py-1 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
 
-              {/* Search */}
               <div className="relative">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                   <Search className="w-5 h-5" />
@@ -169,7 +166,7 @@ export function AddChannel({
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search users..."
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  className="w-full pl-11 pr-4 md:py-[6px] py-1 rounded-xl border border-gray-200 bg-gray-50 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
 
