@@ -199,16 +199,20 @@ export default function AcaAgentsView() {
         { page, limit: LIMIT },
         true
       );
-      const body = res?.body ?? res;
+      if (res?.status) {
+        const body = res?.body ?? res;
 
-      const list = body?.data?.items || body?.items || body?.data || [];
-      const totalCount = body?.data?.total || body?.meta?.total || list.length;
-      setItems(Array.isArray(list) ? list : []);
-      setTotal(totalCount);
+        const list = body?.data?.items || body?.items || body?.data || [];
+        const totalCount = body?.data?.total || body?.meta?.total || list.length;
+        setItems(Array.isArray(list) ? list : []);
+        setTotal(totalCount);
+        toast.success("Agents fetched successfully");
+      }
     } catch (e) {
       console.error(e);
       setItems([]);
       setTotal(0);
+      toast.error("Failed to fetch agents");
     } finally {
       setLoading(false);
     }
@@ -363,9 +367,9 @@ export default function AcaAgentsView() {
       a.phone ?? "-",
       a.employee?.designation?.name ?? "-",
       a.agentProfile?.accessLevel ?? "-",
-      a.agentProfile.isActive === true
+      a.agentProfile?.isActive === true
         ? "Active "
-        : a.agentProfile.isActive === false
+        : a.agentProfile?.isActive === false
           ? "In-Active"
           : "-",
     ]);
@@ -502,7 +506,7 @@ export default function AcaAgentsView() {
         ahipCertified: Boolean(form.ahipCertified),
         stateLicensed: Boolean(form.stateLicensed),
         accessLevel: form.access === "FullAccess" ? "ALL_ACCESS" : "TRAINING",
-        apps:form.apps,
+        apps: form.apps,
       },
     };
 
@@ -852,21 +856,21 @@ export default function AcaAgentsView() {
 
                       <td className="px-4 py-1 border text-nowrap app-border  whitespace-nowrap">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs  font-bold transition ${a.agentProfile.isActive
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs  font-bold transition ${a.agentProfile?.isActive
                             ? "bg-green-500/15 text-green-700"
                             : "bg-orange-500/15 text-orange-700"
                             }`}
                         >
-                          {a.agentProfile.isActive ? (
+                          {a?.agentProfile?.isActive ? (
                             <CheckCircle size={14} />
                           ) : (
                             <XCircle size={14} />
                           )}
-                          {a.agentProfile.isActive ? "Active" : "Inactive"}
+                          {a?.agentProfile?.isActive ? "Active" : "Inactive"}
                         </span>
                       </td>
 
-                      <td className="px-4 py-1 border app-border text-nowrap  font-medium dark:!border-gray-700">
+                      <td className="px-4 py-1 border app-border text-nowrap  font-medium ">
 
                         <div className="flex justify-center items-center gap-3">
                           <Button
@@ -888,7 +892,7 @@ export default function AcaAgentsView() {
                             <Key size={15} />
                           </Button>
 
-                          {a.agentProfile.isActive ? (
+                          {a?.agentProfile?.isActive ? (
                             <Button
                               className="p-2.5 rounded-lg bg-red-500/10 text-red-700 hover:bg-red-500 hover:text-white transition"
                               title="Deactivate"

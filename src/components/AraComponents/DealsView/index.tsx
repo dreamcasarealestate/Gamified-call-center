@@ -26,7 +26,7 @@ type DealRow = {
   agentId: string;
   agent: any;
   agentName: string;
-  status:any;
+  status: any;
   createdByName: string;
 
   socialProvider: any;
@@ -45,7 +45,7 @@ type DealRow = {
     documentUrl?: string;
   }[];
 
-  
+
 };
 
 type ListResponse = {
@@ -332,12 +332,12 @@ const AraDealsView = () => {
           : null,
         agentId: payload.agentId || "",
         notes: payload.notes || "",
-         status: payload.status || "OPEN",
+        status: payload.status || "OPEN",
         documents: uploadedDocs,
 
-       
 
-      
+
+
       };
 
       if (mode === "CREATE") {
@@ -424,7 +424,7 @@ const AraDealsView = () => {
                 onClick={openCreate}
                 className="
     rounded-xl px-4 py-2 text-sm  font-bold
-    bg-indigo-600 text-white
+    bg-indigo-600 text-white text-nowrap
     hover:bg-indigo-700
     dark:bg-indigo-500 dark:hover:bg-indigo-400
     transition-colors
