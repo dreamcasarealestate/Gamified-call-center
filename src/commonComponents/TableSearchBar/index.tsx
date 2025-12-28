@@ -18,6 +18,7 @@ type TableToolbarProps = {
     max?: string;
     label?: string;
   };
+   middleSlot?: React.ReactNode;
   filtersSlot?: React.ReactNode;
   actionsSlot?: React.ReactNode;
   className?: string;
@@ -28,6 +29,7 @@ export default function TableToolbar({
   dateRange,
   filtersSlot,
   actionsSlot,
+   middleSlot,
   className,
 }: TableToolbarProps) {
   const [localSearch, setLocalSearch] = useState(search?.value ?? "");
@@ -81,7 +83,9 @@ export default function TableToolbar({
 
 
 
-        {dateRange ? (
+        
+      </div>
+      {dateRange ? (
           <div className="flex items-center gap-2 rounded-xl px-3 py-2 border dark:border-white app-input">
             {dateRange.label ? (
               <span className="text-xs app-muted">{dateRange.label}</span>
@@ -125,16 +129,24 @@ export default function TableToolbar({
             {filtersSlot}
           </div>
         ) : null}
-      </div>
+      <div className="flex items-center md:gap-2  gap-1">
+         {middleSlot ? (
+        <div className="flex items-center justify-start md:justify-center">
+          {middleSlot}
+        </div>
+      ) : null}
 
 
       {/* RIGHT */}
       {actionsSlot ? (
-        <div className="flex items-center gap-2 justify-end">
+        <div className="flex items-center md:gap-2  gap-1 justify-end">
           {actionsSlot}
         </div>
       ) : null}
 
+        </div>
+
+     
     </div>
   );
 }

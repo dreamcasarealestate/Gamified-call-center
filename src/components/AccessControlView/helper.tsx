@@ -89,15 +89,15 @@ export type CreateAgentProfileDto = {
     accountNumber: string;
     ifscNumber: string;
     accountHolderName: string;
-    isPrimary?: boolean;   // optional, default can be false
-    isVerified?: boolean;  // optional, default can be false
+    isPrimary?: boolean;   
+    isVerified?: boolean;  
   }>;
 };
 
 export type CreateUserDto = {
   user: CreateUserCoreDto;
   employee?: CreateEmployeeDto;
-  addresses?: CreateAddressDto[];
+  addresses?: (CreateAddressDto & { id?: string; delete?: boolean })[];
   agentProfile?: CreateAgentProfileDto;
 };
 export type UpdateUserCoreDto = Partial<{
@@ -118,6 +118,8 @@ export type UpdateEmployeeDto = Partial<{
 }>;
 
 export type UpdateAddressDto = Partial<{
+  id?: string;          // ✅ needed for update/delete
+  delete?: boolean;     // ✅ needed for delete
   address1: string;
   address2?: string;
   city: string;
@@ -128,6 +130,7 @@ export type UpdateAddressDto = Partial<{
   landmark?: string;
   isDefault?: boolean;
 }>;
+
 export type BankAccountDto = {
   id?: string; 
   bankName: string;

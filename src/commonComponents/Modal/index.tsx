@@ -191,8 +191,8 @@ export default function Modal({
                                                 type="button"
                                                 onClick={handleRequestClose}
                                                 className={cn(
-                                                    "rounded-xl p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700",
-                                                    "dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-slate-200",
+                                                    "rounded-xl p-2 app-text hover:app-card hover:app-card",
+                                                    "dark:hover:bg-slate-800  dark:hover:text-slate-200",
                                                     !canClose && "opacity-50 pointer-events-none"
                                                 )}
                                                 aria-label="Close modal"
@@ -204,16 +204,19 @@ export default function Modal({
                                 )}
 
                                 {/* Body */}
-                                <div
-                                    className={cn(
-                                        "px-5 py-4",
-                                        scrollBody && "max-h-[70vh] overflow-auto",
-                                        size === "full" && "h-[calc(92vh-64px-72px)]", // header+footer heights approx
-                                        bodyClassName
-                                    )}
-                                >
-                                    {children}
-                                </div>
+                               {/* Body */}
+<div
+  className={cn(
+    "px-5 py-4",
+    // height control
+    scrollBody && "max-h-[75vh] overflow-y-auto",
+    size === "full" && "h-[calc(92vh-64px-72px)] overflow-y-auto",
+    bodyClassName
+  )}
+>
+  {children}
+</div>
+
 
                                 {/* Footer */}
                                 {(footer || primaryAction || secondaryAction) && (
@@ -235,7 +238,7 @@ export default function Modal({
                                                         disabled={secondaryAction.disabled}
                                                         className={cn(
                                                             "rounded-xl cursor-pointer border px-4 py-2 text-sm  font-medium",
-                                                            "border-slate-200 text-slate-700 hover:bg-slate-50",
+                                                            "app-border app-text hover:app-surface",
                                                             "dark:border-slate-700  dark:hover:bg-slate-800",
                                                             secondaryAction.disabled && "opacity-60 cursor-not-allowed"
                                                         )}
