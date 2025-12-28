@@ -17,6 +17,7 @@ import {
   EyeOff,
   FileText,
   Globe,
+  Grid,
   Home,
   Key,
   Landmark,
@@ -33,8 +34,10 @@ import {
   Settings,
   Shield,
   Star,
+  Trash2,
   TrendingUp,
   Upload,
+  User,
   X,
 } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -52,6 +55,7 @@ import Modal from "@/commonComponents/Modal";
 import Loader from "@/commonComponents/Loader";
 import { uploadFile } from "@/Utils/uploadFile";
 import Button from "@/commonComponents/Button";
+import { DEFAULT_APPS_OPTIONS } from "@/Utils/constants/ara/constants";
 
 type Designation = { id: number; name: string; levelOrder?: number };
 type UserMini = {
@@ -74,18 +78,24 @@ type Employee = {
 
 type AgentProfile = {
   id?: string;
-  npn?: string | null;
-  yearsOfExperience?: number | null;
-  ahipCertified?: boolean;
-  ahipProofUrl?: string | null;
-  stateLicenseNumber?: string | null;
-  stateLicensed?: boolean;
-  accessLevel?: string | null;
-  isActive?: boolean;
-
-  performanceScore?: number;
-  dealsClosed?: number;
-  totalRevenue?: number;
+  npn: string | null;
+  yearsOfExperience: number;
+  ahipCertified: boolean;
+  ahipProofUrl: string | null;
+  stateLicensed: boolean;
+  stateLicenseNumber: string | null;
+  accessLevel: "TRAINING" | "ALL_ACCESS";
+  removeAgentProfile?: boolean;
+  chaseExt?: string | null;
+  chaseDataUsername?: string | null;
+  chaseDataPassword?: string | null;
+  healthSherpaUsername?: string | null;
+  healthSherpaPassword?: string | null;
+  myMfgUsername?: string | null;
+  myMfgPassword?: string | null;
+  ffmUsername?: string | null;
+  apps?: string[];
+  isActive?: any;
 };
 
 type Address = {
@@ -181,7 +191,8 @@ export default function UserProfileView() {
   const params = useParams<{ id?: string }>();
   const userId =
     (params?.id as string | undefined) 
-  
+    
+
   const [data, setData] = useState<UserFull | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -227,21 +238,20 @@ export default function UserProfileView() {
     setModalInitial({});
   };
 
-  
-    const load = async () => {
-      if (!userId) return;
-      setLoading(true);
-      try {
-        const res = await apiClient.get(`${apiClient.URLS.user}/${userId}`);
-      
-        setData(res.body as UserFull);
-      } catch (e: any) {
-        toast.error(e?.message || "Failed to load user profile");
-      } finally {
-        setLoading(false);
-      }
-    };
-    useEffect(() => {
+  const load = async () => {
+    if (!userId) return;
+    setLoading(true);
+    try {
+      const res = await apiClient.get(`${apiClient.URLS.user}/${userId}`);
+
+      setData(res.body as UserFull);
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to load user profile");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     load();
   }, [userId]);
 
@@ -253,7 +263,7 @@ export default function UserProfileView() {
         `${apiClient.URLS.user}/${userId}`,
         dto
       );
-     
+
       setData(updated.body as UserFull);
       await load();
     } catch (error) {
@@ -279,8 +289,13 @@ export default function UserProfileView() {
     },
     { id: "address", label: "Address", icon: <MapPin className="w-4 h-4" /> },
     { id: "security", label: "Security", icon: <Lock className="w-4 h-4" /> },
-    
   ];
+  const visibleTabs = useMemo(() => {
+  if (data?.systemRole === "ADMIN") {
+    return tabs.filter(tab => tab.id !== "employee" && tab.id !== "professional");
+  }
+  return tabs;
+}, [data]);
 
   const [profileImage, setProfileImage] = useState<string>(
     data?.profileImage || ""
@@ -350,7 +365,7 @@ export default function UserProfileView() {
       employee: {
         ...(data?.employee?.id ? { id: data.employee.id } : {}),
         designationId: v.designation ? Number(v.designation) : null,
-        reportsToId: v.reportsTo || null,
+        reportsToId: String(v.reportsTo.id) || v?.reportsTo.id|| v?.reportsTo ||null,
         isActive: v.isActive ?? true,
       },
     };
@@ -372,34 +387,44 @@ export default function UserProfileView() {
           ? v.stateLicenseNumber?.trim() || null
           : null,
         accessLevel: v.accessLevel || "TRAINING",
-        isActive: v.isActive ?? true,
+        removeAgentProfile: !!v.removeAgentProfile,
+        chaseExt: v.chaseExt?.trim() || null,
+        chaseDataUsername: v.chaseDataUsername?.trim() || null,
+        chaseDataPassword: v.chaseDataPassword?.trim() || null,
+        healthSherpaUsername: v.healthSherpaUsername?.trim() || null,
+        healthSherpaPassword: v.healthSherpaPassword?.trim() || null,
+        myMfgUsername: v.myMfgUsername?.trim() || null,
+        myMfgPassword: v.myMfgPassword?.trim() || null,
+        ffmUsername: v.ffmUsername?.trim() || null,
+        apps: v.apps?.length ? v.apps : [],
       },
     };
-    await patchUser(dto);
-    toast.success("Professional details saved ");
-  };
-
-  const saveAddress = async (v: any) => {
-    const dto = {
-      addresses: [
-        {
-          ...(v.id ? { id: v.id } : {}),
-          address1: v.address1.trim(),
-          address2: v.address2?.trim() || null,
-          city: v.city.trim(),
-          state: v.state.trim(),
-          zip: v.zip.trim(),
-          country: v.country.trim(),
-          locality: v.locality?.trim() || null,
-          landmark: v.landmark?.trim() || null,
-          isDefault: v.isPrimary ?? true,
-        },
-      ],
-    };
 
     await patchUser(dto);
-    toast.success("Address saved ");
+    toast.success("Professional details saved");
   };
+
+  // const saveAddress = async (v: any) => {
+  //   const dto = {
+  //     addresses: [
+  //       {
+  //         ...(v.id ? { id: v.id } : {}),
+  //         address1: v.address1.trim(),
+  //         address2: v.address2?.trim() || null,
+  //         city: v.city.trim(),
+  //         state: v.state.trim(),
+  //         zip: v.zip.trim(),
+  //         country: v.country.trim(),
+  //         locality: v.locality?.trim() || null,
+  //         landmark: v.landmark?.trim() || null,
+  //         isDefault: v.isPrimary ?? true,
+  //       },
+  //     ],
+  //   };
+
+  //   await patchUser(dto);
+  //   toast.success("Address saved ");
+  // };
 
   const savePassword = async (v: any) => {
     if (v.newPassword !== v.confirmPassword) {
@@ -423,7 +448,8 @@ export default function UserProfileView() {
 
       if (res.status === 200) {
         toast.success("Password updated ");
-      } await load()
+      }
+      await load();
     } catch (err: any) {
       toast.error(err?.message || "Failed to update password");
     }
@@ -442,193 +468,223 @@ export default function UserProfileView() {
   const lastLogin = undefined;
 
   const renderProfileTab = () => {
-  const mode: ModalMode = hasProfileData(data) ? "edit" : "add";
-  const init = {
-    firstName: data?.firstName || "",
-    lastName: data?.lastName || "",
-    email: data?.email || "",
-    phone: data?.phone || "",
-    dob: data?.dob || "",
-    systemRole: data?.systemRole || "",
-    profileImage: data?.profileImage || profileImage || "",
-  };
+    const mode: ModalMode = hasProfileData(data) ? "edit" : "add";
+    const init = {
+      firstName: data?.firstName || "",
+      lastName: data?.lastName || "",
+      email: data?.email || "",
+      phone: data?.phone || "",
+      dob: data?.dob || "",
+      systemRole: data?.systemRole || "",
+      profileImage: data?.profileImage || profileImage || "",
+    };
 
-  return (
-    <div className="space-y-6 animate-fadeIn app-surface md:p-6 p-2">
-      {/* Header Card */}
-      <div className="app-gradient rounded-2xl md:p-6 p-2 shadow-sm">
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-          {/* Avatar */}
-          <div className="relative">
-            <div className="w-32 h-32 rounded-2xl bg-linear-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-lg overflow-hidden">
-              {profileImage ? (
-                <img
-                  src={profileImage}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <UserIcon big />
-              )}
-            </div>
-
-            {/* Upload button */}
-            <label className="absolute bottom-2 right-2 w-10 h-10 rounded-full app-card flex items-center justify-center cursor-pointer transition-colors shadow-lg hover:bg-[rgb(var(--btnHover))]">
-              <Upload className="w-4 h-4 text-[rgb(var(--muted))]" />
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageUpload}
-              />
-            </label>
-
-            {/* Verified badge */}
-            <div className="absolute -top-2 -left-2 w-8 h-8 rounded-full bg-emerald-500 border-4 border-white dark:border-slate-800 flex items-center justify-center">
-              <CheckCircle className="w-4 h-4 text-white" />
-            </div>
-          </div>
-
-          {/* Info */}
-          <div className="flex-1 app-text">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h1 className="md:text-3xl text-[14px]  font-bold app-heading">
-                  {(data?.firstName || "-") + " " + (data?.lastName || "")}
-                </h1>
-
-                <div className="flex items-center gap-3 mt-2 flex-wrap">
-                  <span className="px-3 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 md:text-sm text-[12px]  font-bold rounded-full">
-                    {statusLabel}
-                  </span>
-
-                  <span className="md:text-sm text-[12px] app-muted">
-                    User ID: {data?.id}
-                  </span>
-                </div>
-
-                {data?.employee?.designation?.name && (
-                  <div className="mt-2 md:text-sm text-[12px] app-text">
-                    Designation:{" "}
-                    <span className=" font-bold">
-                      {data.employee.designation.name}
-                    </span>
-                  </div>
+    return (
+      <div className="space-y-6 animate-fadeIn app-surface md:p-6 p-2">
+        {/* Header Card */}
+        <div className="app-gradient rounded-2xl md:p-6 p-2 shadow-sm">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+            {/* Avatar */}
+            <div className="relative">
+              <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg overflow-hidden">
+                {profileImage ? (
+                  <img
+                    src={profileImage}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <UserIcon big />
                 )}
               </div>
 
-              <div className="flex items-center gap-2">
-                
-                <Button
-                  onClick={() => openModal("profile", mode, init)}
-                  className="flex items-center  font-medium text-nowrap gap-2 px-4 py-2 bg-linear-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all shadow-lg hover:shadow-xl"
-                >
-                  {mode === "edit" ? (
-                    <Pencil className="w-4 h-4" />
-                  ) : (
-                    <Plus className="w-4 h-4" />
+              {/* Upload button */}
+              <label className="absolute bottom-2 right-2 w-10 h-10 rounded-full app-card flex items-center justify-center cursor-pointer transition-colors shadow-lg hover:bg-[rgb(var(--btnHover))]">
+                <Upload className="w-4 h-4 text-[rgb(var(--muted))]" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+              </label>
+
+              {/* Verified badge */}
+              <div className="absolute -top-2 -left-2 w-8 h-8 rounded-full bg-emerald-500 border-4 border-white dark:border-slate-800 flex items-center justify-center">
+                <CheckCircle className="w-4 h-4 text-white" />
+              </div>
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 app-text">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h1 className="md:text-3xl text-[14px]  font-bold app-heading">
+                    {(data?.firstName || "-") + " " + (data?.lastName || "")}
+                  </h1>
+
+                  <div className="flex items-center gap-3 mt-2 flex-wrap">
+                    <span className="px-3 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 md:text-sm text-[12px]  font-bold rounded-full">
+                      {statusLabel}
+                    </span>
+
+                    <span className="md:text-sm text-[12px] app-muted">
+                      User ID: {data?.id}
+                    </span>
+                  </div>
+
+                  {data?.employee?.designation?.name && (
+                    <div className="mt-2 md:text-sm text-[12px] app-text">
+                      Designation:{" "}
+                      <span className=" font-bold">
+                        {data.employee.designation.name}
+                      </span>
+                    </div>
                   )}
-                  {mode === "edit" ? "Edit Profile" : "Add Profile"}
-                </Button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => openModal("profile", mode, init)}
+                    className="flex items-center  font-medium text-nowrap gap-2 px-4 py-2 bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
+                  >
+                    {mode === "edit" ? (
+                      <Pencil className="w-4 h-4" />
+                    ) : (
+                      <Plus className="w-4 h-4" />
+                    )}
+                    {mode === "edit" ? "Edit Profile" : "Add Profile"}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        <SectionCard
+          title="Personal Information"
+          icon={<Mail className="w-5 h-5 text-blue-500" />}
+          actionLabel={mode === "edit" ? "Edit" : "Add"}
+          actionIcon={
+            mode === "edit" ? (
+              <Pencil className="w-4 h-4" />
+            ) : (
+              <Plus className="w-4 h-4" />
+            )
+          }
+          onAction={() => openModal("profile", mode, init)}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+            <KV
+              icon={<UserIcon />}
+              label="First Name"
+              value={data?.firstName}
+            />
+            <KV icon={<UserIcon />} label="Last Name" value={data?.lastName} />
+            <KV
+              icon={<Mail className="w-4 h-4" />}
+              label="Email"
+              value={data?.email}
+            />
+            <KV
+              icon={<Phone className="w-4 h-4" />}
+              label="Phone"
+              value={data?.phone}
+            />
+            <KV
+              icon={<Calendar className="w-4 h-4" />}
+              label="DOB"
+              value={data?.dob}
+            />
+            <KV
+              icon={<Shield className="w-4 h-4" />}
+              label="System Role"
+              value={data?.systemRole}
+            />
+          </div>
+        </SectionCard>
       </div>
-
-     
-      <SectionCard
-        title="Personal Information"
-        icon={<Mail className="w-5 h-5 text-blue-500" />}
-        actionLabel={mode === "edit" ? "Edit" : "Add"}
-        actionIcon={
-          mode === "edit" ? (
-            <Pencil className="w-4 h-4" />
-          ) : (
-            <Plus className="w-4 h-4" />
-          )
-        }
-        onAction={() => openModal("profile", mode, init)}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
-          <KV icon={<UserIcon />} label="First Name" value={data?.firstName} />
-          <KV icon={<UserIcon />} label="Last Name" value={data?.lastName} />
-          <KV icon={<Mail className="w-4 h-4" />} label="Email" value={data?.email} />
-          <KV icon={<Phone className="w-4 h-4" />} label="Phone" value={data?.phone} />
-          <KV icon={<Calendar className="w-4 h-4" />} label="DOB" value={data?.dob} />
-          <KV icon={<Shield className="w-4 h-4" />} label="System Role" value={data?.systemRole} />
-        </div>
-      </SectionCard>
-    </div>
-  );
-};
-
-
- const renderEmployeeTab = () => {
-  const emp = data?.employee || null;
-  const mode: ModalMode = emp?.id ? "edit" : "add";
-
-  const init = {
-    designation: emp?.designation?.id ? String(emp.designation.id) : "",
-    reportsTo: emp?.reportsTo?.id ? String(emp.reportsTo.id) : "",
-    isActive: emp?.isActive ?? true,
+    );
   };
 
-  return (
-    <div className="space-y-6 animate-fadeIn md:p-6 p-2">
-      <SectionCard
-        title="Employee Details"
-        icon={<Briefcase className="w-5 h-5 text-purple-500" />}
-        actionLabel={mode === "edit" ? "Edit" : "Add"}
-        actionIcon={
-          mode === "edit" ? <Pencil className="w-4 h-4" /> : <Plus className="w-4 h-4" />
-        }
-        onAction={() => openModal("employee", mode, init)}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <KV
-            icon={<Award className="w-4 h-4" />}
-            label="Designation"
-            value={emp?.designation?.name ?? "-"}
-          />
-          <KV
-            icon={<UserIcon />}
-            label="Reports To"
-            value={emp?.reportsTo?.designation?.name ?? "-"}
-          />
-          <KV
-            icon={<CheckCircle className="w-4 h-4" />}
-            label="Active"
-            value={emp?.isActive ? "Yes" : "No"}
-          />
-        </div>
-      </SectionCard>
-    </div>
-  );
-};
+  const renderEmployeeTab = () => {
+    const emp = data?.employee || null;
+    const mode: ModalMode = emp?.id ? "edit" : "add";
 
+    const init = {
+      designation: emp?.designation?.id ? String(emp.designation.id) : "",
+      reportsTo: emp?.reportsTo?.id ? String(emp.reportsTo.id) : "",
+      isActive: emp?.isActive ?? true,
+    };
+
+    return (
+      <div className="space-y-6 animate-fadeIn md:p-6 p-2">
+        <SectionCard
+          title="Employee Details"
+          icon={<Briefcase className="w-5 h-5 text-purple-500" />}
+          actionLabel={mode === "edit" ? "Edit" : "Add"}
+          actionIcon={
+            mode === "edit" ? (
+              <Pencil className="w-4 h-4" />
+            ) : (
+              <Plus className="w-4 h-4" />
+            )
+          }
+          onAction={() => openModal("employee", mode, init)}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <KV
+              icon={<Award className="w-4 h-4" />}
+              label="Designation"
+              value={emp?.designation?.name ?? "-"}
+            />
+            <KV
+              icon={<UserIcon />}
+              label="Reports To"
+              value={emp?.reportsTo?.designation?.name ?? "-"}
+            />
+            <KV
+              icon={<CheckCircle className="w-4 h-4" />}
+              label="Active"
+              value={emp?.isActive ? "Yes" : "No"}
+            />
+          </div>
+        </SectionCard>
+      </div>
+    );
+  };
 
   const renderProfessionalTab = () => {
     const a = data?.agentProfile || null;
     const mode: ModalMode = hasAgentData(a) ? "edit" : "add";
 
-    const init = {
-      npn: a?.npn ?? "",
+    const init: AgentProfile = {
+      id: a?.id,
+      npn: a?.npn ?? null,
       yearsOfExperience: a?.yearsOfExperience ?? 0,
       ahipCertified: a?.ahipCertified ?? false,
-      ahipProofUrl: a?.ahipProofUrl ?? "",
+      ahipProofUrl: a?.ahipProofUrl ?? null,
       stateLicensed: a?.stateLicensed ?? false,
-      stateLicenseNumber: a?.stateLicenseNumber ?? "",
+      stateLicenseNumber: a?.stateLicenseNumber ?? null,
       accessLevel: a?.accessLevel ?? "TRAINING",
-      isActive: a?.isActive ?? true,
+
+      chaseExt: a?.chaseExt ?? null,
+      chaseDataUsername: a?.chaseDataUsername ?? null,
+      chaseDataPassword: a?.chaseDataPassword ?? null,
+      healthSherpaUsername: a?.healthSherpaUsername ?? null,
+      healthSherpaPassword: a?.healthSherpaPassword ?? null,
+      myMfgUsername: a?.myMfgUsername ?? null,
+      myMfgPassword: a?.myMfgPassword ?? null,
+      ffmUsername: a?.ffmUsername ?? null,
+      apps: a?.apps ?? [],
     };
 
     return (
-      <div className="space-y-6 animate-fadeIn p-6">
+      <div className="space-y-6 p-6">
         <SectionCard
           title="Professional Information"
-          icon={<Shield className="w-5 h-5 text-indigo-500" />}
           actionLabel={mode === "edit" ? "Edit" : "Add"}
+          icon={<Shield className="w-5 h-5 text-indigo-500" />}
           actionIcon={
             mode === "edit" ? (
               <Pencil className="w-4 h-4" />
@@ -642,17 +698,17 @@ export default function UserProfileView() {
             <KV
               icon={<Award className="w-4 h-4" />}
               label="NPN"
-              value={a?.npn}
+              value={a?.npn ?? "-"}
             />
             <KV
               icon={<TrendingUp className="w-4 h-4" />}
               label="Experience"
-              value={a?.yearsOfExperience}
+              value={a?.yearsOfExperience ?? 0}
             />
             <KV
               icon={<Key className="w-4 h-4" />}
               label="Access Level"
-              value={a?.accessLevel}
+              value={a?.accessLevel ?? "TRAINING"}
             />
             <KV
               icon={<CheckCircle className="w-4 h-4" />}
@@ -664,13 +720,74 @@ export default function UserProfileView() {
               label="State Licensed"
               value={a?.stateLicensed ? "Yes" : "No"}
             />
+
             {a?.stateLicensed && (
               <KV
                 icon={<FileText className="w-4 h-4" />}
                 label="License No"
-                value={a?.stateLicenseNumber}
+                value={a?.stateLicenseNumber ?? "-"}
               />
             )}
+
+            <KV
+              icon={<CheckCircle className="w-4 h-4" />}
+              label="Active"
+              value={a?.isActive ? "Yes" : "No"}
+            />
+
+            <KV
+              icon={<Phone className="w-4 h-4" />}
+              label="Chase Ext"
+              value={a?.chaseExt ?? "-"}
+            />
+
+            <KV
+              icon={<User className="w-4 h-4" />}
+              label="Chase Data Username"
+              value={a?.chaseDataUsername ?? "-"}
+            />
+
+            <KV
+              icon={<Lock className="w-4 h-4" />}
+              label="Chase Data Password"
+              value={a?.chaseDataPassword ? "••••••••" : "-"}
+            />
+
+            <KV
+              icon={<User className="w-4 h-4" />}
+              label="HealthSherpa Username"
+              value={a?.healthSherpaUsername ?? "-"}
+            />
+
+            <KV
+              icon={<Lock className="w-4 h-4" />}
+              label="HealthSherpa Password"
+              value={a?.healthSherpaPassword ? "••••••••" : "-"}
+            />
+
+            <KV
+              icon={<User className="w-4 h-4" />}
+              label="myMFG Username"
+              value={a?.myMfgUsername ?? "-"}
+            />
+
+            <KV
+              icon={<Lock className="w-4 h-4" />}
+              label="myMFG Password"
+              value={a?.myMfgPassword ? "••••••••" : "-"}
+            />
+
+            <KV
+              icon={<User className="w-4 h-4" />}
+              label="FFM Username"
+              value={a?.ffmUsername ?? "-"}
+            />
+
+            <KV
+              icon={<Grid className="w-4 h-4" />}
+              label="Apps"
+              value={a?.apps?.length ? a.apps.join(", ") : "-"}
+            />
           </div>
         </SectionCard>
       </div>
@@ -711,145 +828,163 @@ export default function UserProfileView() {
       </div>
     );
   };
+const saveAddress = async (v: any) => {
+  if (!userId) return;
 
-  const renderAddressTab = () => {
-    const addressList = data?.addresses ?? data?.addresses ?? [];
-    const primary = addressList.find((a: any) => a.isDefault);
-    const mode: ModalMode = primary ? "edit" : "add";
+  const payload = {
+    address1: v.address1?.trim(),
+    address2: v.address2?.trim() || null,
+    city: v.city?.trim(),
+    state: v.state?.trim(),
+    zip: v.zip?.trim(),
+    country: v.country?.trim(),
+    locality: v.locality?.trim() || null,
+    landmark: v.landmark?.trim() || null,
+    isDefault: v.isDefault ?? true, 
+  };
 
-    const init = primary
-      ? { ...primary }
-      : {
-          address1: "",
-          address2: null,
-          city: "",
-          state: "",
-          zip: "",
-          country: "",
-          locality: null,
-          landmark: null,
+  try {
+    setLoading(true);
+    let res;
 
-          isDefault: true,
-        };
+    if (v?.id) {
+     let res= await apiClient.patch(`${apiClient.URLS.user}/${userId}/addresses/${v?.id}`, payload);
+     if (res.status===200){
+       toast.success("Address updated");
 
-    return (
-      <div className="space-y-6 animate-fadeIn p-6">
-        <SectionCard
-          title="Address Information"
-          icon={<MapPin className="w-5 h-5 text-emerald-500" />}
-          actionLabel={mode === "edit" ? "Edit Address" : "Add Address"}
-          actionIcon={
-            mode === "edit" ? (
-              <Pencil className="w-4 h-4" />
-            ) : (
-              <Plus className="w-4 h-4" />
-            )
-          }
-          onAction={() => openModal("address", mode, init)}
-        >
-          {addressList.length > 0 ? (
-            <div className="space-y-4">
-              {addressList.map((addr: any, i: number) => (
-                <div
-                  key={addr.id}
-                  className="rounded-xl border app-border app-surface md:p-4 p-2 relative hover:scale-[1.01] transition-all"
-                >
-                  {addr.isDefault && (
-                    <div className="absolute top-2 right-2 flex items-center gap-1">
-                      <CheckCircle className="w-4 h-4 text-emerald-500" />
-                      <span className="text-xs app-text  font-bold">
-                        Primary
-                      </span>
-                    </div>
-                  )}
+     }
+     
+    } else {
+     let res= await apiClient.post(`${apiClient.URLS.user}/${userId}/addresses`,payload);
+     if(res.statas===200){
+       toast.success("Address added");
+     }
+    }
 
-                  <div className="text-xs  font-medium text-slate-400 mb-2">
-                    Address #{i + 1}
+    await load(); 
+  } catch (e: any) {
+    console.error("saveAddress error", e);
+    toast.error(e?.message || "Failed to save address");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// ---- Delete Address using endpoint ----
+const handleDeleteAddress = async (addr: any) => {
+  if (!userId || !addr?.id) return;
+
+  
+
+  try {
+    setLoading(true);
+    let res=await apiClient.delete(`${apiClient.URLS.user}/${userId}/addresses/${addr.id}`,{});
+    toast.success("Address deleted");
+    await load();
+  } catch (e: any) {
+    console.error("deleteAddress error", e);
+    toast.error(e?.message || "Failed to delete address");
+  } finally {
+    setLoading(false);
+  }
+};
+const renderAddressTab = () => {
+  const addressList = data?.addresses ?? [];
+
+  // ✅ Always add new address from top button
+  const mode: ModalMode = "add";
+
+  const emptyInit = {
+    address1: "",
+    address2: null,
+    city: "",
+    state: "",
+    zip: "",
+    country: "",
+    locality: null,
+    landmark: null,
+    isDefault: addressList.length === 0, // first one auto primary (optional)
+  };
+
+  return (
+    <div className="space-y-6 animate-fadeIn p-6">
+      <SectionCard
+        title="Address Information"
+        icon={<MapPin className="w-5 h-5 text-emerald-500" />}
+        actionLabel="Add Address" 
+        actionIcon={<Plus className="w-4 h-4" />}
+        onAction={() => openModal("address", "add", emptyInit)} 
+      >
+        {addressList.length > 0 ? (
+          <div className="space-y-4">
+            {addressList.map((addr: any, i: number) => (
+              <div
+                key={addr.id}
+                className="rounded-xl border app-border app-surface md:p-4 p-2 relative hover:scale-[1.01] transition-all"
+              >
+                {addr.isDefault && (
+                  <div className="absolute top-2 right-2 flex items-center gap-1">
+                    <CheckCircle className="w-4 h-4 text-emerald-500" />
+                    <span className="text-xs app-text font-bold">Primary</span>
                   </div>
+                )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <KV
-                      icon={<Home className="w-4 h-4" />}
-                      label="Address 1"
-                      value={addr.address1}
-                    />
-                    <KV
-                      icon={<Building className="w-4 h-4" />}
-                      label="City"
-                      value={addr.city}
-                    />
-                    <KV
-                      icon={<MapIcon className="w-4 h-4" />}
-                      label="State"
-                      value={addr.state}
-                    />
-                    <KV
-                      icon={<FileText className="w-4 h-4" />}
-                      label="ZIP"
-                      value={addr.zip}
-                    />
-                    <KV
-                      icon={<Globe className="w-4 h-4" />}
-                      label="Country"
-                      value={addr.country}
-                    />
-                  </div>
+                <div className="text-xs font-medium text-slate-400 mb-2">
+                  Address #{i + 1}
+                </div>
 
-                  {addr.address2 && (
-                    <div className="mt-2">
-                      <KV
-                        icon={<Plus className="w-3 h-3" />}
-                        label="Address 2"
-                        value={addr.address2}
-                      />
-                    </div>
-                  )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <KV icon={<Home className="w-4 h-4" />} label="Address 1" value={addr.address1} />
+                  <KV icon={<Building className="w-4 h-4" />} label="City" value={addr.city} />
+                  <KV icon={<MapIcon className="w-4 h-4" />} label="State" value={addr.state} />
+                  <KV icon={<FileText className="w-4 h-4" />} label="ZIP" value={addr.zip} />
+                  <KV icon={<Globe className="w-4 h-4" />} label="Country" value={addr.country} />
+                  {addr.address2 && ( <div className="mt-2"> <KV icon={<Plus className="w-3 h-3" />} label="Address 2" value={addr.address2} /> </div> )} {(addr.locality || addr.landmark) && ( <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2"> {addr.locality && ( <KV label="Locality" value={addr.locality} icon={<MapPinHouse size={16} />} /> )} {addr.landmark && ( <KV label="Landmark" value={addr.landmark} icon={<Landmark size={16} />} /> )} </div> )}
+                </div>
 
-                  {(addr.locality || addr.landmark) && (
-                    <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {addr.locality && (
-                        <KV
-                          label="Locality"
-                          value={addr.locality}
-                          icon={<MapPinHouse size={16} />}
-                        />
-                      )}
-                      {addr.landmark && (
-                        <KV
-                          label="Landmark"
-                          value={addr.landmark}
-                          icon={<Landmark size={16} />}
-                        />
-                      )}
-                    </div>
-                  )}
+               
+                <div className="absolute bottom-2 right-2 flex items-center gap-2">
+                  <Button
+                    type="button"
+                    className="app-text transition"
+                    onClick={() => openModal("address", "edit", addr)} // ✅ edit only here
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
 
                   <Button
-                    className="absolute bottom-2 right-2 app-text  transition"
-                    onClick={() => openModal("address", "edit", addr)}
+                    type="button"
+                    className="text-red-600 hover:text-red-700 transition"
+                    onClick={() => handleDeleteAddress(addr)}
                   >
-                    <EyeOff className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-10">
-              <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mx-auto mb-4">
-                <MapPin className="w-10 h-10 text-slate-400" />
               </div>
-              <h3 className="text-lg  font-bold text-slate-700 dark:text-slate-300 mb-2">
-                No Address Added
-              </h3>
-              <p className="text-slate-500 dark:text-slate-400">
-                Add your address to complete your profile
-              </p>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-10">
+            <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mx-auto mb-4">
+              <MapPin className="w-10 h-10 text-slate-400" />
             </div>
-          )}
-        </SectionCard>
-      </div>
-    );
-  };
+            <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-2">
+              No Address Added
+            </h3>
+            <p className="text-slate-500 dark:text-slate-400">
+              Add your address to complete your profile
+            </p>
+          </div>
+        )}
+      </SectionCard>
+    </div>
+  );
+};
+
+
+
+
+  
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -866,12 +1001,8 @@ export default function UserProfileView() {
         return (
           <div className="text-center py-12 app-card">
             <Activity className="w-16 h-16 app-text mx-auto mb-4" />
-            <h3 className="text-lg  font-bold app-text">
-              Activity Log
-            </h3>
-            <p className="app-text">
-              Your activity history will appear here
-            </p>
+            <h3 className="text-lg  font-bold app-text">Activity Log</h3>
+            <p className="app-text">Your activity history will appear here</p>
           </div>
         );
       default:
@@ -897,13 +1028,13 @@ export default function UserProfileView() {
             <div className="lg:w-1/4">
               <div className="app-card rounded-2xl shadow-lg border app-border md:p-4 p-2 sticky top-6">
                 <div className="space-y-2">
-                  {tabs.map((t) => (
+                  {visibleTabs.map((t) => (
                     <Button
                       key={t.id}
                       onClick={() => setActiveTab(t.id)}
                       className={`w-full flex items-center gap-3 font-medium px-4 py-3 rounded-xl transition-all duration-300 ${
                         activeTab === t.id
-                          ? "bg-linear-to-r from-blue-500 to-cyan-500 text-white shadow-lg"
+                          ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg"
                           : " app-text"
                       }`}
                     >
@@ -921,9 +1052,7 @@ export default function UserProfileView() {
                 <div className="mt-8 pt-6 border-t app-border ">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm app-text">
-                        Member Since
-                      </span>
+                      <span className="text-sm app-text">Member Since</span>
                       <span className="text-sm  font-medium app-text">
                         {createdAt
                           ? new Date(createdAt).toLocaleDateString()
@@ -932,9 +1061,7 @@ export default function UserProfileView() {
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-sm app-text">
-                        Last Login
-                      </span>
+                      <span className="text-sm app-text">Last Login</span>
                       <span className="text-sm  font-medium app-text">
                         {lastLogin
                           ? new Date(lastLogin).toLocaleDateString()
@@ -943,9 +1070,7 @@ export default function UserProfileView() {
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-sm app-text">
-                        Account Status
-                      </span>
+                      <span className="text-sm app-text">Account Status</span>
                       <span className="px-2 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 text-xs  font-bold rounded-full">
                         {statusLabel}
                       </span>
@@ -966,7 +1091,7 @@ export default function UserProfileView() {
             </div>
 
             <div className="lg:w-3/4 w-full">
-              <div className="app-surface rounded-2xl shadow-lg border app-border overflow-hidden">
+              <div className="app-surface rounded-2xl shadow-lg border app-border ">
                 {renderTabContent()}
               </div>
             </div>
@@ -1064,7 +1189,7 @@ function ProfileModal({
 
         if (Array.isArray(body)) {
           const options = body.map((emp: any) => ({
-            label: emp.designation,
+            label: emp.fullName,
             value: String(emp.id),
           }));
 
@@ -1152,308 +1277,409 @@ function ProfileModal({
   };
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-opacity-50  md:p-4 p-2">
-      <div className="w-full max-w-2xl rounded-2xl app-card border app-border shadow-2xl overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b app-border">
-          <h3 className="text-lg  font-bold app-text">
-            {title}
-          </h3>
+    <Modal
+      open={open}
+      onClose={onClose}
+      size="lg"
+      title={title}
+      scrollBody={true}
+      // optional: make body taller scroll
+      bodyClassName="h-full overflow-y-auto"
+      primaryAction={{
+        label: saving ? "Saving..." : "Save",
+        onClick: handleSave,
+        disabled: saving,
+        loading: saving,
+      }}
+      secondaryAction={{
+        label: "Cancel",
+        onClick: onClose,
+        disabled: saving,
+      }}
+    >
+      {type === "profile" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 gap-2">
+          <Field label="First Name" required>
+            <TextInput
+              value={values.firstName || ""}
+              onChange={(e: any) => set("firstName", e.target.value)}
+              placeholder="First Name"
+            />
+          </Field>
+
+          <Field label="Last Name">
+            <TextInput
+              value={values.lastName || ""}
+              onChange={(e: any) => set("lastName", e.target.value)}
+              placeholder="Last Name"
+            />
+          </Field>
+
+          <Field label="Email" required>
+            <TextInput
+              value={values.email || ""}
+              onChange={(e: any) => set("email", e.target.value)}
+              placeholder="Email"
+            />
+          </Field>
+
+          <Field label="Phone">
+            <TextInput
+              value={values.phone || ""}
+              onChange={(e: any) => set("phone", e.target.value)}
+              placeholder="Phone"
+            />
+          </Field>
+
+          <Field label="DOB">
+            <TextInput
+              type="date"
+              value={values.dob || ""}
+              onChange={(e: any) => set("dob", e.target.value)}
+              placeholder="DOB"
+            />
+          </Field>
+          <Field label="System Role" required>
+            <SingleSelect
+              value={values.systemRole || ""}
+              onChange={(v: any) => set("systemRole", v)}
+              options={[
+                { label: "Admin", value: "ADMIN" },
+                { label: "Standard", value: "STANDARD" },
+              ]}
+              placeholder="Select Role"
+              placement="auto"
+            />
+          </Field>
+        </div>
+      )}
+      {type === "address" && (
+        <div className="md:space-y-4 space-y-2">
+          <Field label="Address Line 1" required>
+            <TextInput
+              value={values.address1 || ""}
+              onChange={(e: any) => set("address1", e.target.value)}
+              placeholder="House/Street"
+              className="w-full"
+            />
+          </Field>
+
+          <Field label="Address Line 2">
+            <TextInput
+              value={values.address2 || ""}
+              onChange={(e: any) => set("address2", e.target.value)}
+              placeholder="Apartment, Floor, etc."
+              className="w-full"
+            />
+          </Field>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
+            <Field label="City" required>
+              <TextInput
+                value={values.city || ""}
+                onChange={(e: any) => set("city", e.target.value)}
+                placeholder="City"
+                className="w-full"
+              />
+            </Field>
+
+            <Field label="State" required>
+              <TextInput
+                value={values.state || ""}
+                onChange={(e: any) => set("state", e.target.value)}
+                placeholder="State"
+                className="w-full"
+              />
+            </Field>
+
+            <Field label="ZIP" required>
+              <TextInput
+                value={values.zip || ""}
+                onChange={(e: any) => set("zip", e.target.value)}
+                placeholder="ZIP Code"
+                className="w-full"
+              />
+            </Field>
+
+            <Field label="Country" required>
+              <TextInput
+                value={values.country || ""}
+                onChange={(e: any) => set("country", e.target.value)}
+                placeholder="Country"
+                className="w-full"
+              />
+            </Field>
+          </div>
+
+          <Field label="Locality">
+            <TextInput
+              value={values.locality || ""}
+              onChange={(e: any) => set("locality", e.target.value)}
+              placeholder="Locality"
+              className="w-full"
+            />
+          </Field>
+
+          <Field label="Landmark">
+            <TextInput
+              value={values.landmark || ""}
+              onChange={(e: any) => set("landmark", e.target.value)}
+              placeholder="Landmark"
+              className="w-full"
+            />
+          </Field>
+
+          <div className="pt-2">
+            <ToggleInline
+              label="Default / Primary Address"
+              checked={values.isDefault ?? true}
+              onChange={(v) => set("isDefault", v)}
+            />
+          </div>
+        </div>
+      )}
+
+      {type === "employee" && (
+        <div className="md:space-y-4 space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+            <Field label="Designation" required>
+              <SingleSelect
+                value={values.designation}
+                onChange={(v: string) => {
+                  set("designation", v);
+                  set("reportsTo", "");
+                }}
+                options={designationOptions}
+                placeholder="Select Designation"
+                placement="auto"
+                searchable
+              />
+            </Field>
+
+            <Field label="Reports To">
+              <SingleSelect
+                value={values.reportsTo}
+                onChange={(v: string) => set("reportsTo", v)}
+                options={reportsToOptions}
+                placeholder="Select Manager"
+                placement="auto"
+                searchable
+              />
+            </Field>
+          </div>
+
+          <ToggleInline
+            label="Is Active"
+            checked={values.isActive ?? true}
+            onChange={(v) => set("isActive", v)}
+          />
+        </div>
+      )}
+
+      {type === "professional" && (
+        <div className="md:space-y-4 space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label="NPN">
+              <TextInput
+                value={values.npn || ""}
+                onChange={(e: any) => set("npn", e.target.value)}
+                placeholder="NPN"
+              />
+            </Field>
+
+            <Field label="Years of Experience">
+              <TextInput
+                type="number"
+                value={values.yearsOfExperience ?? 0}
+                onChange={(e: any) =>
+                  set("yearsOfExperience", Number(e.target.value))
+                }
+                placeholder="Years"
+              />
+            </Field>
+
+            <Field label="Access Level">
+              <TextInput
+                value={values.accessLevel || "TRAINING"}
+                onChange={(e: any) => set("accessLevel", e.target.value)}
+                placeholder="TRAINING / ALL_ACCESS"
+              />
+            </Field>
+
+            <Field label="Chase Ext">
+              <TextInput
+                value={values.chaseExt || ""}
+                onChange={(e: any) => set("chaseExt", e.target.value)}
+                placeholder="Chase extension"
+              />
+            </Field>
+          </div>
+
+          <ToggleInline
+            label="AHIP Certified"
+            checked={!!values.ahipCertified}
+            onChange={(v) => set("ahipCertified", v)}
+          />
+
+          {values.ahipCertified && (
+            <Field label="AHIP Proof URL">
+              <TextInput
+                value={values.ahipProofUrl || ""}
+                onChange={(e: any) => set("ahipProofUrl", e.target.value)}
+                placeholder="https://..."
+              />
+            </Field>
+          )}
+
+          <ToggleInline
+            label="State Licensed"
+            checked={!!values.stateLicensed}
+            onChange={(v) => set("stateLicensed", v)}
+          />
+
+          {values.stateLicensed && (
+            <Field label="State License Number">
+              <TextInput
+                value={values.stateLicenseNumber || ""}
+                onChange={(e: any) => set("stateLicenseNumber", e.target.value)}
+                placeholder="License Number"
+              />
+            </Field>
+          )}
+
+          {/* --- Credentials section --- */}
+          <div className="rounded-2xl border app-border p-4 md:space-y-3 space-y-2">
+            <p className="font-bold app-text text-sm">Portal Credentials</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field label="Chase Data Username">
+                <TextInput
+                  value={values.chaseDataUsername || ""}
+                  onChange={(e: any) =>
+                    set("chaseDataUsername", e.target.value)
+                  }
+                  placeholder="Username"
+                />
+              </Field>
+
+              <Field label="Chase Data Password">
+                <TextInput
+                  type="password"
+                  value={values.chaseDataPassword || ""}
+                  onChange={(e: any) =>
+                    set("chaseDataPassword", e.target.value)
+                  }
+                  placeholder="Password"
+                />
+              </Field>
+
+              <Field label="HealthSherpa Username">
+                <TextInput
+                  value={values.healthSherpaUsername || ""}
+                  onChange={(e: any) =>
+                    set("healthSherpaUsername", e.target.value)
+                  }
+                  placeholder="Username"
+                />
+              </Field>
+
+              <Field label="HealthSherpa Password">
+                <TextInput
+                  type="password"
+                  value={values.healthSherpaPassword || ""}
+                  onChange={(e: any) =>
+                    set("healthSherpaPassword", e.target.value)
+                  }
+                  placeholder="Password"
+                />
+              </Field>
+
+              <Field label="myMFG Username">
+                <TextInput
+                  value={values.myMfgUsername || ""}
+                  onChange={(e: any) => set("myMfgUsername", e.target.value)}
+                  placeholder="Username"
+                />
+              </Field>
+
+              <Field label="myMFG Password">
+                <TextInput
+                  type="password"
+                  value={values.myMfgPassword || ""}
+                  onChange={(e: any) => set("myMfgPassword", e.target.value)}
+                  placeholder="Password"
+                />
+              </Field>
+
+              <Field label="FFM Username">
+                <TextInput
+                  value={values.ffmUsername || ""}
+                  onChange={(e: any) => set("ffmUsername", e.target.value)}
+                  placeholder="FFM username"
+                />
+              </Field>
+            </div>
+          </div>
+
+          {/* Apps */}
+          {/* Apps */}
+          <Field label="Apps">
+            <MultiSelect
+              values={values.apps || []}
+              onChange={(v: any) => set("apps", v)}
+              options={DEFAULT_APPS_OPTIONS}
+              placeholder="Select Apps"
+              placement="auto"
+            />
+          </Field>
+        </div>
+      )}
+
+      {type === "security" && (
+        <div className="space-y-2 md:space-y-4">
+          <Field label="Current Password" required>
+            <TextInput
+              type={showPassword ? "text" : "password"}
+              value={values.password || ""}
+              onChange={(e: any) => set("password", e.target.value)}
+              placeholder="Current Password"
+            />
+          </Field>
+
+          <Field label="New Password" required>
+            <TextInput
+              type={showPassword ? "text" : "password"}
+              value={values.newPassword || ""}
+              onChange={(e: any) => set("newPassword", e.target.value)}
+              placeholder="New Password"
+            />
+          </Field>
+
+          <Field label="Confirm New Password" required>
+            <TextInput
+              type={showPassword ? "text" : "password"}
+              value={values.confirmPassword || ""}
+              onChange={(e: any) => set("confirmPassword", e.target.value)}
+              placeholder="Confirm New Password"
+            />
+          </Field>
+
           <Button
-            onClick={onClose}
-            className="p-2 rounded-lg hover:app-text"
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="flex items-center gap-2 text-sm app-text hover:app-text"
           >
-            <X className="w-5 h-5" />
+            {showPassword ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
+            )}
+            {showPassword ? "Hide Passwords" : "Show Passwords"}
           </Button>
         </div>
+      )}
 
-        <div className="md:p-5 p-2 md:space-y-4 space-y-2">
-          {type === "profile" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 gap-2">
-              <Field label="First Name" required>
-                <TextInput
-                  value={values.firstName || ""}
-                  onChange={(e: any) => set("firstName", e.target.value)}
-                  placeholder="First Name"
-                />
-              </Field>
-
-              <Field label="Last Name">
-                <TextInput
-                  value={values.lastName || ""}
-                  onChange={(e: any) => set("lastName", e.target.value)}
-                  placeholder="Last Name"
-                />
-              </Field>
-
-              <Field label="Email" required>
-                <TextInput
-                  value={values.email || ""}
-                  onChange={(e: any) => set("email", e.target.value)}
-                  placeholder="Email"
-                />
-              </Field>
-
-              <Field label="Phone">
-                <TextInput
-                  value={values.phone || ""}
-                  onChange={(e: any) => set("phone", e.target.value)}
-                  placeholder="Phone"
-                />
-              </Field>
-
-              <Field label="DOB">
-                <TextInput
-                  type="date"
-                  value={values.dob || ""}
-                  onChange={(e: any) => set("dob", e.target.value)}
-                  placeholder="DOB"
-                />
-              </Field>
-              <Field label="System Role" required>
-                <SingleSelect
-                  value={values.systemRole || ""}
-                  onChange={(v: any) => set("systemRole", v)}
-                  options={[
-                    { label: "Admin", value: "ADMIN" },
-                    { label: "Standard", value: "STANDARD" },
-                  ]}
-                  placeholder="Select Role"
-                  placement="auto"
-                />
-              </Field>
-            </div>
-          )}
-          {type === "address" && (
-            <div className="md:space-y-4 space-y-2">
-              <Field label="Address Line 1" required>
-                <TextInput
-                  value={values.address1 || ""}
-                  onChange={(e: any) => set("address1", e.target.value)}
-                  placeholder="House/Street"
-                  className="w-full"
-                />
-              </Field>
-
-              <Field label="Address Line 2">
-                <TextInput
-                  value={values.address2 || ""}
-                  onChange={(e: any) => set("address2", e.target.value)}
-                  placeholder="Apartment, Floor, etc."
-                  className="w-full"
-                />
-              </Field>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
-                <Field label="City" required>
-                  <TextInput
-                    value={values.city || ""}
-                    onChange={(e: any) => set("city", e.target.value)}
-                    placeholder="City"
-                    className="w-full"
-                  />
-                </Field>
-
-                <Field label="State" required>
-                  <TextInput
-                    value={values.state || ""}
-                    onChange={(e: any) => set("state", e.target.value)}
-                    placeholder="State"
-                    className="w-full"
-                  />
-                </Field>
-
-                <Field label="ZIP" required>
-                  <TextInput
-                    value={values.zip || ""}
-                    onChange={(e: any) => set("zip", e.target.value)}
-                    placeholder="ZIP Code"
-                    className="w-full"
-                  />
-                </Field>
-
-                <Field label="Country" required>
-                  <TextInput
-                    value={values.country || ""}
-                    onChange={(e: any) => set("country", e.target.value)}
-                    placeholder="Country"
-                    className="w-full"
-                  />
-                </Field>
-              </div>
-
-              <Field label="Locality">
-                <TextInput
-                  value={values.locality || ""}
-                  onChange={(e: any) => set("locality", e.target.value)}
-                  placeholder="Locality"
-                  className="w-full"
-                />
-              </Field>
-
-              <Field label="Landmark">
-                <TextInput
-                  value={values.landmark || ""}
-                  onChange={(e: any) => set("landmark", e.target.value)}
-                  placeholder="Landmark"
-                  className="w-full"
-                />
-              </Field>
-
-             
-              <div className="pt-2">
-                <ToggleInline
-                  label="Default / Primary Address"
-                  checked={values.isDefault ?? true}
-                  onChange={(v) => set("isDefault", v)}
-                />
-              </div>
-            </div>
-          )}
-
-          {type === "employee" && (
-            <div className="md:space-y-4 space-y-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                <Field label="Designation" required>
-                  <SingleSelect
-                    value={values.designation}
-                    onChange={(v: string) => {
-                      set("designation", v);
-                      set("reportsTo", "");
-                    }}
-                    options={designationOptions}
-                    placeholder="Select Designation"
-                    placement="auto"
-                    searchable
-                  />
-                </Field>
-
-                <Field label="Reports To">
-                  <SingleSelect
-                    value={values.reportsTo}
-                    onChange={(v: string) => set("reportsTo", v)}
-                    options={reportsToOptions}
-                    placeholder="Select Manager"
-                    placement="auto"
-                    searchable
-                  />
-                </Field>
-              </div>
-
-              <ToggleInline
-                label="Is Active"
-                checked={values.isActive ?? true}
-                onChange={(v) => set("isActive", v)}
-              />
-            </div>
-          )}
-
-          {type === "professional" && (
-            <div className="md:space-y-4 space-y-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Field label="NPN">
-                  <TextInput
-                    value={values.npn || ""}
-                    onChange={(e: any) => set("npn", e.target.value)}
-                    placeholder="NPn"
-                  />
-                </Field>
-
-                <Field label="Years of Experience">
-                  <TextInput
-                    type="number"
-                    value={values.yearsOfExperience ?? 0}
-                    onChange={(e: any) =>
-                      set("yearsOfExperience", Number(e.target.value))
-                    }
-                    placeholder="Years"
-                  />
-                </Field>
-
-                <Field label="Access Level">
-                  <TextInput
-                    value={values.accessLevel || "TRAINING"}
-                    onChange={(e: any) => set("accessLevel", e.target.value)}
-                    placeholder="TRAINING / FULL"
-                  />
-                </Field>
-              </div>
-
-              <ToggleInline
-                label="AHIP Certified"
-                checked={!!values.ahipCertified}
-                onChange={(v) => set("ahipCertified", v)}
-              />
-              <ToggleInline
-                label="State Licensed"
-                checked={!!values.stateLicensed}
-                onChange={(v) => set("stateLicensed", v)}
-              />
-
-              {values.stateLicensed && (
-                <Field label="State License Number">
-                  <TextInput
-                    value={values.stateLicenseNumber || ""}
-                    onChange={(e: any) =>
-                      set("stateLicenseNumber", e.target.value)
-                    }
-                    placeholder="License Number"
-                  />
-                </Field>
-              )}
-
-              <ToggleInline
-                label="Is Active"
-                checked={values.isActive ?? true}
-                onChange={(v) => set("isActive", v)}
-              />
-            </div>
-          )}
-          {type === "security" && (
-            <div className="space-y-2 md:space-y-4">
-              <Field label="Current Password" required>
-                <TextInput
-                  type={showPassword ? "text" : "password"}
-                  value={values.password || ""}
-                  onChange={(e: any) => set("password", e.target.value)}
-                  placeholder="Current Password"
-                />
-              </Field>
-
-              <Field label="New Password" required>
-                <TextInput
-                  type={showPassword ? "text" : "password"}
-                  value={values.newPassword || ""}
-                  onChange={(e: any) => set("newPassword", e.target.value)}
-                  placeholder="New Password"
-                />
-              </Field>
-
-              <Field label="Confirm New Password" required>
-                <TextInput
-                  type={showPassword ? "text" : "password"}
-                  value={values.confirmPassword || ""}
-                  onChange={(e: any) => set("confirmPassword", e.target.value)}
-                  placeholder="Confirm New Password"
-                />
-              </Field>
-
-              <Button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="flex items-center gap-2 text-sm app-text hover:app-text"
-              >
-                {showPassword ? (
-                  <EyeOff className="w-4 h-4" />
-                ) : (
-                  <Eye className="w-4 h-4" />
-                )}
-                {showPassword ? "Hide Passwords" : "Show Passwords"}
-              </Button>
-            </div>
-          )}
-        </div>
-
-        <div className="px-5 py-4 border-t app-border flex items-center justify-end gap-2">
+      {/* <div className="px-5 py-4 border-t app-border flex items-center justify-end gap-2">
           <Button
             onClick={onClose}
             className="px-4 py-2 rounded-xl btn-txt hover:app-surface app-text font-medium app-border"
@@ -1467,9 +1693,8 @@ function ProfileModal({
           >
             {saving ? "Saving..." : "Save"}
           </Button>
-        </div>
-      </div>
-    </div>
+        </div> */}
+    </Modal>
   );
 }
 
@@ -1489,20 +1714,20 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="app-card rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
+    <div className="app-card rounded-2xl md:p-6 p-2 shadow-sm border border-slate-200 dark:border-slate-700">
       <div className="flex items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 app-text rounded-lg border border-slate-200 dark:border-slate-700">
+          <div className="md:p-2 p-1 app-text rounded-lg border border-slate-200 dark:border-slate-700">
             {icon}
           </div>
-          <h3 className="md:text-lg text-[14px]  font-bold app-text">
+          <h3 className="md:text-lg text-[12px]  font-bold app-text">
             {title}
           </h3>
         </div>
 
         <Button
           onClick={onAction}
-          className="flex items-center font-medium   gap-2 md:px-4 px-2  py-1 bg-linear-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all"
+          className="flex items-center font-medium text-nowrap  gap-2 md:px-4 px-2  py-1 bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all"
         >
           {actionIcon}
           {actionLabel}
@@ -1550,8 +1775,8 @@ function ToggleInline({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-      <div className=" font-medium text-slate-900 dark:text-white">{label}</div>
+    <div className="flex items-center justify-between p-3 rounded-xl borderapp-border app-card">
+      <div className=" font-medium app-text">{label}</div>
       <label className="relative inline-flex items-center cursor-pointer">
         <input
           type="checkbox"
@@ -1559,7 +1784,7 @@ function ToggleInline({
           onChange={(e) => onChange(e.target.checked)}
           className="sr-only peer"
         />
-        <div className="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500" />
+        <div className="w-11 h-6 app-surface rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500" />
       </label>
     </div>
   );

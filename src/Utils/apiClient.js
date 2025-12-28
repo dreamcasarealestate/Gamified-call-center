@@ -16,14 +16,14 @@ const URLS = {
   designation: `${base_url}/api/designation`,
   employee: `${base_url}/employee`,
   permissions: `${base_url}/permissions`,
-  designationPermissions: `${base_url}/designationPermissions`,
+  designationPermissions: `${base_url}/admin/designations`,
   login: `${base_url}/auth/login`,
   forgotPassword: `${base_url}/auth`,
   chat: `${base_url}/chat/threads`,
   chatDm: `${base_url}/chat/dm`,
   chatChannels: `${base_url}/chat/channels`,
   resources: `${base_url}/admin/resources`,
-  users: `${base_url}/users`,
+ addresses:`${base_url}/addresses`
 };
 
 export function encodeQueryData(data = {}) {

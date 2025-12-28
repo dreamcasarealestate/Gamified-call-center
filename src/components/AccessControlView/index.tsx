@@ -17,13 +17,17 @@ import {
   BadgeCheck,
   Briefcase,
   Check,
+  CheckCircle,
   Download,
   Eye,
   Layers,
+  LayoutGrid,
   Pencil,
   Plus,
+  Rows,
   Trash2,
   Users,
+  XCircle,
 } from "lucide-react";
 import UserOnboardModal from "./UserOnboardModal";
 import {
@@ -38,6 +42,7 @@ import {
 import TableToolbar from "@/commonComponents/TableSearchBar";
 import Loader from "@/commonComponents/Loader";
 import Pagination from "@/commonComponents/Pagination";
+import { cn } from "@/Utils/common/cn";
 
 type Designation = { id: number; name: string; levelOrder: number };
 type Option = { label: string; value: string };
@@ -100,10 +105,13 @@ function parsePermissionCode(
 
 const formatResourceName = (r: string) =>
   r.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+type ViewMode = "compact" | "cards";
 
 export default function DesignationsPermissionsPage() {
   const [designations, setDesignations] = useState<any[]>([]);
   const [tab, setTab] = useState<"users" | "designations">("users");
+  const [view, setView] = useState<ViewMode>("compact");
+
   const [loading, setLoading] = useState(false);
 
   const [open, setOpen] = useState(false);
@@ -335,9 +343,7 @@ export default function DesignationsPermissionsPage() {
       if (res.status === 200 || res.status === 201) {
         setDesignations((prev) =>
           formMode === "edit"
-            ? prev.map((d) =>
-              (d.id) === (selectedDesignationId) ? res.data : d
-            )
+            ? prev.map((d) => (d.id === selectedDesignationId ? res.data : d))
             : [...prev, res.data]
         );
 
@@ -541,73 +547,78 @@ export default function DesignationsPermissionsPage() {
     setUserFormOpen(true);
   };
 
-  const convertToUpdateDto = (payload: CreateUserDto): UpdateUserDto => {
-    const role = payload.user?.systemRole ?? "STANDARD";
+ const convertToUpdateDto = (payload: CreateUserDto): UpdateUserDto => {
+  const role = payload.user?.systemRole ?? "STANDARD";
 
-    const update: UpdateUserDto = {
-      user: {
-        firstName: payload.user.firstName,
-        lastName: payload.user.lastName,
-        dob: payload.user.dob,
-        email: payload.user.email,
-        phone: payload.user.phone,
-        profileImage: payload.user.profileImage,
-        systemRole: payload.user.systemRole,
-        password: payload.user.password.trim(),
+  const update: UpdateUserDto = {
+    user: {
+      firstName: payload.user.firstName,
+      lastName: payload.user.lastName,
+      dob: payload.user.dob,
+      email: payload.user.email,
+      phone: payload.user.phone,
+      profileImage: payload.user.profileImage,
+      systemRole: payload.user.systemRole,
 
-        // ...(payload.user.password?.trim()
-        //   ? { password: payload.user.password.trim() }
-        //   : {}),
-      },
-    };
-
-    if (role === "ADMIN") return update;
-
-    if (payload.employee) {
-      update.employee = {
-        designationId: payload.employee.designationId,
-        reportsToId: payload.employee.reportsToId,
-      };
-    }
-
-    if (payload.addresses?.length) {
-      update.addresses = payload.addresses.map((a) => ({
-        address1: a.address1,
-        address2: a.address2,
-        city: a.city,
-        state: a.state,
-        zip: a.zip,
-        country: a.country,
-        locality: a.locality,
-        landmark: a.landmark,
-        isDefault: a.isDefault,
-      }));
-    }
-
-    if (payload.agentProfile) {
-      update.agentProfile = {
-        npn: payload.agentProfile.npn,
-        yearsOfExperience: payload.agentProfile.yearsOfExperience,
-        ahipCertified: payload.agentProfile.ahipCertified,
-        ahipProofUrl: payload.agentProfile.ahipCertified
-          ? payload.agentProfile.ahipProofUrl
-          : undefined,
-        stateLicensed: payload.agentProfile.stateLicensed,
-        accessLevel: payload.agentProfile.accessLevel,
-        bankAccounts: payload.agentProfile.bankAccounts?.map((b) => ({
-          bankName: b.bankName,
-          accountNumber: b.accountNumber,
-          ifscNumber: b.ifscNumber,
-          accountHolderName: b.accountHolderName,
-          isPrimary: b.isPrimary ?? false,
-          isVerified: b.isVerified ?? false,
-        })),
-      };
-    } else {
-    }
-
-    return update;
+      ...(payload.user.password?.trim()
+        ? { password: payload.user.password.trim() }
+        : {}),
+    },
   };
+
+  // ✅ addresses should be allowed for BOTH ADMIN + STANDARD
+  if (payload.addresses?.length) {
+    update.addresses = payload.addresses.map((a: any) => ({
+      ...(a.id ? { id: a.id } : {}),
+      ...(a.delete ? { delete: true } : {}),
+      address1: a.address1,
+      address2: a.address2,
+      city: a.city,
+      state: a.state,
+      zip: a.zip,
+      country: a.country,
+      locality: a.locality,
+      landmark: a.landmark,
+      isDefault: a.isDefault,
+    }));
+  }
+
+  // ✅ only skip employee/agent for ADMIN
+  if (role === "ADMIN") return update;
+
+  if (payload.employee) {
+    update.employee = {
+      designationId: payload.employee.designationId,
+      reportsToId: payload.employee.reportsToId,
+    };
+  }
+
+  if (payload.agentProfile) {
+    update.agentProfile = {
+      npn: payload.agentProfile.npn,
+      yearsOfExperience: payload.agentProfile.yearsOfExperience,
+      ahipCertified: payload.agentProfile.ahipCertified,
+      ahipProofUrl: payload.agentProfile.ahipCertified
+        ? payload.agentProfile.ahipProofUrl
+        : undefined,
+      stateLicensed: payload.agentProfile.stateLicensed,
+      accessLevel: payload.agentProfile.accessLevel,
+      bankAccounts: payload.agentProfile.bankAccounts?.map((b: any) => ({
+        ...(b.id ? { id: b.id } : {}),
+        bankName: b.bankName,
+        accountNumber: b.accountNumber,
+        ifscNumber: b.ifscNumber,
+        accountHolderName: b.accountHolderName,
+        isPrimary: b.isPrimary ?? false,
+        isVerified: b.isVerified ?? false,
+      })),
+    };
+  }
+
+  return update;
+};
+
+
 
   const handleUserSubmit = async (payload: CreateUserDto) => {
     // const ok1 = validateStep1();
@@ -729,6 +740,35 @@ export default function DesignationsPermissionsPage() {
                   widthClassName: "min-w-full  rounded-xl",
                   debounceMs: 300,
                 }}
+                middleSlot={
+                  <div className="flex items-center md:gap-2 gap-1">
+                    <div className="flex items-center gap-1">
+                      <Button
+                        className={`md:px-2 px-1 md:py-[7px] py-[5px] rounded-md border ${
+                          view === "cards"
+                            ? "bg-purple-600 text-white"
+                            : "bg-white text-gray-800"
+                        }`}
+                        onClick={() => setView("cards")}
+                        title="Cards view"
+                      >
+                        <LayoutGrid className="md:w-4 w-3 md:h-4 h-3" />
+                      </Button>
+
+                      <Button
+                        className={`md:px-2 px-1 md:py-[7px] py-[5px] rounded-md border ${
+                          view === "compact"
+                            ? "bg-purple-600 text-white"
+                            : "bg-white text-gray-800"
+                        }`}
+                        onClick={() => setView("compact")}
+                        title="Compact view"
+                      >
+                        <Rows className="md:w-4 w-3 md:h-4 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                }
                 actionsSlot={
                   <>
                     <div className="flex items-center gap-2">
@@ -758,103 +798,241 @@ export default function DesignationsPermissionsPage() {
                 No users found
               </div>
             ) : (
-              <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
-                {filteredUsers.map((u) => (
-                  <div
-                    key={u.id}
-                    className="app-card rounded-2xl border app-border p-4 md:p-5 hover:shadow-xl transition-all duration-300 hover:-translate-y-[2px]"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                      <div className="space-y-1 md:space-y-1.5">
-                        <p className="font-bold app-text text-sm md:text-base">
-                          {u.firstName} {u.lastName}
-                        </p>
+              <>
+                {view === "cards" && (
+                  <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
+                    {filteredUsers.map((u) => (
+                      <div
+                        key={u.id}
+                        className="app-card rounded-2xl border app-border p-4 md:p-5 hover:shadow-xl transition-all duration-300 hover:-translate-y-[2px]"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                          <div className="space-y-1 md:space-y-1.5">
+                            <p className="font-bold app-text text-sm md:text-base">
+                              {u.firstName} {u.lastName}
+                            </p>
 
-                        <p className="font-medium app-muted text-[11px] md:text-xs">
-                          {u.email}
-                        </p>
+                            <p className="font-medium app-muted text-[11px] md:text-xs">
+                              {u.email}
+                            </p>
 
-                        <p className="font-medium app-muted text-[11px] md:text-xs">
-                          {u.phone}
-                        </p>
+                            <p className="font-medium app-muted text-[11px] md:text-xs">
+                              {u.phone}
+                            </p>
 
-                        <div className="flex flex-wrap gap-2 pt-1 md:pt-2">
-                          <span className="px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-medium app-card app-text border app-border">
-                            {u.systemRole}
-                          </span>
-                          <span className="px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-medium app-card app-text border app-border">
-                            {u.userStatus}
-                          </span>
+                            <div className="flex flex-wrap gap-2 pt-1 md:pt-2">
+                              <span className="px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-medium app-card app-text border app-border">
+                                {u.systemRole}
+                              </span>
+                              <span className="px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-medium app-card app-text border app-border">
+                                {u.userStatus}
+                              </span>
 
-                          {u.employee?.designation?.name && (
-                            <span className="px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-medium app-card app-text border app-border">
-                              {u.employee.designation.name}
-                            </span>
-                          )}
+                              {u.employee?.designation?.name && (
+                                <span className="px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-medium app-card app-text border app-border">
+                                  {u.employee.designation.name}
+                                </span>
+                              )}
 
-                          {u.agentProfile && (
-                            <span className="px-3 py-1 rounded-full text-[10px] md:text-[11px] font-medium border app-border bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-200">
-                              Agent
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                              {u.agentProfile && (
+                                <span className="px-3 py-1 rounded-full text-[10px] md:text-[11px] font-medium border app-border bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-200">
+                                  Agent
+                                </span>
+                              )}
+                            </div>
+                          </div>
 
-                      <div className="flex gap-2 self-end sm:self-start">
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openEditUser(u);
-                          }}
-                          className="p-2 md:p-2.5 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 rounded-full transition-all"
-                        >
-                          <Pencil size={16} className="md:size-[18px]" />
-                        </Button>
-
-                        <div className="flex items-center gap-2">
-                          {u.userStatus === "INACTIVE" ? (
+                          <div className="flex gap-2 self-end sm:self-start">
                             <Button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                openConfirmModal(u);
+                                openEditUser(u);
                               }}
-                              className="p-2 md:p-2.5 text-emerald-700 bg-emerald-100 hover:bg-emerald-200
+                              className="p-2 md:p-2.5 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 rounded-full transition-all"
+                            >
+                              <Pencil size={16} className="md:size-[18px]" />
+                            </Button>
+
+                            <div className="flex items-center gap-2">
+                              {u.userStatus === "INACTIVE" ? (
+                                <Button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openConfirmModal(u);
+                                  }}
+                                  className="p-2 md:p-2.5 text-emerald-700 bg-emerald-100 hover:bg-emerald-200
       dark:bg-emerald-500/20 dark:hover:bg-emerald-500/30 rounded-full transition-all"
-                            >
-                              <Check size={16} className="md:size-[18px]" />
-                            </Button>
-                          ) : (
-                            <Button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openConfirmModal(u);
-                              }}
-                              className="p-2 md:p-2.5 text-rose-700 bg-rose-100 hover:bg-rose-200
+                                >
+                                  <Check size={16} className="md:size-[18px]" />
+                                </Button>
+                              ) : (
+                                <Button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openConfirmModal(u);
+                                  }}
+                                  className="p-2 md:p-2.5 text-rose-700 bg-rose-100 hover:bg-rose-200
       dark:bg-rose-500/20 dark:hover:bg-rose-500/30 rounded-full transition-all"
-                            >
-                              <Trash2 size={16} className="md:size-[18px]" />
-                            </Button>
-                          )}
+                                >
+                                  <Trash2
+                                    size={16}
+                                    className="md:size-[18px]"
+                                  />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
 
-                    {u.agentProfile && (
-                      <div className="mt-3 md:mt-4 text-[11px] md:text-xs font-medium app-muted border-t app-border pt-2 md:pt-3">
-                        Agent Access:
-                        <span className="app-text ml-1">
-                          {u.agentProfile.accessLevel}
-                        </span>
-                        <span className="mx-1.5">•</span>
-                        NPN:
-                        <span className="app-text ml-1">
-                          {u.agentProfile.npn}
-                        </span>
+                        {u.agentProfile && (
+                          <div className="mt-3 md:mt-4 text-[11px] md:text-xs font-medium app-muted border-t app-border pt-2 md:pt-3">
+                            Agent Access:
+                            <span className="app-text ml-1">
+                              {u.agentProfile.accessLevel}
+                            </span>
+                            <span className="mx-1.5">•</span>
+                            NPN:
+                            <span className="app-text ml-1">
+                              {u.agentProfile.npn}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    )}
+                    ))}
                   </div>
-                ))}
-              </div>
+                )}
+                {view === "compact" && (
+                  <div className="overflow-x-auto rounded-sm border app-border app-card shadow-sm">
+                    <table className="min-w-full w-full text-sm app-text border-collapse">
+                      <thead className="app-table-head">
+                        <tr>
+                          <th className="px-4 py-1 text-left font-bold border app-border">
+                            Name
+                          </th>
+                          <th className="px-4 py-1 text-left font-bold border app-border">
+                            Email
+                          </th>
+                          <th className="px-4 py-1 text-left font-bold border app-border">
+                            Phone
+                          </th>
+                          <th className="px-4 py-1 text-center font-bold border app-border">
+                            Role
+                          </th>
+                          <th className="px-4 py-1 text-center font-bold border app-border">
+                            Status
+                          </th>
+                          <th className="px-4 py-1 text-center font-bold border app-border">
+                            Designation
+                          </th>
+                          <th className="px-4 py-1 text-center font-bold border app-border">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {filteredUsers.length === 0 ? (
+                          <tr>
+                            <td
+                              colSpan={7}
+                              className="py-16 text-center app-text border app-border font-bold"
+                            >
+                              No users found
+                            </td>
+                          </tr>
+                        ) : (
+                          filteredUsers.map((u) => (
+                            <tr key={u.id} className="border-t app-row-hover">
+                              <td className="px-4 py-0.5 border app-border font-medium text-nowrap">
+                                {u.firstName} {u.lastName}
+                              </td>
+                              <td className="px-4 py-0.5 border app-border font-medium text-nowrap">
+                                {u.email}
+                              </td>
+                              <td className="px-4 py-0.5 border app-border font-medium text-nowrap">
+                                {u.phone}
+                              </td>
+                              <td className="px-4 py-0.5 border app-border text-center font-medium">
+                                {u.systemRole}
+                              </td>
+                              <td className="px-4 py-0.5 border app-border text-center font-medium">
+                                {" "}
+                                <span
+                                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition ${
+                                    u.userStatus === "ACTIVE"
+                                      ? "bg-green-500/15 text-green-700"
+                                      : "bg-orange-500/15 text-orange-700"
+                                  }`}
+                                >
+                                  {u.userStatus === "ACTIVE" ? (
+                                    <CheckCircle size={14} />
+                                  ) : (
+                                    <XCircle size={14} />
+                                  )}
+                                  {u.userStatus === "ACTIVE"
+                                    ? "Active"
+                                    : "Inactive"}
+                                </span>
+                              </td>
+                              <td className="px-4 py-0.5 border app-border text-center font-bold">
+                                {u.employee?.designation?.name ?? "-"}
+                              </td>
+
+                              <td className="px-4 py-0.5 border app-border text-center">
+                                <div className="inline-flex items-center gap-2">
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openEditUser(u);
+                                    }}
+                                    className="p-2 md:p-2.5 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 rounded-full transition-all"
+                                    title="Edit"
+                                  >
+                                    <Pencil
+                                      size={16}
+                                      className="md:size-[18px]"
+                                    />
+                                  </Button>
+
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openConfirmModal(u);
+                                    }}
+                                    className={cn(
+                                      "p-2 md:p-2.5 rounded-full transition-all",
+                                      u.userStatus === "INACTIVE"
+                                        ? "text-emerald-700 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-500/20 dark:hover:bg-emerald-500/30"
+                                        : "text-rose-700 bg-rose-100 hover:bg-rose-200 dark:bg-rose-500/20 dark:hover:bg-rose-500/30"
+                                    )}
+                                    title={
+                                      u.userStatus === "INACTIVE"
+                                        ? "Activate"
+                                        : "Delete"
+                                    }
+                                  >
+                                    {u.userStatus === "INACTIVE" ? (
+                                      <Check
+                                        size={16}
+                                        className="md:size-[18px]"
+                                      />
+                                    ) : (
+                                      <Trash2
+                                        size={16}
+                                        className="md:size-[18px]"
+                                      />
+                                    )}
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
             )}
             <div className="">
               <Pagination
@@ -989,6 +1167,35 @@ export default function DesignationsPermissionsPage() {
                       widthClassName: "md:w-[360px] w-full rounded-xl",
                       debounceMs: 300,
                     }}
+                    middleSlot={
+                      <div className="flex items-center md:gap-2 gap-1">
+                        <Button
+                          className={cn(
+                            "md:px-2 px-1 md:py-[7px] py-[5px] rounded-md border",
+                            view === "cards"
+                              ? "bg-purple-600 text-white"
+                              : "bg-white app-text"
+                          )}
+                          onClick={() => setView("cards")}
+                          title="Cards view"
+                        >
+                          <LayoutGrid className="w-4 h-4" />
+                        </Button>
+
+                        <Button
+                          className={cn(
+                            "md:px-2 px-1 md:py-[7px] py-[5px] rounded-md border",
+                            view === "compact"
+                              ? "bg-purple-600 text-white"
+                              : "bg-white app-text"
+                          )}
+                          onClick={() => setView("compact")}
+                          title="Table view"
+                        >
+                          <Rows className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    }
                     actionsSlot={
                       <div className="flex items-center gap-2">
                         <Button
@@ -1017,64 +1224,152 @@ export default function DesignationsPermissionsPage() {
                     No designations available
                   </div>
                 ) : (
-                  <div className="md:pt-5 pt-2 grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
-                    {filteredDesignations
-                      .slice()
-                      .sort((a, b) => a.levelOrder - b.levelOrder)
-                      .map((d) => (
-                        <div
-                          key={d.id}
-                          onClick={() => openModalForDesignation(d)}
-                          className="group app-card md:p-4 p-2 rounded-2xl border app-border hover:border-blue-500 hover:shadow-xl transition-all"
-                        >
-                          <div className="flex items-center justify-between">
-                            <p className="md:text-base  font-bold app-text group-hover:text-blue-600 transition">
-                              {d.name}
-                            </p>
-
-                            <span className="px-2.5 py-1 text-[10px]  font-bold rounded-full app-card app-text">
-                              Level {d.levelOrder}
-                            </span>
-                          </div>
-
-                          <div className="mt-3 flex items-center justify-between gap-2">
-                            <Button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openModalForDesignation(d);
-                              }}
-                              className="text-xs text-slate-500 hover:text-slate-700 transition"
+                  <>
+                    {view === "cards" && (
+                      <div className="md:pt-5 pt-2 grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
+                        {filteredDesignations
+                          .slice()
+                          .sort((a, b) => a.levelOrder - b.levelOrder)
+                          .map((d) => (
+                            <div
+                              key={d.id}
+                              onClick={() => openModalForDesignation(d)}
+                              className="group app-card md:p-4 p-2 rounded-2xl border app-border hover:border-blue-500 hover:shadow-xl transition-all"
                             >
-                              Manage permissions →
-                            </Button>
+                              <div className="flex items-center justify-between">
+                                <p className="md:text-base  font-bold app-text group-hover:text-blue-600 transition">
+                                  {d.name}
+                                </p>
 
-                            <div className="flex items-center gap-2">
-                              <Button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openEditDesignation(d);
-                                }}
-                                className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition"
-                              >
-                                <Pencil size={16} />
-                              </Button>
+                                <span className="px-2.5 py-1 text-[10px]  font-bold rounded-full app-card app-text">
+                                  Level {d.levelOrder}
+                                </span>
+                              </div>
 
-                              <Button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelecteddeleteDesignation(d);
-                                  setConfirmdeleteOpen(true);
-                                }}
-                                className="p-2 text-rose-600 hover:bg-rose-100 rounded-full transition disabled:opacity-50"
-                                disabled={saving}
-                              >
-                                <Trash2 size={16} />
-                              </Button>
+                              <div className="mt-3 flex items-center justify-between gap-2">
+                                <Button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openModalForDesignation(d);
+                                  }}
+                                  className="text-xs text-slate-500 hover:text-slate-700 transition"
+                                >
+                                  Manage permissions →
+                                </Button>
+
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openEditDesignation(d);
+                                    }}
+                                    className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition"
+                                  >
+                                    <Pencil size={16} />
+                                  </Button>
+
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelecteddeleteDesignation(d);
+                                      setConfirmdeleteOpen(true);
+                                    }}
+                                    className="p-2 text-rose-600 hover:bg-rose-100 rounded-full transition disabled:opacity-50"
+                                    disabled={saving}
+                                  >
+                                    <Trash2 size={16} />
+                                  </Button>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
+                          ))}
+                      </div>
+                    )}
+                    {view === "compact" && (
+                      <div className="overflow-x-auto rounded-sm border app-border app-card shadow-sm">
+                        <table className="min-w-full w-full text-sm app-text border-collapse">
+                          <thead className="app-table-head sticky top-0 z-10">
+                            <tr>
+                              <th className="px-4 py-1 text-left font-bold border app-border">
+                                Order
+                              </th>
+                              <th className="px-4 py-1 text-left font-bold border app-border">
+                                Name
+                              </th>
+                              <th className="px-4 py-1 text-center font-bold border app-border">
+                                Level
+                              </th>
+                              <th className="px-4 py-1 text-center font-bold border app-border text-nowrap">
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+
+                          <tbody>
+                            {filteredDesignations.length === 0 ? (
+                              <tr>
+                                <td
+                                  colSpan={4}
+                                  className="py-12 text-center font-bold border app-border app-text"
+                                >
+                                  No designations available
+                                </td>
+                              </tr>
+                            ) : (
+                              filteredDesignations
+                                .slice()
+                                .sort((a, b) => a.levelOrder - b.levelOrder)
+                                .map((d, i) => (
+                                  <tr
+                                    key={d.id}
+                                    onClick={() => openModalForDesignation(d)}
+                                    className="border-t app-row-hover cursor-pointer"
+                                  >
+                                    <td className="px-4 py-0.5 border app-border font-medium">
+                                      {i + 1}
+                                    </td>
+                                    <td className="px-4 py-0.5 border app-border font-medium text-nowrap">
+                                      {d.name}
+                                    </td>
+                                    <td className="px-4 py-0.5 border app-border text-center font-medium text-nowrap">
+                                      Level {d.levelOrder}
+                                    </td>
+
+                                    <td className="px-4 py-0.5 border app-border text-center">
+                                      <div className="inline-flex items-center gap-2">
+                                        <Button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            openEditDesignation(d);
+                                          }}
+                                          className="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-500/10 dark:hover:bg-blue-500/20 rounded-full transition"
+                                          title="Edit"
+                                        >
+                                          <Pencil size={16} />
+                                        </Button>
+
+                                        <Button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelecteddeleteDesignation(d);
+                                            setConfirmdeleteOpen(true);
+                                          }}
+                                          className="p-2 text-rose-600 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 rounded-full transition disabled:opacity-50"
+                                          title="Delete"
+                                          disabled={saving}
+                                        >
+                                          <Trash2 size={16} />
+                                        </Button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -1130,7 +1425,6 @@ export default function DesignationsPermissionsPage() {
                   setConfirmdeleteOpen(false);
                 }}
                 className="md:px-4 px-2  md:py-2 py-1 text-sm  bg-rose-600 hover:bg-rose-700 text-white rounded-xl btn-text font-Gordita-Medium transition disabled:opacity-40"
-
               >
                 Delete
               </Button>
@@ -1291,7 +1585,7 @@ function DesignationPermissionsCrudModalBody({
     fetchResources();
   }, []);
 
-  /** 2) fetch designation permissions */
+ 
   useEffect(() => {
 
     console.log("designationId", designationId);
@@ -1321,7 +1615,7 @@ function DesignationPermissionsCrudModalBody({
     fetchDesignationPermissions();
   }, [designationId]);
 
-  /** Dropdown options */
+ 
   const filteredResourceDropdownOptions = useMemo(() => {
     let list = [...resources];
     if (resourceSearch.trim()) {

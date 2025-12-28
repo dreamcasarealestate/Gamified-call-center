@@ -48,7 +48,7 @@ export function SidebarContent({
   return (
     <div className="flex flex-col h-full min-h-0">
       {/* Enhanced Search Section */}
-      <div className="px-5 py-4 border-b border-gray-200/60 bg-gradient-to-b from-white to-gray-50/50 backdrop-blur-sm">
+      <div className="px-5 py-4 border-b border-gray-200/60 prof-surface  backdrop-blur-sm">
         <div className="relative group">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-2xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="relative">
@@ -56,7 +56,7 @@ export function SidebarContent({
               <Search
                 className={`w-5 h-5 transition-all duration-300 ${isSearchFocused
                   ? "text-blue-600 transform scale-110"
-                  : "text-gray-400 group-hover:text-gray-600"
+                  : "app-text group-hover:text-gray-600"
                   }`}
               />
             </div>
@@ -66,7 +66,7 @@ export function SidebarContent({
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
-              className="w-full pl-12 pr-4 py-2 btn-text bg-white/80 backdrop-blur-sm border-2 border-gray-200/60 rounded-2xl outline-none focus:ring-3 focus:ring-blue-500/20 focus:border-blue-400/60 shadow-sm hover:shadow transition-all duration-300 text-gray-700 placeholder-gray-400"
+              className="w-full pl-12 pr-4 py-2 btn-text bg-white/80 backdrop-blur-sm border-2 border-gray-200/60 rounded-2xl outline-none focus:ring-3 focus:ring-blue-500/20 focus:border-blue-400/60 shadow-sm hover:shadow transition-all duration-300 app-text placeholder-gray-400"
             />
             {searchQuery && (
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-medium px-2.5 py-1 bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 rounded-lg border border-blue-200/50">
@@ -79,14 +79,14 @@ export function SidebarContent({
         </div>
       </div>
 
-      <div className="flex border-b border-gray-200/60 bg-gradient-to-b from-white to-gray-50/30 backdrop-blur-sm">
+      <div className="flex border-b app-border app-surface backdrop-blur-sm">
         {(["chats", "channels"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`flex-1 py-3 flex items-center justify-center gap-2.5 relative overflow-hidden group ${activeTab === tab
               ? "text-blue-700 font-semibold"
-              : "text-gray-500 hover:text-gray-700"
+              : "app-text"
               }`}
             type="button"
           >
@@ -143,10 +143,11 @@ export function SidebarContent({
 
       {/* List Section - Now scrollable */}
       <div className="flex-1 min-h-0 overflow-y-auto">
-        <div className="sticky top-0 z-10 px-5 py-3 bg-gradient-to-b from-white/95 to-white/80 backdrop-blur-sm border-b border-gray-200/60">
+        {/* Enhanced Header */}
+        <div className="sticky top-0 z-10 px-5 py-3 prof-surface backdrop-blur-sm border-b border-gray-200/60">
           <div className="flex  items-center w-full justify-between">
             <div className="flex items-center justify-between w-full  gap-2">
-              <h2 className="text-sm font-bold text-gray-800 uppercase text-nowrap tracking-wide">
+              <h2 className="text-sm font-bold app-text uppercase text-nowrap tracking-wide">
                 {activeTab === "chats" ? "Direct Messages" : "Team Channels"}
               </h2>
               {activeTab === "channels" && (

@@ -22,6 +22,8 @@ import {
   EyeOff,
   CheckCircle,
   XCircle,
+  Rows,
+  LayoutGrid,
 } from "lucide-react";
 import apiClient from "@/Utils/apiClient";
 import Modal from "@/commonComponents/Modal";
@@ -52,6 +54,8 @@ const accessLevelMap: Record<AgentAccess, "TRAINING" | "ALL_ACCESS"> = {
   Training: "TRAINING",
   FullAccess: "ALL_ACCESS",
 };
+type ViewMode = "compact" | "cards";
+
 
 type AgentsRow = {
   id: string;
@@ -62,6 +66,8 @@ type AgentsRow = {
   employee: {
     designation: { name: string; id: string };
     id:string;
+
+    user:any;
 
   };
   agentProfile: {
@@ -170,8 +176,10 @@ const emptyForm = (): AgentForm => ({
 
 export default function AcaAgentsView() {
   const [q, setQ] = useState("");
-  const [items, setItems] = useState<AgentsRow[]>([]);
+  const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+     const [view, setView] = useState<ViewMode>("compact");
+
 
   const [page, setPage] = useState(1);
   const LIMIT = 10;
@@ -182,7 +190,7 @@ export default function AcaAgentsView() {
   const [showPassword, setShowPassword] = useState(false);
 
   const [OpenModal, setOpenModal] = useState(false);
-  const [editing, setEditing] = useState<AgentsRow | null>(null);
+  const [editing, setEditing] = useState<any | null>(null);
   const [designationOptions, setDesignationOptions] = useState<
     { label: string; value: string }[]
   >([]);
@@ -197,6 +205,7 @@ export default function AcaAgentsView() {
   const isEditMode = Boolean(editing?.id);
 
   const [isAgentsLoading, setIsAgentsLoading] = useState(false);
+
   const [uploadProgress, setUploadProgress] = useState(0);
   const [openFileModal, setOpenFileModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -283,11 +292,12 @@ export default function AcaAgentsView() {
       return 0;
     });
   }, [filteredItems, sortKey, sortOrder]);
+  
 
   const openEdit = (agent: any) => {
     setEditing(agent);
     setErrors({});
-
+   
     setForm({
       firstName: agent.firstName || "",
       lastName: agent.lastName || "",
@@ -298,7 +308,7 @@ export default function AcaAgentsView() {
       password: agent.password || "",
 
       designation: agent.employee?.designation?.id ?? "",
-      reportsTo: agent.employee?.id ?? "",
+      reportsTo: agent.employee?.reportsTo?.id ? String(agent.employee.reportsTo.id) : "",
 
       npn: agent.agentProfile?.npn || "",
       yearsOfExperience: agent.agentProfile?.yearsOfExperience ?? "",
@@ -444,8 +454,8 @@ export default function AcaAgentsView() {
 
         if (Array.isArray(res.body)) {
           const options = res.body.map((emp: any) => ({
-            label: emp.designation, // DISPLAY
-            value: String(emp.id), // SEND
+            label: emp.fullName, 
+            value: String(emp.id), 
           }));
 
           setReportsToOptions(options);
@@ -745,6 +755,35 @@ const handleUpload = async () => {
               placeholder: "Search...",
               debounceMs: 350,
             }}
+           middleSlot={
+          <div className="flex items-center md:gap-2 gap-1">
+            <div className="flex items-center gap-1">
+              <Button
+                className={`md:px-2 px-1 md:py-[7px] py-[5px] rounded-md border ${
+                  view === "cards"
+                    ? "bg-purple-600 text-white"
+                    : "bg-white text-gray-800"
+                }`}
+                onClick={() => setView("cards")}
+                title="Cards view"
+              >
+                <LayoutGrid className="md:w-4 w-3 md:h-4 h-3" />
+              </Button>
+
+              <Button
+                className={`md:px-2 px-1 md:py-[7px] py-[5px] rounded-md border ${
+                  view === "compact"
+                    ? "bg-purple-600 text-white"
+                    : "bg-white text-gray-800"
+                }`}
+                onClick={() => setView("compact")}
+                title="Compact view"
+              >
+                <Rows className="md:w-4 w-3 md:h-4 h-3" />
+              </Button>
+            </div>
+          </div>
+        }
             actionsSlot={
               <>
                 <Button
@@ -771,6 +810,8 @@ const handleUpload = async () => {
               </>
             }
           />
+          {view === "compact" ? (
+            <>
 
           <div className="overflow-auto   rounded-md shadow-2xl border app-border app-card">
             <table className="w-full text-sm border app-border ">
@@ -884,11 +925,105 @@ const handleUpload = async () => {
             <Pagination
               page={page}
               totalPages={totalPages}
+              totalItems={sortedItems?.length}
+              limit={LIMIT}
+              onPageChange={setPage}
+            />
+          </div>
+          </>):(
+            <>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 md:gap-4 gap-2">
+            {filteredItems.length === 0 ? (
+              <div className="col-span-full py-10 text-center app-text font-bold">
+                No Agents found
+              </div>
+            ) : (
+              filteredItems.map((a) => (
+                <div
+                  key={a.id}
+                  className="rounded-2xl border app-border app-card shadow-sm md:p-4 p-2 flex flex-col gap-3"
+                >
+                  <div className="flex items-start justify-between md:gap-3 gap-2">
+                    <div>
+                      <p className="font-semibold app-text text-base">
+                        {a.firstName} {a.lastName}
+                      </p>
+                      <p className="text-sm app-muted break-all">{a.email}</p>
+                      <p className="text-sm app-muted">
+                        {a?.employee?.designation?.name ?? "-"}
+                      </p>
+                    </div>
+
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition ${
+                        a.agentProfile?.isActive
+                          ? "bg-green-500/15 text-green-700"
+                          : "bg-orange-500/15 text-orange-700"
+                      }`}
+                    >
+                      {a?.agentProfile?.isActive ? (
+                        <CheckCircle size={14} />
+                      ) : (
+                        <XCircle size={14} />
+                      )}
+                      {a?.agentProfile?.isActive ? "Active" : "Inactive"}
+                    </span>
+                  </div>
+
+                   <div className="flex justify-center items-center gap-3">
+                          <Button
+                            className="p-2.5 rounded-lg bg-indigo-600/10 text-indigo-700 hover:bg-indigo-600  hover:text-white transition"
+                            title="Edit"
+                            onClick={() => openEdit(a)}
+                          >
+                            <Pencil size={15} />
+                          </Button>
+
+                          <Button
+                            className="p-2.5 rounded-lg bg-yellow-500/10 text-yellow-700 hover:bg-yellow-500 hover:text-white transition"
+                            title="Reset / View Password"
+                            onClick={() => {
+                              setSelectedAgent(a);
+                              setPasswordModalOpen(true);
+                            }}
+                          >
+                            <Key size={15} />
+                          </Button>
+
+                          {a?.agentProfile?.isActive ? (
+                            <Button
+                              className="p-2.5 rounded-lg bg-red-500/10 text-red-700 hover:bg-red-500 hover:text-white transition"
+                              title="Deactivate"
+                              onClick={() => openDeactivate(a)}
+                            >
+                              <Trash2 size={15} />
+                            </Button>
+                          ) : (
+                            <Button
+                              className="p-2.5 rounded-lg bg-green-600/10 text-green-700 hover:bg-green-600 hover:text-white transition"
+                              title="Activate"
+                              onClick={() => openActivate(a)}
+                            >
+                              <Check size={15} />
+                            </Button>
+                          )}
+                        </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="mt-4">
+            <Pagination
+              page={page}
+              totalPages={totalPages}
               totalItems={items.length}
               limit={LIMIT}
               onPageChange={setPage}
             />
           </div>
+        </>
+      )}
           {confirmOpen && (
             <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)}>
               <div className="w-full py-2 rounded-md">

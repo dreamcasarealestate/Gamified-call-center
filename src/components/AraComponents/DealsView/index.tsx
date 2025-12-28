@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import { Download, Eye, Pencil, Trash2 } from "lucide-react";
+import { Download, Eye, LayoutGrid, Pencil, Rows, Trash2 } from "lucide-react";
 import apiClient from "@/Utils/apiClient";
 import TableToolbar from "@/commonComponents/TableSearchBar";
 import CreateDealModal from "./CreateDealModal.tsx";
@@ -82,6 +82,7 @@ function isoToDateTimeLocal(iso: string) {
 }
 
 const LIMIT = 10;
+type ViewMode = "compact" | "cards";
 
 const AraDealsView = () => {
   const [q, setQ] = useState("");
@@ -91,6 +92,8 @@ const AraDealsView = () => {
 
   // const [to, setTo] = useState(toDateOnly(new Date()));
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [view, setView] = useState<ViewMode>("compact");
+
   const [selecteddeleteDeal, setSelecteddeleteDeal] = useState<any | null>(
     null
   );
@@ -168,26 +171,31 @@ const AraDealsView = () => {
     });
   }, [items, q, from, to]);
 
-  const fetchAgents = async () => {
-    setLoading(true);
+ const fetchAgents = async () => {
+  setLoading(true);
 
-    try {
-      const res = await apiClient.get(`${apiClient.URLS.user}/all`, {}, true);
+  try {
+    const res = await apiClient.get(`${apiClient.URLS.user}`, {}, true);
 
-      if (res.body.data && Array.isArray(res.body.data)) {
-        const options = res.body.data.map((d: any) => ({
-          label: d.firstName,
-          value: d.id,
-        }));
+    if (res.body.data && Array.isArray(res.body.data)) {
+      const activeAgents = res.body.data.filter(
+        (agent: any) => agent?.userStatus === "ACTIVE"
+      );
 
-        setAgents(options);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
+      const options = activeAgents.map((d: any) => ({
+        label: d.firstName,
+        value: d.id,
+      }));
+
+      setAgents(options);
     }
-  };
+  } catch (e) {
+    console.error(e);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const createDeal = async (dto: any) => {
     await apiClient.post(apiClient.URLS.deals, dto);
@@ -403,6 +411,35 @@ const AraDealsView = () => {
               setTo(r.to);
             },
           }}
+          middleSlot={
+            <div className="flex items-center md:gap-2 gap-1">
+              <div className="flex items-center gap-1">
+                <Button
+                  className={`md:px-2 px-2 md:py-[7px] py-[6px] rounded-md border ${
+                    view === "cards"
+                      ? "bg-purple-600 text-white"
+                      : "bg-white text-gray-800"
+                  }`}
+                  onClick={() => setView("cards")}
+                  title="Cards view"
+                >
+                  <LayoutGrid className="md:w-4 w-4 md:h-4 h-4" />
+                </Button>
+
+                <Button
+                  className={`md:px-2 px-2 md:py-[7px] py-[6px] rounded-md border ${
+                    view === "compact"
+                      ? "bg-purple-600 text-white"
+                      : "bg-white text-gray-800"
+                  }`}
+                  onClick={() => setView("compact")}
+                  title="Compact view"
+                >
+                  <Rows className="md:w-4 w-4 md:h-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          }
           actionsSlot={
             <>
               <Button
@@ -435,107 +472,182 @@ const AraDealsView = () => {
           }
         />
 
-        <div className="overflow-x-auto rounded-sm border app-border app-card  shadow-sm">
-          <table className="min-w-275 w-full text-sm app-text  border-collapse">
-            <thead className="sticky top-0 z-10 app-table-head   ">
-              <tr>
-                <th className="px-4 py-1 text-left  font-bold border app-border ">
-                  Deal #
-                </th>
-                <th className="px-4 py-1 text-left  font-bold border app-border ">
-                  Full Name
-                </th>
-                <th className="px-4 py-1 text-center  font-bold border app-border ">
-                  Applicants
-                </th>
-                <th className="px-4 py-1 text-left  font-bold border app-border ">
-                  Carrier
-                </th>
-                <th className="px-4 py-1 text-left  font-bold border app-border ">
-                  Closed Date
-                </th>
-                <th className="px-4 py-1 text-left  font-bold border app-border ">
-                  Agent
-                </th>
-                <th className="px-4 py-1 text-left  font-bold border app-border ">
-                  Created By
-                </th>
-                <th className="px-4 py-1 text-center  font-bold border app-border ">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {filteredItems.length === 0 ? (
+        {view === "compact" && (
+          <div className="overflow-x-auto rounded-sm border app-border app-card  shadow-sm">
+            <table className="min-w-275 w-full text-sm app-text  border-collapse">
+              <thead className="sticky top-0 z-10 app-table-head   ">
                 <tr>
-                  <td
-                    colSpan={8}
-                    className="py-16 text-center app-text border app-border "
-                  >
-                    No deals found
-                  </td>
+                  <th className="px-4 py-1 text-left  font-bold border app-border ">
+                    Deal #
+                  </th>
+                  <th className="px-4 py-1 text-left  font-bold border app-border ">
+                    Full Name
+                  </th>
+                  <th className="px-4 py-1 text-center  font-bold border app-border ">
+                    Applicants
+                  </th>
+                  <th className="px-4 py-1 text-left  font-bold border app-border ">
+                    Carrier
+                  </th>
+                  <th className="px-4 py-1 text-left  font-bold border app-border ">
+                    Closed Date
+                  </th>
+                  <th className="px-4 py-1 text-left  font-bold border app-border ">
+                    Agent
+                  </th>
+                  <th className="px-4 py-1 text-left  font-bold border app-border ">
+                    Created By
+                  </th>
+                  <th className="px-4 py-1 text-center  font-bold border app-border ">
+                    Actions
+                  </th>
                 </tr>
-              ) : (
-                filteredItems.map((d, i) => (
-                  <tr key={d.id} className="app-row-hover  transition-colors">
-                    <td className="px-4 py-1  font-medium border app-border ">
-                      {d.dealNo || i + 1}
-                    </td>
-                    <td className="px-4 py-1 border app-border ">
-                      {d.fullName?.trim() ||
-                        `${d.applicantFirstName} ${d.applicantLastName}`}
-                    </td>
-                    <td className="px-4 py-1 text-center border app-border ">
-                      {d.numberOfApplicants}
-                    </td>
-                    <td className="px-4 py-1 border app-border ">
-                      {d.carrier || "-"}
-                    </td>
-                    <td className="px-4 py-1 whitespace-nowrap  border app-border ">
-                      {formatDateTime(d.closedDate)}
-                    </td>
-                    <td className="px-4 py-1 border app-border ">
-                      {d.agent?.user?.firstName || "-"}
-                    </td>
-                    <td className="px-4 py-1 border app-border ">
-                      {formatDateTime(d.createdAt)}
-                    </td>
-                    <td className="px-4 py-1 text-center border app-border ">
-                      <div className="inline-flex items-center gap-2">
-                        <Button
-                          className="p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 transition"
-                          title="Edit"
-                          onClick={() => openEdit(d)}
-                        >
-                          <Pencil size={16} />
-                        </Button>
-                        <Button
-                          className="p-2 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-100 dark:bg-orange-500/10 dark:hover:bg-orange-500/20 transition"
-                          title="Delete"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelecteddeleteDeal(d);
-                            setConfirmOpen(true);
-                          }}
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                        <Button
-                          className="p-2 rounded-lg bg-cyan-50 text-cyan-600 hover:bg-cyan-100 dark:bg-cyan-500/10 dark:hover:bg-cyan-500/20 transition"
-                          title="View"
-                          onClick={() => handleView(d)}
-                        >
-                          <Eye size={16} />
-                        </Button>
-                      </div>
+              </thead>
+
+              <tbody>
+                {filteredItems.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={8}
+                      className="py-16 text-center app-text border app-border "
+                    >
+                      No deals found
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ) : (
+                  filteredItems.map((d, i) => (
+                    <tr key={d.id} className="app-row-hover  transition-colors">
+                      <td className="px-4 py-1  font-medium border app-border ">
+                        {d.dealNo || i + 1}
+                      </td>
+                      <td className="px-4 py-1 border app-border ">
+                        {d.fullName?.trim() ||
+                          `${d.applicantFirstName} ${d.applicantLastName}`}
+                      </td>
+                      <td className="px-4 py-1 text-center border app-border ">
+                        {d.numberOfApplicants}
+                      </td>
+                      <td className="px-4 py-1 border app-border ">
+                        {d.carrier || "-"}
+                      </td>
+                      <td className="px-4 py-1 whitespace-nowrap  border app-border ">
+                        {formatDateTime(d.closedDate)}
+                      </td>
+                      <td className="px-4 py-1 border app-border ">
+                        {d.agent?.user?.firstName || "-"}
+                      </td>
+                      <td className="px-4 py-1 border app-border ">
+                        {formatDateTime(d.createdAt)}
+                      </td>
+                      <td className="px-4 py-1 text-center border app-border ">
+                        <div className="inline-flex items-center gap-2">
+                          <Button
+                            className="p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 transition"
+                            title="Edit"
+                            onClick={() => openEdit(d)}
+                          >
+                            <Pencil size={16} />
+                          </Button>
+                          <Button
+                            className="p-2 rounded-lg bg-orange-50 text-orange-600 hover:bg-orange-100 dark:bg-orange-500/10 dark:hover:bg-orange-500/20 transition"
+                            title="Delete"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelecteddeleteDeal(d);
+                              setConfirmOpen(true);
+                            }}
+                          >
+                            <Trash2 size={16} />
+                          </Button>
+                          <Button
+                            className="p-2 rounded-lg bg-cyan-50 text-cyan-600 hover:bg-cyan-100 dark:bg-cyan-500/10 dark:hover:bg-cyan-500/20 transition"
+                            title="View"
+                            onClick={() => handleView(d)}
+                          >
+                            <Eye size={16} />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {view === "cards" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 md:gap-4 gap-2 px-1">
+            {filteredItems.map((d) => (
+              <div
+                key={d.id}
+                className="app-card border app-border rounded-2xl shadow-md md:p-4 p-2 flex flex-col md:gap-2 gap-1 hover:shadow-lg transition"
+              >
+                <div className="md:text-xs text-[14px] font-bold app-muted">
+                  Deal # {d.dealNo}
+                </div>
+
+                <div className="md:text-sm text-[12px] font-bold app-text">
+                  {d.fullName?.trim() ||
+                    `${d.applicantFirstName} ${d.applicantLastName}`}
+                </div>
+
+                <div className="md:text-sm text-[12px] font-medium app-muted">
+                  Applicants:{" "}
+                  <span className="font-semibold">{d.numberOfApplicants}</span>
+                </div>
+
+                <div className="md:text-sm text-[12px]  font-mediumapp-muted">
+                  Carrier:{" "}
+                  <span className="font-semibold">{d.carrier || "-"}</span>
+                </div>
+
+                <div className="md:text-xs text-[12px] font-medium app-muted whitespace-nowrap">
+                  Closed:{" "}
+                  <span className="font-medium">
+                    {formatDateTime(d.closedDate)}
+                  </span>
+                </div>
+
+                <div className="md:text-sm text-[12px] font-medium app-muted">
+                  Agent: {d.agent?.user?.firstName || "-"}
+                </div>
+                <div className="text-xs font-medium app-muted">
+                  Created: {formatDateTime(d.createdAt)}
+                </div>
+
+                <div className="flex items-center gap-2 mt-2">
+                  <Button
+                    className="p-2 rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:hover:bg-indigo-500/20 transition"
+                    title="Edit"
+                    onClick={() => openEdit(d)}
+                  >
+                    <Pencil size={16} />
+                  </Button>
+
+                  <Button
+                    className="p-2 rounded-lg bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:hover:bg-orange-500/20 transition"
+                    title="Delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelecteddeleteDeal(d);
+                      setConfirmOpen(true);
+                    }}
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+
+                  <Button
+                    className="p-2 rounded-lg bg-cyan-50 text-cyan-600 dark:bg-cyan-500/10 dark:hover:bg-cyan-500/20 transition"
+                    title="View"
+                    onClick={() => handleView(d)}
+                  >
+                    <Eye size={16} />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         {confirmOpen && (
           <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)}>
             <div className="app-card w-full py-2 rounded-md">

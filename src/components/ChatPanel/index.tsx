@@ -405,7 +405,7 @@ export default function ChatPanel() {
       try {
         if (!user?.id) return;
 
-        const res = await apiClient.get(apiClient.URLS.users);
+        const res = await apiClient.get(apiClient.URLS.user);
         const all = (res.body.data ?? []) as any[];
 
         const mapped: ChatUser[] = all
@@ -467,8 +467,8 @@ export default function ChatPanel() {
   }
 
   return (
-    <div className="h-[calc(100vh-theme(spacing.16))] overflow-hidden bg-gradient-to-br from-gray-50/30 via-white to-blue-50/10">
-      <div className="px-4 md:px-6 py-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-white/80 backdrop-blur-sm border-b border-gray-200/60 shadow-sm">
+    <div className="h-[calc(100vh-theme(spacing.16))] overflow-hidden app-surface">
+      <div className="px-4 md:px-6 py-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between app-card backdrop-blur-sm border-b app-border shadow-sm">
         <div className="flex items-center gap-4">
           <div className="rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 p-3 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105">
             <MessageSquare className="h-7 w-7 text-white" />
@@ -476,15 +476,15 @@ export default function ChatPanel() {
 
           <div className="leading-tight">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-blue-500 via-blue-900 to-purple-900 bg-clip-text text-transparent">
                 Chat Hub
               </h1>
               <div className="h-2 w-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 animate-pulse shadow-[0_0_8px] shadow-green-400/50" />
             </div>
-            <p className="text-sm text-gray-600 mt-1 flex items-center gap-1">
+            <p className="text-sm app-text mt-1 flex items-center gap-1">
               <span className="font-medium">Connect instantly</span>
-              <span className="text-gray-400">•</span>
-              <span className="text-gray-500">Real-time messaging</span>
+              <span className="app-muted">•</span>
+              <span className="app-text">Real-time messaging</span>
             </p>
           </div>
         </div>
@@ -494,15 +494,15 @@ export default function ChatPanel() {
             href="/aca/dashboard"
             className="flex items-center gap-2 px-4 py-1 rounded-xl  hover:border-blue-200 hover:bg-gradient-to-r hover:from-white hover:to-blue-50/50 transition-all duration-300 group shadow-sm hover:shadow-md"
           >
-            <Home className="w-4 h-4 text-gray-500 group-hover:text-blue-600 transition-colors duration-300" />
-            <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-800 transition-colors duration-300">
+            <Home className="w-4 h-4 app-text group-hover:text-blue-600 transition-colors duration-300" />
+            <span className="text-sm font-semibold app-textgroup-hover:text-blue-800 transition-colors duration-300">
               Home
             </span>
           </a>
 
-          <ChevronRight className="w-4 h-4 text-gray-400 mx-1" />
+          <ChevronRight className="w-4 h-4 app-muted mx-1" />
 
-          <div className="flex items-center gap-3 px-5 py-1 backdrop-blur-sm border border-blue-100/80 rounded-xl shadow-sm">
+          <div className="flex items-center gap-3 px-5 py-1 backdrop-blur-sm border app-border rounded-xl shadow-sm">
             <div className="relative">
               <MessageSquare className="w-4 h-4 text-blue-600" />
               <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-pulse shadow-[0_0_6px] shadow-blue-400" />
@@ -518,7 +518,7 @@ export default function ChatPanel() {
       {/* Main Area with fixed height */}
       <div className="flex h-[calc(100vh-theme(spacing.16)-5.5rem)] min-h-0">
         {/* Sidebar - Fixed */}
-        <div className="w-full min-[1300px]:w-96 shrink-0 bg-gradient-to-b from-white to-gray-50/50 flex flex-col h-full min-h-0 border-r border-gray-200/60">
+        <div className="w-full min-[1300px]:w-96 shrink-0 app-surface flex flex-col h-full min-h-0 border-r app-border">
           <div className="flex flex-col h-full min-h-0">
             <div className="flex-1 min-h-0 overflow-hidden">
               <SidebarContent
@@ -547,7 +547,7 @@ export default function ChatPanel() {
         </div>
 
         {/* Desktop Chat Window - Fixed to take remaining space */}
-        <div className="hidden min-[1300px]:flex flex-1 min-w-0 flex-col h-full bg-gradient-to-br from-white to-gray-50/30 relative overflow-hidden">
+        <div className="hidden min-[1300px]:flex flex-1 min-w-0 flex-col h-full prof-surface relative overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-blue-100/20 to-purple-100/20 rounded-full -translate-x-32 -translate-y-32 blur-2xl" />
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tr from-blue-50/10 to-indigo-50/10 rounded-full translate-x-48 translate-y-48 blur-2xl" />
