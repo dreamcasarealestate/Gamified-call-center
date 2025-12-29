@@ -51,13 +51,11 @@ export function ChatWindow({
   const hasActive = Boolean(selectedChat || selectedChannel);
 
   return (
-    <div className="flex-1 min-w-0 flex flex-col h-full bg-gradient-to-b from-white via-blue-50/5 to-transparent">
-      {/* Enhanced Header with Glass Effect */}
-      <div className="bg-white/90 backdrop-blur-sm border-b border-gray-200/50 px-4 md:px-6 py-4 shadow-sm">
+    <div className="flex-1 min-w-0 flex flex-col h-full  bg-gradient-to-b from-white via-blue-50/5 to-transparent">
+      <div className="bg-white/90 backdrop-blur-sm  px-4 md:px-6 py-4 shadow-sm">
         {hasActive ? (
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              {/* Back (drawer only) */}
               {showBackButton && (
                 <button
                   onClick={closeActive}

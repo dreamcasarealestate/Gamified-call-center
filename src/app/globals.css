@@ -262,8 +262,7 @@ body {
 
 /* Dark mode version */
 .dark .prof-surface {
-  @apply bg-gradient-to-br from-gray-900/70 to-[#0a0f1f]/40 border;
+  @apply bg-gradient-to-br from-gray-900/70 to-[#0a0f1f]/40;
 }
-
   
 }
