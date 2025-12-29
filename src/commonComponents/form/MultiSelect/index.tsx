@@ -141,7 +141,7 @@ export function MultiSelect({
       {open && (
         <div
           className={cn(
-            "absolute z-50 mt-2 w-full overflow-hidden rounded-xl border bg-white shadow-lg",
+            "absolute z-50 mt-2 w-full overflow-hidden rounded-xl border app-surface shadow-lg",
             " dark:border-slate-700",
             dir === "top" && "bottom-full mb-2 mt-0"
           )}
@@ -157,13 +157,13 @@ export function MultiSelect({
                   onClick={() => toggle(opt.value)}
                   className={cn(
                     "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm",
-                    "hover:bg-slate-100 dark:hover:bg-slate-800",
+                    "app-card ",
                     opt.disabled && "opacity-50 pointer-events-none",
                     active &&
-                      "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300"
+                    "app-surface  app-text"
                   )}
                 >
-                  <span className="truncate text-slate-900 dark:text-slate-100">
+                  <span className="truncate   label-text font-medium app-text">
                     {opt.label}
                   </span>
 

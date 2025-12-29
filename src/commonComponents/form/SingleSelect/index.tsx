@@ -222,27 +222,27 @@ export function SingleSelect({
 
                 return (
                   <button
-  key={opt.value}
-  type="button"
-  disabled={opt.disabled}
-  onMouseEnter={() => setActiveIndex(idx)}
-  onClick={() => {
-    if (opt.disabled) return;
-    onChange(opt.value);
-    setOpen(false);
-  }}
-  className={cn(
-    "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm",
-    "hover:app-surface",
-    opt.disabled && "opacity-50 pointer-events-none",
-    isActive && "app-card",
-    isSelected && "app-surface text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300"
-  )}
-  role="option"
-  aria-selected={isSelected}
->
-  <span className="truncate app-text">{opt.label}</span>
-</button>
+                    key={opt.value}
+                    type="button"
+                    disabled={opt.disabled}
+                    onMouseEnter={() => setActiveIndex(idx)}
+                    onClick={() => {
+                      if (opt.disabled) return;
+                      onChange(opt.value);
+                      setOpen(false);
+                    }}
+                    className={cn(
+                      "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm",
+                      "hover:app-surface",
+                      opt.disabled && "opacity-50 pointer-events-none",
+                      isActive && "app-card",
+                      isSelected && "app-surface text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300"
+                    )}
+                    role="option"
+                    aria-selected={isSelected}
+                  >
+                    <span className="truncate app-text">{opt.label}</span>
+                  </button>
                 );
               })
             )}

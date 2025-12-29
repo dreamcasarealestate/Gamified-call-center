@@ -86,7 +86,7 @@ export default function TableToolbar({
         
       </div>
       {dateRange ? (
-          <div className="flex items-center gap-2 rounded-xl px-3 py-2 border dark:border-white app-input">
+          <div className="flex items-center gap-2 rounded-xl px-3 py-2 border dark:app-border app-input">
             {dateRange.label ? (
               <span className="text-xs app-muted">{dateRange.label}</span>
             ) : null}

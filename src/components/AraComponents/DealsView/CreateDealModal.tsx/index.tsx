@@ -20,14 +20,10 @@ import { MultiSelect } from "@/commonComponents/form/MultiSelect";
 import { NumberInput } from "@/commonComponents/form/NumberInput";
 import { SingleSelect } from "@/commonComponents/form/SingleSelect";
 import { Textarea } from "@/commonComponents/form/Textarea";
-// import { FileInput } from "@/commonComponents/form/FileInput";
-import Modal from "@/commonComponents/Modal";
 import Drawer from "@/commonComponents/Drawers";
 import Button from "@/commonComponents/Button";
 import toast from "react-hot-toast";
-
 import { Checkbox } from "@/commonComponents/form/Checkbox";
-
 /** ========= Types (same file, as you asked) ========= */
 export type SelectOption = { label: string; value: string; disabled?: boolean };
 export type DealStatus = "OPEN" | "CLOSED" | "REJECTED";
