@@ -19,15 +19,17 @@ import {
   DmUser,
 } from "@/lib/chat/types";
 import { DIRECT_MESSAGES, CHANNELS, INITIAL_MESSAGES } from "@/lib/chat/mock";
-import { useAuthStore } from "@/store/user";
 import Loader from "@/commonComponents/Loader";
 import { AddChannel } from "./AddChannel";
 import { SidebarContent } from "./SidebarContent";
 import { ChatWindow } from "./ChatWindow";
+import { useSession } from "next-auth/react";
+import { toast } from "react-hot-toast";
 
 export default function ChatPanel() {
-  const { token, user } = useAuthStore();
-
+  const [user, setUser] = useState<any>(null)
+  const [token, setToken] = useState<any>(null)
+  const session = useSession()
   const isBelow1300 = useIsBelow1300();
   const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
 
@@ -51,6 +53,14 @@ export default function ChatPanel() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (session?.status === "authenticated") {
+      setUser(session.data.user)
+      setToken(session.data.token)
+      loadAllUsers(session.data.user?.id as string);
+    }
+  }, [session?.status])
 
   const filteredUsers = useMemo(
     () =>
@@ -147,7 +157,6 @@ export default function ChatPanel() {
     try {
       if (!user?.id) return;
 
-      // 1) Create/Get DM thread
       const dmRes = await apiClient.post(
         `${apiClient.URLS.chatDm}?userId=${user.id}`,
         { otherUserId: u.id }
@@ -159,12 +168,10 @@ export default function ChatPanel() {
       const updated = { ...(u as any), threadId };
       setSelectedChat(updated);
 
-      // cache threadId for next time
       setDmList((prev: any) =>
         prev.map((x: any) => (x.id === u.id ? updated : x))
       );
 
-      // 2) Fetch history messages immediately
       const msgRes = await apiClient.get(
         `${apiClient.URLS.chat}/${threadId}/messages`,
         { params: { userId: user.id, limit: 50 } }
@@ -192,7 +199,6 @@ export default function ChatPanel() {
       console.error("Failed to open DM", err);
     }
   };
-
   // use effects
   useEffect(() => {
     if (!user?.id) return;
@@ -398,18 +404,15 @@ export default function ChatPanel() {
     loadThreads();
   }, []);
 
-  //  Load all Users
-  useEffect(() => {
+  const loadAllUsers = async (id: string) => {
+    if (!id) return;
     setLoading(true);
-    const loadAllUsers = async () => {
-      try {
-        if (!user?.id) return;
-
-        const res = await apiClient.get(apiClient.URLS.user);
-        const all = (res.body.data ?? []) as any[];
-
+    try {
+      const res = await apiClient.get(apiClient.URLS.user);
+      const all = (res.body.data ?? []) as any[];
+      if (res?.status === 200) {
         const mapped: ChatUser[] = all
-          .filter((u) => u.id !== user.id)
+          .filter((u) => u.id !== user?.id)
           .map((u) => ({
             id: u.id,
             name: `${u.firstName ?? ""} ${u.lastName ?? ""}`.trim() || u.email,
@@ -419,18 +422,17 @@ export default function ChatPanel() {
             timestamp: "",
             avatarColor: "bg-blue-500",
           }));
-        console.log(mapped, all);
-
         setLoading(false);
-
+        toast.success("Users loaded");
         setDmList(mapped);
-      } catch (e) {
-        console.error("Failed to load users", e);
       }
-    };
+    } catch (e) {
+      console.error("Failed to load users", e);
+      toast.error("Failed to load users");
+      setLoading(false);
+    }
+  };
 
-    loadAllUsers();
-  }, [user?.id]);
 
   // get Status online or offline
   useEffect(() => {
@@ -547,8 +549,7 @@ export default function ChatPanel() {
         </div>
 
         {/* Desktop Chat Window - Fixed to take remaining space */}
-        <div className="hidden min-[1300px]:flex flex-1 min-w-0 flex-col h-full prof-surface relative overflow-hidden">
-          {/* Decorative elements */}
+        <div className="hidden min-[1300px]:flex flex-1 min-w-0 flex-col h-full prof-surface border-none relative overflow-hidden">
           <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-blue-100/20 to-purple-100/20 rounded-full -translate-x-32 -translate-y-32 blur-2xl" />
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tr from-blue-50/10 to-indigo-50/10 rounded-full translate-x-48 translate-y-48 blur-2xl" />
 
