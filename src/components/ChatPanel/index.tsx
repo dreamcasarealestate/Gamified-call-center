@@ -1,11 +1,9 @@
 "use client";
-
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, Home, ChevronRight } from "lucide-react";
 import { getSocket } from "@/lib/chat/socket";
 import apiClient from "@/Utils/apiClient";
-
 import { getTimeHour, useIsBelow1300 } from "@/lib/chat/utilFunctions";
 import {
   ChatUser,
@@ -18,7 +16,6 @@ import {
   ThreadApiItem,
   DmUser,
 } from "@/lib/chat/types";
-import { DIRECT_MESSAGES, CHANNELS, INITIAL_MESSAGES } from "@/lib/chat/mock";
 import Loader from "@/commonComponents/Loader";
 import { AddChannel } from "./AddChannel";
 import { SidebarContent } from "./SidebarContent";
@@ -46,8 +43,8 @@ export default function ChatPanel() {
   );
   const [loading, setLoading] = useState(false);
 
-  const [dmList, setDmList] = useState<DmUser[]>(DIRECT_MESSAGES as any);
-  const [channelList, setChannelList] = useState(CHANNELS);
+  const [dmList, setDmList] = useState<DmUser[]>([] as any);
+  const [channelList, setChannelList] = useState([] as any);
   const [addChannelOpen, setAddChannelOpen] = useState(false);
 
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -73,7 +70,7 @@ export default function ChatPanel() {
 
   const filteredChannels = useMemo(
     () =>
-      channelList.filter((channel) =>
+      channelList.filter((channel: any) =>
         channel.name.toLowerCase().includes(searchQuery.toLowerCase())
       ),
     [channelList, searchQuery]
@@ -99,7 +96,7 @@ export default function ChatPanel() {
 
   const messages = useMemo(() => {
     if (!threadKey) return [];
-    return messagesByThread[threadKey] ?? INITIAL_MESSAGES; // fallback for demo
+    return messagesByThread[threadKey] ?? []; // fallback for demo
   }, [messagesByThread, threadKey]);
 
   const isDrawerOpen = Boolean(selectedChat || selectedChannel);
@@ -628,7 +625,7 @@ export default function ChatPanel() {
             users={filteredUsers.filter((u) => u.id !== user?.id)}
             currentUserId={user.id}
             onCreated={({ threadId, title }) => {
-              setChannelList((prev) => [
+              setChannelList((prev: any) => [
                 {
                   id: threadId,
                   name: title,
