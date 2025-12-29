@@ -102,11 +102,9 @@ export default function PremiumLogin({
     return [];
   }, [identifier]);
 
-  // Effects
   useEffect(() => {
     if (resetSuccess) {
       setInfo("Password updated successfully. Please log in.");
-      // Clear message after 5 seconds
       const timer = setTimeout(() => setInfo(null), 5000);
       return () => clearTimeout(timer);
     }
@@ -118,7 +116,6 @@ export default function PremiumLogin({
     }
   }, [status, router]);
 
-  // Clear specific field error
   const clearFieldError = useCallback((fieldName: string) => {
     setErrors((prev) => prev.filter((error) => error.field !== fieldName));
   }, []);
@@ -352,7 +349,6 @@ export default function PremiumLogin({
             animate="visible"
             className="p-6 sm:p-8"
           >
-            {/* Global Messages */}
             <AnimatePresence>
               {errors.length > 0 && errors[0]?.field === undefined && (
                 <motion.div
@@ -428,7 +424,6 @@ export default function PremiumLogin({
 
             {view === "login" ? (
               <motion.form onSubmit={handleSubmit} variants={containerVariants}>
-                {/* Password Field */}
                 <motion.div variants={itemVariants} className="mb-4 sm:mb-6">
                   <Field
                     label="Password"
@@ -537,7 +532,6 @@ export default function PremiumLogin({
                   </button>
                 </motion.div>
 
-                {/* Submit Button */}
                 <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Button
                     type="submit"
