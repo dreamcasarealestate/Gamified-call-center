@@ -332,8 +332,8 @@ export default function ChatPanel() {
           )
         );
       } else {
-        setChannelList((prev) =>
-          prev.map((c) =>
+        setChannelList((prev: any) =>
+          prev.map((c: any) =>
             c.id === t.id
               ? {
                 ...c,
