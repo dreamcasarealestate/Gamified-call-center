@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
 import PremiumLogin from "@/components/Login";
-import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 export default function LoginPage() {
-  const searchParams = useSearchParams();
-  const resetSuccess = searchParams.get("reset") === "success";
-
-  return <PremiumLogin resetSuccess={resetSuccess} />;
+  return (
+    <Suspense fallback={null}>
+      <PremiumLogin />
+    </Suspense>
+  );
 }
