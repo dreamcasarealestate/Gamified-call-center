@@ -5,13 +5,10 @@ import toast from "react-hot-toast";
 import {
   Activity,
   Award,
-  Bell,
-  Briefcase,
   Building,
   Calendar,
   CheckCircle,
   ChevronRight,
-  CreditCard,
   Download,
   Eye,
   EyeOff,
@@ -30,28 +27,19 @@ import {
   Pencil,
   Phone,
   Plus,
-  QrCode,
-  Save,
-  Settings,
   Shield,
   Star,
   Trash2,
   TrendingUp,
   Upload,
   User,
-  X,
 } from "lucide-react";
-import { useParams } from "next/navigation";
 
 import apiClient from "@/Utils/apiClient";
-
 import { Field } from "@/commonComponents/form/Field";
 import { TextInput } from "@/commonComponents/form/TextInput";
 import { MultiSelect } from "@/commonComponents/form/MultiSelect";
-import { NumberInput } from "@/commonComponents/form/NumberInput";
 import { SingleSelect } from "@/commonComponents/form/SingleSelect";
-import { Textarea } from "@/commonComponents/form/Textarea";
-import { FileInput } from "@/commonComponents/form/FileInput";
 import Modal from "@/commonComponents/Modal";
 import Loader from "@/commonComponents/Loader";
 import { uploadFile } from "@/Utils/uploadFile";
@@ -154,9 +142,9 @@ function normalizeSSN(v: string) {
 }
 
 export default function UserProfileView() {
-  
-const { data: session } = useSession();
-const userId = session?.user?.id;
+
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
 
   const [data, setData] = useState<UserFull | null>(null);
   const [loading, setLoading] = useState(false);
@@ -729,15 +717,15 @@ const userId = session?.user?.id;
 
       const res = v?.id
         ? await apiClient.patch(
-            `${apiClient.URLS.user}/${userId}/bank-accounts/${v.id}`,
-            payload,
-            true
-          )
+          `${apiClient.URLS.user}/${userId}/bank-accounts/${v.id}`,
+          payload,
+          true
+        )
         : await apiClient.post(
-            `${apiClient.URLS.user}/${userId}/bank-accounts`,
-            payload,
-            true
-          );
+          `${apiClient.URLS.user}/${userId}/bank-accounts`,
+          payload,
+          true
+        );
 
       if (res?.status === 200 || res?.status === 201) {
         toast.success(v?.id ? "Bank updated" : "Bank added");
@@ -833,10 +821,9 @@ const userId = session?.user?.id;
 
     try {
       setLoading(true);
-      let res;
 
       if (v?.id) {
-        let res = await apiClient.patch(
+        const res = await apiClient.patch(
           `${apiClient.URLS.user}/${userId}/addresses/${v?.id}`,
           payload
         );
@@ -844,7 +831,7 @@ const userId = session?.user?.id;
           toast.success("Address updated");
         }
       } else {
-        let res = await apiClient.post(
+        const res = await apiClient.post(
           `${apiClient.URLS.user}/${userId}/addresses`,
           payload
         );
@@ -867,7 +854,7 @@ const userId = session?.user?.id;
 
     try {
       setLoading(true);
-      let res = await apiClient.delete(
+      const res = await apiClient.delete(
         `${apiClient.URLS.user}/${userId}/addresses/${addr.id}`,
         {}
       );
@@ -1194,25 +1181,23 @@ const userId = session?.user?.id;
           </div>
 
           <div className="flex flex-col lg:flex-row md:gap-6 gap-3">
-            <div className="lg:w-1/4">
-              <div className="app-card rounded-2xl shadow-lg border app-border md:p-4 p-2 sticky top-6">
+            <div className="lg:w-1/4 ">
+              <div className="app-card rounded-2xl min-h-[540px] shadow-lg border app-border md:p-4 p-2 sticky top-6">
                 <div className="space-y-2">
                   {visibleTabs.map((t) => (
                     <Button
                       key={t.id}
                       onClick={() => setActiveTab(t.id)}
-                      className={`w-full flex items-center gap-3 font-medium px-4 py-3 rounded-xl transition-all duration-300 ${
-                        activeTab === t.id
-                          ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg"
-                          : " app-text"
-                      }`}
+                      className={`w-full flex items-center gap-3 font-medium px-4 py-3 rounded-xl transition-all duration-300 ${activeTab === t.id
+                        ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg"
+                        : " app-text"
+                        }`}
                     >
                       {t.icon}
                       <span className=" font-medium">{t.label}</span>
                       <ChevronRight
-                        className={`w-4 h-4 ml-auto transition-transform ${
-                          activeTab === t.id ? "rotate-90" : ""
-                        }`}
+                        className={`w-4 h-4 ml-auto transition-transform ${activeTab === t.id ? "rotate-90" : ""
+                          }`}
                       />
                     </Button>
                   ))}
@@ -1346,18 +1331,18 @@ function ProfileModal({
         ? "Edit Profile"
         : "Add Profile"
       : type === "bank"
-      ? mode === "edit"
-        ? "Edit Bank Account"
-        : "Add Bank Account"
-      : type === "professional"
-      ? mode === "edit"
-        ? "Edit Professional"
-        : "Add Professional"
-      : type === "address"
-      ? mode === "edit"
-        ? "Edit Address"
-        : "Add Address"
-      : "Change Password";
+        ? mode === "edit"
+          ? "Edit Bank Account"
+          : "Add Bank Account"
+        : type === "professional"
+          ? mode === "edit"
+            ? "Edit Professional"
+            : "Add Professional"
+          : type === "address"
+            ? mode === "edit"
+              ? "Edit Address"
+              : "Add Address"
+            : "Change Password";
 
   const validate = () => {
     if (type === "profile") {
@@ -1949,7 +1934,7 @@ function ToggleInline({
             "w-11 h-6 rounded-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all",
             "bg-gray-300 dark:bg-gray-700", // ✅ Unchecked gray based on theme
             checked &&
-              "peer-checked:bg-emerald-500 peer-checked:after:translate-x-full"
+            "peer-checked:bg-emerald-500 peer-checked:after:translate-x-full"
           )}
         />
       </label>

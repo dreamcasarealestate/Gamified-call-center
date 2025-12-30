@@ -187,7 +187,7 @@ export default function DesignationsPermissionsPage() {
     ahipProofUrl: "",
     stateLicensed: false,
     accessLevel: "TRAINING",
-     apps: []
+    apps: []
   });
   const [page, setPage] = useState(1);
   const LIMIT = 10;
@@ -471,7 +471,7 @@ export default function DesignationsPermissionsPage() {
       ahipProofUrl: "",
       stateLicensed: false,
       accessLevel: "TRAINING",
-       apps: [],
+      apps: [],
     });
   };
 
@@ -531,7 +531,7 @@ export default function DesignationsPermissionsPage() {
         ahipProofUrl: u.agentProfile.ahipProofUrl || "",
         stateLicensed: !!u.agentProfile.stateLicensed,
         accessLevel: u.agentProfile.accessLevel || "TRAINING",
-        apps:u.agentProfile.apps||[]
+        apps: u.agentProfile.apps || []
       });
     }
 
@@ -557,7 +557,7 @@ export default function DesignationsPermissionsPage() {
       },
     };
 
-   
+
     if (payload.addresses?.length) {
       update.addresses = payload.addresses.map((a: any) => ({
         ...(a.id ? { id: a.id } : {}),
@@ -574,7 +574,7 @@ export default function DesignationsPermissionsPage() {
       }));
     }
 
-   
+
     if (role === "ADMIN") return update;
 
     if (payload.employee) {
@@ -594,7 +594,7 @@ export default function DesignationsPermissionsPage() {
           : undefined,
         stateLicensed: payload.agentProfile.stateLicensed,
         accessLevel: payload.agentProfile.accessLevel,
-        apps:payload.agentProfile.apps||[]
+        apps: payload.agentProfile.apps || []
       };
     }
 
@@ -725,11 +725,10 @@ export default function DesignationsPermissionsPage() {
                   <div className="flex items-center md:gap-2 gap-1">
                     <div className="flex items-center gap-1">
                       <Button
-                        className={`md:px-2 px-2 md:py-[7px] py-[5px] rounded-md border ${
-                          view === "cards"
-                            ? "bg-purple-600 text-white"
-                            : "bg-white text-gray-800"
-                        }`}
+                        className={`md:px-2 px-2 md:py-[7px] py-[5px] rounded-md border ${view === "cards"
+                          ? "bg-purple-600 text-white"
+                          : "bg-white text-gray-800"
+                          }`}
                         onClick={() => setView("cards")}
                         title="Cards view"
                       >
@@ -737,11 +736,10 @@ export default function DesignationsPermissionsPage() {
                       </Button>
 
                       <Button
-                        className={`md:px-2 px-2 md:py-[7px] py-[5px] rounded-md border ${
-                          view === "compact"
-                            ? "bg-purple-600 text-white"
-                            : "bg-white text-gray-800"
-                        }`}
+                        className={`md:px-2 px-2 md:py-[7px] py-[5px] rounded-md border ${view === "compact"
+                          ? "bg-purple-600 text-white"
+                          : "bg-white text-gray-800"
+                          }`}
                         onClick={() => setView("compact")}
                         title="Compact view"
                       >
@@ -781,7 +779,7 @@ export default function DesignationsPermissionsPage() {
             ) : (
               <>
                 {view === "cards" && (
-                  <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
+                  <div className="grid lg:grid-cols-3 md:grid-cols-2 px-3 grid-cols-1 gap-3">
                     {filteredUsers.map((u) => (
                       <div
                         key={u.id}
@@ -939,11 +937,10 @@ export default function DesignationsPermissionsPage() {
                               <td className="px-4 py-0.5 border app-border text-center font-medium">
                                 {" "}
                                 <span
-                                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition ${
-                                    u.userStatus === "ACTIVE"
-                                      ? "bg-green-500/15 text-green-700"
-                                      : "bg-orange-500/15 text-orange-700"
-                                  }`}
+                                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition ${u.userStatus === "ACTIVE"
+                                    ? "bg-green-500/15 text-green-700"
+                                    : "bg-orange-500/15 text-orange-700"
+                                    }`}
                                 >
                                   {u.userStatus === "ACTIVE" ? (
                                     <CheckCircle size={14} />
@@ -1031,20 +1028,18 @@ export default function DesignationsPermissionsPage() {
           <Modal open={confirmOpen} onClose={() => setConfirmOpen(false)}>
             <div className="w-full py-2 rounded-md">
               <div
-                className={`absolute top-0 left-0 w-full h-1.5 ${
-                  confirmType === "DEACTIVATE"
-                    ? "bg-orange-500"
-                    : "bg-green-500"
-                }`}
+                className={`absolute top-0 left-0 w-full h-1.5 ${confirmType === "DEACTIVATE"
+                  ? "bg-orange-500"
+                  : "bg-green-500"
+                  }`}
               ></div>
 
               <div className="flex justify-center mt-2">
                 <div
-                  className={`w-16 h-16 flex items-center justify-center rounded-full border-4 app-card shadow-lg ${
-                    confirmType === "DEACTIVATE"
-                      ? "border-orange-200 shadow-orange-400/30"
-                      : "border-green-200 shadow-green-400/30"
-                  }`}
+                  className={`w-16 h-16 flex items-center justify-center rounded-full border-4 app-card shadow-lg ${confirmType === "DEACTIVATE"
+                    ? "border-orange-200 shadow-orange-400/30"
+                    : "border-green-200 shadow-green-400/30"
+                    }`}
                 >
                   {confirmType === "DEACTIVATE" ? (
                     <Trash2 className="w-8 h-8 text-orange-600 animate-pulse" />
@@ -1072,11 +1067,10 @@ export default function DesignationsPermissionsPage() {
                 <span className="text-xs font-bold text-slate-400">Power</span>
                 <div className="w-40 h-2 bg-slate-100 rounded-full overflow-hidden">
                   <div
-                    className={`h-full transition-all duration-700 ${
-                      confirmType === "DEACTIVATE"
-                        ? "w-[35%] bg-orange-600"
-                        : "w-full bg-green-600"
-                    }`}
+                    className={`h-full transition-all duration-700 ${confirmType === "DEACTIVATE"
+                      ? "w-[35%] bg-orange-600"
+                      : "w-full bg-green-600"
+                      }`}
                   ></div>
                 </div>
                 <span className="text-xs font-bold text-slate-400">
@@ -1093,11 +1087,10 @@ export default function DesignationsPermissionsPage() {
                 </Button>
 
                 <Button
-                  className={`md:px-6 px-3 md:py-2.5 py-1.5 md:text-[14px] text-[12px] rounded-2xl text-white font-bold flex items-center gap-2 shadow-lg hover:scale-110 active:scale-95 transition-all ${
-                    confirmType === "DEACTIVATE"
-                      ? "bg-linear-to-r from-orange-600 to-red-600 shadow-red-400/40"
-                      : "bg-linear-to-r from-green-600 to-emerald-600 shadow-green-400/40"
-                  }`}
+                  className={`md:px-6 px-3 md:py-2.5 py-1.5 md:text-[14px] text-[12px] rounded-2xl text-white font-bold flex items-center gap-2 shadow-lg hover:scale-110 active:scale-95 transition-all ${confirmType === "DEACTIVATE"
+                    ? "bg-linear-to-r from-orange-600 to-red-600 shadow-red-400/40"
+                    : "bg-linear-to-r from-green-600 to-emerald-600 shadow-green-400/40"
+                    }`}
                   onClick={async () => {
                     if (!selectedUser) {
                       toast.error("No user selected");
@@ -1110,8 +1103,9 @@ export default function DesignationsPermissionsPage() {
                       } else {
                         await reactivateUser(selectedUser);
                       }
-                    } catch (err) {
+                    } catch (err: any) {
                       toast.error("Action failed");
+                      console.log(err);
                     }
 
                     setConfirmOpen(false);
@@ -1211,7 +1205,7 @@ export default function DesignationsPermissionsPage() {
                 ) : (
                   <>
                     {view === "cards" && (
-                      <div className="md:pt-5 pt-2 grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
+                      <div className="md:pt-5 pt-2 grid lg:grid-cols-4 md:grid-cols-3 px-3 sm:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
                         {filteredDesignations
                           .slice()
                           .sort((a, b) => a.levelOrder - b.levelOrder)
@@ -1237,7 +1231,7 @@ export default function DesignationsPermissionsPage() {
                                     e.stopPropagation();
                                     openModalForDesignation(d);
                                   }}
-                                  className="text-xs text-slate-500 hover:text-slate-700 transition"
+                                  className="label-text text-slate-500 hover:text-slate-700 transition"
                                 >
                                   Manage permissions →
                                 </Button>
@@ -1418,7 +1412,7 @@ export default function DesignationsPermissionsPage() {
         </Modal>
       )}
 
-     
+
       <Modal
         open={formOpen}
         onClose={() => setFormOpen(false)}
@@ -1505,7 +1499,7 @@ export default function DesignationsPermissionsPage() {
   );
 }
 type ResourceRow = {
-  id?: string; 
+  id?: string;
   resource: string;
   view: boolean;
   create: boolean;
@@ -1633,7 +1627,7 @@ function DesignationPermissionsCrudModalBody({
     setNewResource((prev) => ({ ...prev, [name]: checked }));
   };
 
-  
+
   const resetEditor = () => {
     setEditId(null);
     setNewResource({
@@ -1972,10 +1966,9 @@ function DesignationPermissionsCrudModalBody({
                 onClick={handleAddOrUpdateResourceLocal}
                 disabled={!designationId || savingAll}
                 className={`md:px-4 py-2 px-3 rounded-lg md:text-[14px] text-[12px] font-medium text-white shadow-sm transition
-                  ${
-                    !designationId || savingAll
-                      ? "bg-blue-300 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700"
+                  ${!designationId || savingAll
+                    ? "bg-blue-300 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
                   }`}
               >
                 {editId ? "Update Resource" : "+ Add Resource"}
@@ -2056,9 +2049,8 @@ function DesignationPermissionsCrudModalBody({
                     return (
                       <tr
                         key={perm.id || perm.resource}
-                        className={`border-t hover:app-card ${
-                          changed ? "bg-amber-50/40" : ""
-                        }`}
+                        className={`border-t hover:app-card ${changed ? "bg-amber-50/40" : ""
+                          }`}
                       >
                         <td className="py-3 px-4 text-left">
                           <div className="flex items-center gap-2">
@@ -2087,11 +2079,10 @@ function DesignationPermissionsCrudModalBody({
                                 type="button"
                                 onClick={() => toggleCellLocal(perm, action)}
                                 className={`inline-flex items-center justify-center md:w-8 w-5 h-5 md:h-8 rounded-lg border transition
-                                ${
-                                  perm[action]
+                                ${perm[action]
                                     ? "bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100"
                                     : "bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100"
-                                }`}
+                                  }`}
                                 title={action}
                                 disabled={savingAll}
                               >
@@ -2149,10 +2140,9 @@ function DesignationPermissionsCrudModalBody({
             onClick={handleSaveAllPermissions}
             disabled={savingAll || pendingChangesCount === 0}
             className={`md:px-5 md:py-2 py-2 px-4 rounded-lg md:text-[14px] text-[12px] font-medium text-white shadow-sm transition
-              ${
-                savingAll || pendingChangesCount === 0
-                  ? "bg-emerald-300 cursor-not-allowed"
-                  : "bg-emerald-600 hover:bg-emerald-700"
+              ${savingAll || pendingChangesCount === 0
+                ? "bg-emerald-300 cursor-not-allowed"
+                : "bg-emerald-600 hover:bg-emerald-700"
               }`}
           >
             {savingAll ? "Saving..." : "Save Permissions"}

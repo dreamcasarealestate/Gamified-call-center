@@ -1,4 +1,4 @@
-// component/dashboard/chat/index.tsx
+/* eslint-disable react-hooks/purity */
 "use client";
 
 import React, { useMemo, useState } from "react";
@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from "recharts";
 import { motion } from "framer-motion";
-import { Sparkles, TrendingUp, Users, FileText, ChevronDown, Zap, Target, BarChart3 } from "lucide-react";
+import { TrendingUp, Users, FileText, ChevronDown, Zap, BarChart3 } from "lucide-react";
 
 // -------------------- Types --------------------
 
@@ -60,9 +60,9 @@ function safeNum(v: unknown): number {
   return 0;
 }
 
-type StatCardProps = { 
-  label: string; 
-  value: string | number; 
+type StatCardProps = {
+  label: string;
+  value: string | number;
   hint?: string;
   icon: React.ReactNode;
   bgColor: string;
@@ -76,13 +76,13 @@ function StatCard({ label, value, hint, icon, bgColor, textColor, delay, gradien
     <motion.div
       initial={{ opacity: 0, y: 30, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ 
+      transition={{
         type: "spring",
         stiffness: 100,
         damping: 15,
-        delay 
+        delay
       }}
-      whileHover={{ 
+      whileHover={{
         y: -8,
         scale: 1.03,
         rotateX: 2,
@@ -96,14 +96,14 @@ function StatCard({ label, value, hint, icon, bgColor, textColor, delay, gradien
     >
       {/* Floating particles */}
       <motion.div
-        animate={{ 
+        animate={{
           x: [0, 20, 0],
           y: [0, -10, 0],
         }}
         transition={{ duration: 4, repeat: Infinity, delay: delay * 0.5 }}
         className="absolute top-2 right-2 h-2 w-2 rounded-full bg-white/30"
       />
-      
+
       <div className="relative z-10">
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -114,7 +114,7 @@ function StatCard({ label, value, hint, icon, bgColor, textColor, delay, gradien
               {value}
             </div>
             {hint && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: delay + 0.2 }}
@@ -125,7 +125,7 @@ function StatCard({ label, value, hint, icon, bgColor, textColor, delay, gradien
             )}
           </div>
           <motion.div
-            animate={{ 
+            animate={{
               rotate: [0, 10, -10, 0],
               scale: [1, 1.1, 1]
             }}
@@ -135,7 +135,7 @@ function StatCard({ label, value, hint, icon, bgColor, textColor, delay, gradien
             {icon}
           </motion.div>
         </div>
-        
+
         {/* Animated progress bar */}
         <motion.div
           initial={{ width: 0 }}
@@ -183,7 +183,7 @@ function FancyTooltip({
     >
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="text-sm font-bold text-gray-800">{label}</div>
-        <motion.span 
+        <motion.span
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
           className="rounded-full bg-gradient-to-r from-blue-500 to-purple-500 px-3 py-1 text-xs font-bold text-white"
@@ -200,21 +200,21 @@ function FancyTooltip({
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-3">
-        <motion.div 
+        <motion.div
           whileHover={{ scale: 1.08, rotateY: 10 }}
           className="rounded-xl bg-gradient-to-br from-purple-100 to-purple-50 p-3 shadow-lg"
         >
           <div className="text-xs font-bold text-purple-700">Deals</div>
           <div className="mt-1 text-lg font-black text-purple-900">{fmt.format(deals)}</div>
         </motion.div>
-        <motion.div 
+        <motion.div
           whileHover={{ scale: 1.08, rotateY: 10 }}
           className="rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 p-3 shadow-lg"
         >
           <div className="text-xs font-bold text-blue-700">Forms</div>
           <div className="mt-1 text-lg font-black text-blue-900">{fmt.format(forms)}</div>
         </motion.div>
-        <motion.div 
+        <motion.div
           whileHover={{ scale: 1.08, rotateY: 10 }}
           className="rounded-xl bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 shadow-lg"
         >
@@ -222,13 +222,13 @@ function FancyTooltip({
           <div className="mt-1 text-lg font-black text-emerald-900">{fmt.format(activeAgents)}</div>
         </motion.div>
       </div>
-      
+
       {/* Mini sparkles */}
       <div className="mt-3 flex justify-center gap-1">
         {[1, 2, 3].map((i) => (
           <motion.div
             key={i}
-            animate={{ 
+            animate={{
               scale: [1, 1.5, 1],
               opacity: [0.3, 1, 0.3]
             }}
@@ -316,7 +316,7 @@ export default function DealsChatCard({
       transition={{ duration: 0.6 }}
       className="w-full"
     >
-      <div 
+      <div
         className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-white to-blue-50/50 p-6 shadow-2xl"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -326,7 +326,7 @@ export default function DealsChatCard({
       >
         {/* Animated floating shapes */}
         <motion.div
-          animate={{ 
+          animate={{
             x: [0, 50, 0],
             y: [0, -30, 0],
             rotate: [0, 180, 360]
@@ -335,7 +335,7 @@ export default function DealsChatCard({
           className="absolute top-10 right-10 h-32 w-32 rounded-full bg-gradient-to-r from-purple-200/30 to-pink-200/30 blur-xl"
         />
         <motion.div
-          animate={{ 
+          animate={{
             x: [0, -40, 0],
             y: [0, 40, 0],
             rotate: [360, 180, 0]
@@ -345,7 +345,7 @@ export default function DealsChatCard({
         />
 
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial={{ y: -30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 100 }}
@@ -354,7 +354,7 @@ export default function DealsChatCard({
           <div className="flex-1">
             <div className="flex items-center gap-3">
               <motion.div
-                animate={{ 
+                animate={{
                   scale: [1, 1.2, 1],
                   rotate: [0, 360]
                 }}
@@ -377,7 +377,7 @@ export default function DealsChatCard({
           </div>
 
           {/* Agent dropdown */}
-          <motion.div 
+          <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
             className="relative"
@@ -412,7 +412,7 @@ export default function DealsChatCard({
         </div>
 
         {/* Chart Container */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5, duration: 0.7, type: "spring" }}
@@ -427,13 +427,13 @@ export default function DealsChatCard({
             {Array.from({ length: 8 }).map((_, i) => (
               <motion.div
                 key={i}
-                animate={{ 
+                animate={{
                   y: [0, -20, 0],
                   opacity: [0.2, 0.8, 0.2]
                 }}
-                transition={{ 
-                  duration: 3, 
-                  repeat: Infinity, 
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
                   delay: i * 0.4,
                   ease: "easeInOut"
                 }}
@@ -495,17 +495,17 @@ export default function DealsChatCard({
                   stroke="#8b5cf6"
                   strokeWidth={3}
                   fill="url(#dealFill)"
-                  dot={{ 
-                    r: 5, 
+                  dot={{
+                    r: 5,
                     fill: "#8b5cf6",
                     stroke: "#ffffff",
-                    strokeWidth: 2 
+                    strokeWidth: 2
                   }}
-                  activeDot={{ 
-                    r: 10, 
-                    fill: "#ffffff", 
-                    stroke: "#8b5cf6", 
-                    strokeWidth: 3 
+                  activeDot={{
+                    r: 10,
+                    fill: "#ffffff",
+                    stroke: "#8b5cf6",
+                    strokeWidth: 3
                   }}
                 />
 
@@ -530,33 +530,33 @@ export default function DealsChatCard({
 
           {/* Legend */}
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <motion.span 
+            <motion.span
               whileHover={{ scale: 1.1, y: -3 }}
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-100 to-purple-50 px-5 py-2.5 text-sm font-bold text-purple-900 shadow-lg"
             >
-              <motion.span 
+              <motion.span
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
                 className="h-3 w-3 rounded-full bg-gradient-to-r from-purple-500 to-purple-600"
               />
               Deals
             </motion.span>
-            <motion.span 
+            <motion.span
               whileHover={{ scale: 1.1, y: -3 }}
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-100 to-blue-50 px-5 py-2.5 text-sm font-bold text-blue-900 shadow-lg"
             >
-              <motion.span 
+              <motion.span
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
                 className="h-3 w-3 rounded-full bg-gradient-to-r from-blue-500 to-blue-600"
               />
               Forms
             </motion.span>
-            <motion.span 
+            <motion.span
               whileHover={{ scale: 1.1, y: -3 }}
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 px-5 py-2.5 text-sm font-bold text-emerald-900 shadow-lg"
             >
-              <motion.span 
+              <motion.span
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ duration: 2, repeat: Infinity, delay: 0.4 }}
                 className="h-3 w-3 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600"
@@ -566,7 +566,7 @@ export default function DealsChatCard({
           </div>
         </motion.div>
 
-        
+
       </div>
     </motion.section>
   );
