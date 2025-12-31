@@ -1,54 +1,25 @@
-// component/dashboard/deals-portfolio/index.tsx
+// component/dashboard/deals-summary-by-date/index.tsx
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar as CalendarIcon } from "lucide-react";
-import {
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Sector,
-} from "recharts";
-
+import { Download, Calendar as CalendarIcon } from "lucide-react";
 import apiClient from "../../Utils/apiClient";
 import { SpinnerLoader } from "./spinner";
 
 /* ----------------------------- Types ----------------------------- */
 
-type DealsPortfolioApiRow = {
-  agentId: string;
-  agentName: string;
-  totalDeals: number;
-  totalForms: number;
-};
-
-type AgentDealsRow = {
-  agentId: string;
-  agentName: string;
+type DayPoint = {
+  date: string;
+  forms: number;
   deals: number;
 };
 
-type DealsPortfolioResponse = {
-  from: string;
-  to: string;
-  totalDeals: number;
-  totalForms: number;
-  agents: AgentDealsRow[];
+type AgentRow = {
+  agentId: string;
+  agentName: string;
+  data: DayPoint[];
 };
-
-type Slice = {
-  key: string;
-  name: string;
-  value: number;
-  pct: number;
-  isOthers?: boolean;
-};
-
-type TooltipValue = number;
-type TooltipName = string;
 
 type DateRange = {
   from: Date;
@@ -62,12 +33,7 @@ type DraftRange = {
 
 /* ----------------------------- Helpers ----------------------------- */
 
-const fmt = new Intl.NumberFormat();
-const fmtRange = new Intl.DateTimeFormat(undefined, {
-  month: "2-digit",
-  day: "2-digit",
-  year: "numeric",
-});
+const fmt2 = new Intl.NumberFormat(undefined, { minimumFractionDigits: 0 });
 
 function clampInt(n: number): number {
   return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
@@ -95,88 +61,44 @@ function isSameDay(a: Date, b: Date) {
   );
 }
 
+function eachDayInclusive(from: Date, to: Date) {
+  const out: Date[] = [];
+  let cur = startOfDay(from);
+  const end = startOfDay(to);
+  while (cur.getTime() <= end.getTime()) {
+    out.push(new Date(cur));
+    cur.setDate(cur.getDate() + 1);
+  }
+  return out;
+}
+
+function parseISOishToLocalDate(dateStr: string) {
+  return startOfDay(new Date(dateStr));
+}
+
+function safeNum(v: any) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
 function todayRangeDefault(): DateRange {
   const to = startOfDay(new Date());
   const from = new Date(to);
-  from.setDate(from.getDate() - 28);
+  from.setDate(from.getDate() - 12);
   return { from, to };
 }
 
-/* ----------------------------- Palette (Light only) ----------------------------- */
-
-const PALETTE_LIGHT = [
-  "#2563EB",
-  "#06B6D4",
-  "#22C55E",
-  "#F59E0B",
-  "#EF4444",
-  "#A855F7",
-  "#EC4899",
-  "#14B8A6",
-  "#84CC16",
-  "#F97316",
-  "#64748B",
-];
-
-function pickColor(i: number) {
-  return PALETTE_LIGHT[i % PALETTE_LIGHT.length];
+function formatDayMonth(d: Date) {
+  const day = pad2(d.getDate());
+  const mon = d.toLocaleString("en-GB", { month: "short" });
+  return `${day}-${mon}`;
 }
 
-/* ----------------------------- Tooltip ----------------------------- */
-
-function SliceTooltip({
-  active,
-  payload,
-}: {
-  active?: boolean;
-  payload?: any[];
-}) {
-  if (!active || !payload?.length) return null;
-  const p = payload[0]?.payload as Slice | undefined;
-  if (!p) return null;
-
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-3 text-slate-900 shadow-xl backdrop-blur">
-      <div className="text-xs font-semibold">{p.name}</div>
-      <div className="mt-1 text-sm">
-        <span className="font-semibold">Deals:</span> {fmt.format(p.value)}
-      </div>
-      <div className="mt-0.5 text-xs opacity-70">{p.pct.toFixed(1)}%</div>
-    </div>
-  );
-}
-
-/* ----------------------------- Center Label ----------------------------- */
-
-function CenterLabel({
-  color,
-  title,
-  value,
-  subtitle,
-}: {
-  color: string;
-  title: string;
-  value: string;
-  subtitle: string;
-}) {
-  return (
-    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-      <div className="text-center">
-        <div className="text-xs font-medium text-slate-600">{title}</div>
-        <div className="mt-1 flex items-center justify-center gap-2">
-          <span
-            className="inline-block h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: color }}
-          />
-          <span className="text-2xl font-semibold tracking-tight text-slate-950">
-            {value}
-          </span>
-        </div>
-        <div className="mt-1 text-[11px] text-slate-500">{subtitle}</div>
-      </div>
-    </div>
-  );
-}
+const fmtRange = new Intl.DateTimeFormat(undefined, {
+  month: "2-digit",
+  day: "2-digit",
+  year: "numeric",
+});
 
 /* ---------------------- Range Calendar (Popover content) ---------------------- */
 
@@ -351,12 +273,10 @@ function RangeCalendar({
   );
 }
 
-/* ----------------------------- Component ----------------------------- */
+/* ---------------------- Component ---------------------- */
 
-export default function DealsPortfolioCard() {
+export default function DealsSummaryByDate() {
   const initial = todayRangeDefault();
-
-  const [loading,setLoading] = useState(false)
 
   const [draftRange, setDraftRange] = useState<DraftRange>({
     from: initial.from,
@@ -368,15 +288,8 @@ export default function DealsPortfolioCard() {
     to: initial.to,
   });
 
-  const [portfolio, setPortfolio] = useState<DealsPortfolioResponse>({
-    from: toISODateOnly(initial.from),
-    to: toISODateOnly(initial.to),
-    totalDeals: 0,
-    totalForms: 0,
-    agents: [],
-  });
-
-  const [activeKey, setActiveKey] = useState<string | null>(null);
+  const [rows, setRows] = useState<AgentRow[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const [openCal, setOpenCal] = useState(false);
   const calWrapRef = useRef<HTMLDivElement | null>(null);
@@ -386,57 +299,45 @@ export default function DealsPortfolioCard() {
   const fromISO = toISODateOnly(appliedRange.from);
   const toISO = toISODateOnly(appliedRange.to);
 
-  const fetchPortfolio = async (nextFrom: string, nextTo: string) => {
+  const days = useMemo(() => {
+    return eachDayInclusive(appliedRange.from, appliedRange.to);
+  }, [appliedRange]);
+
+  const fetchData = async (from: string, to: string) => {
+    setLoading(true);
     try {
-      setLoading(true)
       const res = await apiClient.get(
-        `${apiClient.URLS.dashboard}/deals-portfolio?from=${nextFrom}&to=${nextTo}`
+        `${apiClient.URLS.dashboard}/deals-summary?from=${from}&to=${to}`
       );
 
       const body = res?.body;
 
-      const rows: DealsPortfolioApiRow[] = Array.isArray(body)
+      const safe: AgentRow[] = Array.isArray(body)
         ? body.map((r: any) => ({
             agentId: typeof r?.agentId === "string" ? r.agentId : "",
             agentName: typeof r?.agentName === "string" ? r.agentName : "Unknown",
-            totalDeals:
-              typeof r?.totalDeals === "number" && Number.isFinite(r.totalDeals)
-                ? r.totalDeals
-                : 0,
-            totalForms:
-              typeof r?.totalForms === "number" && Number.isFinite(r.totalForms)
-                ? r.totalForms
-                : 0,
+            data: Array.isArray(r?.data)
+              ? r.data.map((p: any) => ({
+                  date: typeof p?.date === "string" ? p.date : "",
+                  forms: safeNum(p?.forms),
+                  deals: safeNum(p?.deals),
+                }))
+              : [],
           }))
         : [];
 
-      const totalDeals = rows.reduce((s, r) => s + clampInt(r.totalDeals), 0);
-      const totalForms = rows.reduce((s, r) => s + clampInt(r.totalForms), 0);
-
-      const safe: DealsPortfolioResponse = {
-        from: nextFrom,
-        to: nextTo,
-        totalDeals,
-        totalForms,
-        agents: rows.map((r) => ({
-          agentId: r.agentId,
-          agentName: r.agentName,
-          deals: clampInt(r.totalDeals),
-        })),
-      };
-      setLoading(false)
-
-      setPortfolio(safe);
+      setRows(safe);
     } catch {
-      setPortfolio((p) => p);
-      setLoading(false)
+      setRows([]);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchPortfolio(fromISO, toISO);
+    fetchData(fromISO, toISO);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fromISO, toISO]);
 
   useEffect(() => {
     const onDown = (e: MouseEvent) => {
@@ -456,61 +357,23 @@ export default function DealsPortfolioCard() {
     };
   }, [openCal]);
 
-  const slices = useMemo(() => {
-    const total = clampInt(portfolio.totalDeals);
+  const dayKeyList = useMemo(() => days.map((d) => toISODateOnly(d)), [days]);
 
-    const sorted = [...(portfolio.agents || [])].sort(
-      (a, b) => b.deals - a.deals
-    );
+  const tableMatrix = useMemo(() => {
+    const map: Record<string, Record<string, { forms: number; deals: number }>> =
+      {};
 
-    const top10 = sorted.slice(0, 10);
-    const top10Sum = top10.reduce((s, r) => s + clampInt(r.deals), 0);
-    const others = Math.max(0, total - top10Sum);
+    for (const r of rows) {
+      const perDay: Record<string, { forms: number; deals: number }> = {};
+      for (const p of r.data || []) {
+        const k = toISODateOnly(parseISOishToLocalDate(p.date));
+        perDay[k] = { forms: safeNum(p.forms), deals: safeNum(p.deals) };
+      }
+      map[r.agentId || r.agentName] = perDay;
+    }
 
-    return [
-      ...top10.map((r, i) => ({
-        key: r.agentId || `${r.agentName}-${i}`,
-        name: r.agentName,
-        value: clampInt(r.deals),
-        pct: total > 0 ? (clampInt(r.deals) / total) * 100 : 0,
-      })),
-      {
-        key: "others",
-        name: "Others",
-        value: clampInt(others),
-        pct: total > 0 ? (others / total) * 100 : 0,
-        isOthers: true,
-      },
-    ] as Slice[];
-  }, [portfolio]);
-
-  const topFive = useMemo(() => {
-    return [...(portfolio.agents || [])]
-      .sort((a, b) => b.deals - a.deals)
-      .slice(0, 5);
-  }, [portfolio.agents]);
-
-  const totalDeals = clampInt(portfolio.totalDeals);
-
-  const activeSlice = useMemo(() => {
-    if (!activeKey) return null;
-    return slices.find((s) => s.key === activeKey) ?? null;
-  }, [activeKey, slices]);
-
-  const centerTitle = activeSlice ? activeSlice.name : "Total Deals";
-  const centerValue = activeSlice
-    ? fmt.format(activeSlice.value)
-    : fmt.format(totalDeals);
-
-  const centerSubtitle = activeSlice
-    ? `${activeSlice.pct.toFixed(1)}% of total`
-    : `${fmt.format(Math.max(0, slices.length - 1))} agents + Others`;
-
-  const centerColor = (() => {
-    if (!activeSlice) return "#0F172A";
-    const idx = slices.findIndex((s) => s.key === activeSlice.key);
-    return idx >= 0 ? pickColor(idx) : "#0F172A";
-  })();
+    return map;
+  }, [rows]);
 
   const rangeLabel = hasTwoPointers
     ? `${fmtRange.format(draftRange.from!)} to ${fmtRange.format(draftRange.to!)}`
@@ -526,8 +389,63 @@ export default function DealsPortfolioCard() {
     const to = a.getTime() <= b.getTime() ? b : a;
     setAppliedRange({ from, to });
     setOpenCal(false);
-    fetchPortfolio(toISODateOnly(from), toISODateOnly(to));
   };
+
+  const downloadPdf = async () => {
+    const title = `Deals Summary By Date (${fromISO} to ${toISO})`;
+
+    const flatHeaders: string[] = ["Agent Name"];
+    for (const d of days) {
+      const lab = formatDayMonth(d);
+      flatHeaders.push(`${lab} Forms`);
+      flatHeaders.push(`${lab} Deals`);
+    }
+
+    const bodyRows: (string | number)[][] = rows.map((r) => {
+      const key = r.agentId || r.agentName;
+      const perDay = tableMatrix[key] || {};
+      const row: (string | number)[] = [r.agentName];
+
+      for (const dk of dayKeyList) {
+        const v = perDay[dk] || { forms: 0, deals: 0 };
+        row.push(clampInt(v.forms));
+        row.push(clampInt(v.deals));
+      }
+      return row;
+    });
+
+    try {
+      const jsPDFMod: any = await import("jspdf");
+      const autoTableMod: any = await import("jspdf-autotable");
+
+      const jsPDF = jsPDFMod.default ?? jsPDFMod.jsPDF ?? jsPDFMod;
+      const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "pt",
+        format: "a4",
+      });
+
+      doc.setFontSize(12);
+      doc.text(title, 40, 40);
+
+      const autoTable = autoTableMod.default ?? autoTableMod;
+      autoTable(doc, {
+        head: [flatHeaders],
+        body: bodyRows,
+        startY: 60,
+        styles: { fontSize: 8, cellPadding: 3, overflow: "linebreak" },
+        headStyles: { fontSize: 8 },
+        columnStyles: { 0: { cellWidth: 160 } },
+        margin: { left: 40, right: 40 },
+      });
+
+      doc.save(`deals-summary-${fromISO}-to-${toISO}.pdf`);
+    } catch {
+      window.print();
+    }
+  };
+
+  const showTable = hasTwoPointers;
 
   return (
     <motion.section
@@ -536,9 +454,9 @@ export default function DealsPortfolioCard() {
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       className="w-full"
     >
-      {loading ? (
-              <SpinnerLoader label="Fetching data..." />
-            ) : (
+        {loading ? (
+                <SpinnerLoader label="Fetching data..." />
+              ) : (
       <motion.div
         whileHover={{ y: -2 }}
         transition={{ type: "spring", stiffness: 260, damping: 18 }}
@@ -547,9 +465,9 @@ export default function DealsPortfolioCard() {
         <div className="relative p-5 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-base font-semibold">Deals Portfolio</h2>
+              <h2 className="text-base font-semibold">Deals Summary By Date</h2>
               <div className="mt-1 text-sm text-slate-500">
-                Top 10 agents + Others (hover a segment to inspect).
+                Forms and deals per agent for each day in the selected range.
               </div>
             </div>
 
@@ -593,129 +511,135 @@ export default function DealsPortfolioCard() {
                   </div>
                 ) : null}
               </div>
+
+              <button
+                type="button"
+                onClick={downloadPdf}
+                disabled={!showTable}
+                className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold shadow-sm transition ${
+                  showTable
+                    ? "border-emerald-100 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                    : "border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed"
+                }`}
+              >
+                <Download className="h-4 w-4" />
+                <span>Excel</span>
+              </button>
             </div>
           </div>
 
-          <div className="mt-5 grid gap-5 sm:grid-cols-[320px,1fr]">
-            <div className="relative rounded-[22px] border border-transparent">
-              <div className="relative h-[280px] w-full">
-                <CenterLabel
-                  color={centerColor}
-                  title={centerTitle}
-                  value={centerValue}
-                  subtitle={centerSubtitle}
-                />
+          {!showTable ? (
+            <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center">
+              <div className="text-sm font-semibold text-slate-800">
+                Select both From and To dates to view the table.
+              </div>
+              <div className="mt-2 text-xs text-slate-500">
+                The table will render only after the second pointer is selected.
+              </div>
+            </div>
+          ) : (
+            <div className="mt-5 min-w-0">
+              <div className="overflow-x-auto rounded-2xl border border-slate-200">
+                <table className="min-w-[980px] w-full border-separate border-spacing-0">
+                  <thead className="sticky top-0 z-10">
+                    <tr>
+                      <th
+                        rowSpan={2}
+                        className="sticky left-0 z-20 w-[220px] min-w-[220px] border-b border-slate-200 bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-700"
+                      >
+                        Agent Name
+                      </th>
+                      {days.map((d) => (
+                        <th
+                          key={toISODateOnly(d)}
+                          colSpan={2}
+                          className="border-b border-slate-200 bg-slate-50 px-3 py-3 text-center text-xs font-semibold text-slate-700"
+                        >
+                          {formatDayMonth(d)}
+                        </th>
+                      ))}
+                    </tr>
 
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Tooltip<TooltipValue, TooltipName>
-                      content={<SliceTooltip />}
-                    />
+                    <tr>
+                      {days.map((d) => {
+                        const dk = toISODateOnly(d);
+                        return (
+                          <span key={`${dk}-pair`} style={{ display: "contents" }}>
+                            <th className="border-b border-slate-200 bg-white px-3 py-2 text-center text-[11px] font-semibold text-slate-500">
+                              Forms
+                            </th>
+                            <th className="border-b border-slate-200 bg-white px-3 py-2 text-center text-[11px] font-semibold text-slate-500">
+                              Deals
+                            </th>
+                          </span>
+                        );
+                      })}
+                    </tr>
+                  </thead>
 
-                    <Pie
-                      data={slices}
-                      dataKey="value"
-                      nameKey="name"
-                      innerRadius={92}
-                      outerRadius={120}
-                      paddingAngle={2}
-                      cornerRadius={8}
-                      stroke="#ffffff"
-                      strokeWidth={2}
-                      onMouseLeave={() => setActiveKey(null)}
-                      onMouseEnter={(d: any) => {
-                        const key = (d?.payload?.key ?? d?.key) as
-                          | string
-                          | undefined;
-                        setActiveKey(key ?? null);
-                      }}
-                      activeShape={(props: any) => {
-                        const key = props?.payload?.key as string | undefined;
-                        const isActive = !!key && key === activeKey;
-
-                        if (!isActive) return <Sector {...props} />;
+                  <tbody>
+                    {loading ? (
+                      <tr>
+                        <td
+                          colSpan={1 + days.length * 2}
+                          className="px-4 py-10 text-center text-sm font-semibold text-slate-600"
+                        >
+                          Loading…
+                        </td>
+                      </tr>
+                    ) : rows.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={1 + days.length * 2}
+                          className="px-4 py-10 text-center text-sm font-semibold text-slate-600"
+                        >
+                          No data for selected range.
+                        </td>
+                      </tr>
+                    ) : (
+                      rows.map((r) => {
+                        const key = r.agentId || r.agentName;
+                        const perDay = tableMatrix[key] || {};
 
                         return (
-                          <Sector
-                            {...props}
-                            outerRadius={(props.outerRadius as number) + 6}
-                          />
+                          <tr key={key} className="hover:bg-slate-50/60">
+                            <td className="sticky left-0 z-10 border-b border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900">
+                              {r.agentName}
+                            </td>
+
+                            {days.map((d) => {
+                              const dk = toISODateOnly(d);
+                              const v = perDay[dk] || { forms: 0, deals: 0 };
+                              return (
+                                <span
+                                  key={`${key}-${dk}-pair`}
+                                  style={{ display: "contents" }}
+                                >
+                                  <td className="border-b border-slate-200 px-3 py-3 text-center text-sm font-semibold text-slate-900">
+                                    {fmt2.format(clampInt(v.forms))}
+                                  </td>
+                                  <td className="border-b border-slate-200 px-3 py-3 text-center text-sm font-semibold text-slate-900">
+                                    {fmt2.format(clampInt(v.deals))}
+                                  </td>
+                                </span>
+                              );
+                            })}
+                          </tr>
                         );
-                      }}
-                    >
-                      {slices.map((s, i) => (
-                        <Cell
-                          key={s.key}
-                          fill={pickColor(i)}
-                          opacity={
-                            activeKey === null || activeKey === s.key ? 1 : 0.35
-                          }
-                        />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
+                      })
+                    )}
+                  </tbody>
+                </table>
               </div>
 
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                <span className="inline-flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-slate-400" />
-                  Hover changes center + tooltip
-                </span>
-                <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-slate-700">
-                  {fmt.format(totalDeals)} total
-                </span>
+              <div className="mt-3 text-xs text-slate-500">
+                Tip: Scroll horizontally on smaller screens to view all dates.
               </div>
             </div>
-
-            <div className="rounded-[22px] border border-slate-200 p-4 sm:p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-semibold">Top Agents</div>
-                  <div className="mt-1 text-xs text-slate-500">
-                    Showing top 5 by deals
-                  </div>
-                </div>
-                <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
-                  Period: {portfolio.from} → {portfolio.to}
-                </div>
-              </div>
-
-              <div className="mt-4 divide-y border-slate-200">
-                {topFive.map((r, idx) => {
-                  const color = pickColor(idx);
-                  return (
-                    <motion.div
-                      key={r.agentId || `${r.agentName}-${idx}`}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.05 * idx, duration: 0.25 }}
-                      className="flex items-center justify-between py-3"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span
-                          className="h-2.5 w-2.5 rounded-full"
-                          style={{ backgroundColor: color }}
-                        />
-                        <div className="text-sm font-medium">{r.agentName}</div>
-                      </div>
-                      <div className="text-sm font-semibold">
-                        #{fmt.format(clampInt(r.deals))}
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              <div className="mt-4 text-xs text-slate-500">
-                Note: Donut shows <span className="font-semibold">Top 10</span>{" "}
-                + <span className="font-semibold">Others</span>. This list shows{" "}
-                <span className="font-semibold">Top 5</span>.
-              </div>
-            </div>
-          </div>
+          )}
         </div>
-      </motion.div>)}
+      </motion.div>
+)}
     </motion.section>
   );
 }
