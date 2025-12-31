@@ -14,7 +14,7 @@ export function TrainingTopBar(
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto mb-4 sm:mb-6"
+        className="max-w-8xl mx-auto mb-4 sm:mb-6"
       >
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg shadow-blue-100/30 p-4 sm:p-6">
           {/* Top Row */}

@@ -5,7 +5,7 @@ import withAdminLayout from '@/components/Layouts/GeneralLayout';
 
 const Training = () => {
     return (
-        <div>
+        <div className='w-full '>
             <TrainingPage />
         </div>
     )

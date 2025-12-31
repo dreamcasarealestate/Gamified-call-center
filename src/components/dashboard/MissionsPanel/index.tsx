@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/purity */
 "use client";
 
 import { CheckCircle2, Circle, Zap, Target, Timer, Award, TrendingUp, Sparkles, Clock, Trophy, ChevronRight } from "lucide-react";
@@ -11,15 +12,15 @@ interface MissionsProps {
 
 export default function Missions({ missions }: MissionsProps) {
   const [selectedMission, setSelectedMission] = useState<string | null>(null);
-  
+
   const activeMissions = missions.filter((m) => m.status === "ACTIVE");
   const completedMissions = missions.filter((m) => m.status === "COMPLETED");
   const totalXpReward = missions.reduce((sum, mission) => sum + mission.xpReward, 0);
   const earnedXp = completedMissions.reduce((sum, mission) => sum + mission.xpReward, 0);
 
   // Calculate daily progress
-  const completionPercentage = missions.length > 0 
-    ? Math.round((completedMissions.length / missions.length) * 100) 
+  const completionPercentage = missions.length > 0
+    ? Math.round((completedMissions.length / missions.length) * 100)
     : 0;
 
   return (
@@ -31,7 +32,7 @@ export default function Missions({ missions }: MissionsProps) {
     >
       {/* Background Glow Effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-teal-500/10 to-amber-500/10 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500" />
-      
+
       {/* Main Card */}
       <div className="relative app-card rounded-3xl shadow-2xl shadow-emerald-200/30 border border-slate-200/50 p-6 h-full">
         {/* Header */}
@@ -47,7 +48,7 @@ export default function Missions({ missions }: MissionsProps) {
                 <Target className="w-6 h-6 text-white" />
               </div>
             </motion.div>
-            
+
             <div>
               <h2 className="text-xl md:text-2xl  font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
                 Daily Missions
@@ -87,7 +88,7 @@ export default function Missions({ missions }: MissionsProps) {
             </div>
             <span className="text-sm  font-bold text-emerald-700">{completionPercentage}%</span>
           </div>
-          
+
           <div className="relative">
             <div className="h-3 bg-gradient-to-r from-slate-100 to-slate-200 rounded-full overflow-hidden shadow-inner">
               <motion.div
@@ -99,22 +100,21 @@ export default function Missions({ missions }: MissionsProps) {
                 <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-transparent animate-shimmer" />
               </motion.div>
             </div>
-            
+
             {/* Progress Indicators */}
             <div className="absolute top-0 left-0 w-full h-3 flex items-center justify-between px-2">
               {[0, 25, 50, 75, 100].map((percent) => (
                 <div
                   key={percent}
-                  className={`w-2 h-2 rounded-full ${
-                    completionPercentage >= percent 
-                      ? 'bg-white shadow-lg' 
-                      : 'bg-slate-300'
-                  }`}
+                  className={`w-2 h-2 rounded-full ${completionPercentage >= percent
+                    ? 'bg-white shadow-lg'
+                    : 'bg-slate-300'
+                    }`}
                 />
               ))}
             </div>
           </div>
-          
+
           {/* XP Summary */}
           <div className="flex items-center justify-between mt-2 text-xs text-slate-500">
             <div className="flex items-center gap-4">
@@ -141,12 +141,12 @@ export default function Missions({ missions }: MissionsProps) {
               Active Missions ({activeMissions.length})
             </h3>
           </div>
-          
+
           {activeMissions.length > 0 ? (
             activeMissions.map((mission, index) => (
-              <MissionRow 
-                key={mission.id} 
-                mission={mission} 
+              <MissionRow
+                key={mission.id}
+                mission={mission}
                 index={index}
                 isSelected={selectedMission === mission.id}
                 onSelect={() => setSelectedMission(
@@ -205,7 +205,7 @@ export default function Missions({ missions }: MissionsProps) {
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       <div className="px-2.5 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs  font-bold rounded-lg shadow-sm">
                         +{mission.xpReward} XP
@@ -213,7 +213,7 @@ export default function Missions({ missions }: MissionsProps) {
                       <ChevronRight className="w-4 h-4 text-slate-400" />
                     </div>
                   </div>
-                  
+
                   {/* Time Info */}
                   <div className="flex items-center gap-2 mt-2 text-xs text-slate-500">
                     <Clock className="w-3 h-3" />
@@ -268,6 +268,7 @@ function MissionRow({ mission, index, isSelected, onSelect }: MissionRowProps) {
   );
 
   const timeRemaining = new Date(mission.endsAt);
+  // eslint-disable-next-line react-hooks/purity
   const isExpiringSoon = timeRemaining.getTime() - Date.now() < 24 * 60 * 60 * 1000;
 
   return (
@@ -276,16 +277,15 @@ function MissionRow({ mission, index, isSelected, onSelect }: MissionRowProps) {
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.1 }}
       whileHover={{ scale: 1.01, y: -2 }}
-      className={`group relative rounded-2xl border p-4 cursor-pointer transition-all duration-200 ${
-        isSelected
-          ? 'border-emerald-300 bg-gradient-to-r from-emerald-50/50 via-white to-white shadow-lg shadow-emerald-200/50'
-          : 'border-slate-200 hover:border-emerald-200 hover:shadow-md'
-      }`}
+      className={`group relative rounded-2xl border p-4 cursor-pointer transition-all duration-200 ${isSelected
+        ? 'border-emerald-300 bg-gradient-to-r from-emerald-50/50 via-white to-white shadow-lg shadow-emerald-200/50'
+        : 'border-slate-200 hover:border-emerald-200 hover:shadow-md'
+        }`}
       onClick={onSelect}
     >
       {/* Hover Glow Effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      
+
       <div className="relative">
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-3">
@@ -294,17 +294,15 @@ function MissionRow({ mission, index, isSelected, onSelect }: MissionRowProps) {
               {isExpiringSoon && (
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full animate-pulse" />
               )}
-              <div className={`p-2 rounded-lg transition-all duration-200 ${
-                progressPercentage >= 100 
-                  ? 'bg-gradient-to-br from-emerald-500 to-teal-500' 
-                  : 'bg-slate-100 group-hover:bg-emerald-50'
-              }`}>
-                <Circle className={`w-4 h-4 ${
-                  progressPercentage >= 100 ? 'text-white' : 'text-slate-400 group-hover:text-emerald-500'
-                }`} />
+              <div className={`p-2 rounded-lg transition-all duration-200 ${progressPercentage >= 100
+                ? 'bg-gradient-to-br from-emerald-500 to-teal-500'
+                : 'bg-slate-100 group-hover:bg-emerald-50'
+                }`}>
+                <Circle className={`w-4 h-4 ${progressPercentage >= 100 ? 'text-white' : 'text-slate-400 group-hover:text-emerald-500'
+                  }`} />
               </div>
             </div>
-            
+
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h4 className=" font-bold app-text">{mission.title}</h4>
@@ -314,7 +312,7 @@ function MissionRow({ mission, index, isSelected, onSelect }: MissionRowProps) {
                   </span>
                 )}
               </div>
-              
+
               {mission.description && (
                 <p className="text-sm app-muted mt-1 line-clamp-2">
                   {mission.description}
@@ -322,7 +320,7 @@ function MissionRow({ mission, index, isSelected, onSelect }: MissionRowProps) {
               )}
             </div>
           </div>
-          
+
           {/* XP Reward Badge */}
           <motion.div
             whileHover={{ scale: 1.1 }}
@@ -348,7 +346,7 @@ function MissionRow({ mission, index, isSelected, onSelect }: MissionRowProps) {
               )}
             </div>
           </div>
-          
+
           {/* Progress Bar */}
           <div className="relative">
             <div className="h-2.5 bg-gradient-to-r from-slate-100 to-slate-200 rounded-full overflow-hidden shadow-inner">
@@ -356,20 +354,17 @@ function MissionRow({ mission, index, isSelected, onSelect }: MissionRowProps) {
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPercentage}%` }}
                 transition={{ duration: 1, delay: index * 0.2 }}
-                className={`h-full rounded-full ${
-                  progressPercentage >= 100
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500'
-                    : 'bg-gradient-to-r from-blue-500 to-cyan-500'
-                }`}
+                className={`h-full rounded-full ${progressPercentage >= 100
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500'
+                  : 'bg-gradient-to-r from-blue-500 to-cyan-500'
+                  }`}
               >
-                {/* Shimmer Effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-white/30 via-transparent to-transparent animate-shimmer" />
               </motion.div>
             </div>
-            
-            {/* Progress Indicator */}
+
             {progressPercentage > 0 && progressPercentage < 100 && (
-              <div 
+              <div
                 className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-lg border-4 border-emerald-500 flex items-center justify-center"
                 style={{ left: `${progressPercentage}%`, marginLeft: '-12px' }}
               >
@@ -377,14 +372,13 @@ function MissionRow({ mission, index, isSelected, onSelect }: MissionRowProps) {
               </div>
             )}
           </div>
-          
-          {/* Time Info */}
+
           <div className="flex items-center justify-between text-xs app-text">
             <div className="flex items-center gap-2">
               <Clock className="w-3 h-3" />
-              <span>Ends {new Date(mission.endsAt).toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit' 
+              <span>Ends {new Date(mission.endsAt).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
               })}</span>
             </div>
             <span className={isExpiringSoon ? 'text-amber-600  font-medium' : 'text-slate-500'}>

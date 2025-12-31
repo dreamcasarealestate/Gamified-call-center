@@ -169,7 +169,7 @@ export default function ChatHistory() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full placeholder:text-[12px] pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all"
+            className="w-full placeholder:text-[12px] pl-10 pr-4 py-[6px] bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all"
           />
         </div>
 
@@ -182,7 +182,7 @@ export default function ChatHistory() {
               setFromDate(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border label-text border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all"
           />
         </div>
 
@@ -195,7 +195,7 @@ export default function ChatHistory() {
               setToDate(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border label-text border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all"
           />
         </div>
       </div>

@@ -16,17 +16,16 @@ import {
   Award,
   Target,
   Search,
-  AlertCircle,
   Eye,
   EyeOff,
   Download,
-  Loader,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import apiClient from "../../Utils/apiClient"; // ✅ CHANGE THIS PATH
+import apiClient from "../../Utils/apiClient";
 import { useAuthStore } from "../../store/user";
 import toast from "react-hot-toast";
+import Loader from "@/commonComponents/Loader";
 
 type TrainingType = "video" | "image" | "pdf";
 
@@ -54,7 +53,6 @@ type UserProgress = {
 /** ---------------- RBAC ---------------- */
 type Role = "ceo" | "manager" | "agent_lead" | "agent" | string;
 
-/** ---------------- Normalizers ---------------- */
 const normalizeTrainingItem = (item: any): TrainingItem => ({
   ...item,
   lastAccessed: item?.lastAccessed ? new Date(item.lastAccessed) : undefined,
@@ -69,7 +67,6 @@ export default function TrainingPage() {
   const [data, setData] = useState<TrainingItem[]>([]);
   const [openId, setOpenId] = useState<string | number | null>(null);
 
-  // modal state
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState<TrainingItem | null>(null);
 
@@ -106,6 +103,7 @@ export default function TrainingPage() {
       }
     } catch (e) {
       toast.error("Failed to fetch chapters");
+      console.log("Failed to fetch chapters", e);
     }
   };
 
@@ -283,7 +281,6 @@ export default function TrainingPage() {
   };
 
   const markAllAsCompleted = async () => {
-    // Optional: Could call backend in bulk later. For now, local.
     setData((prev) => prev.map((item) => ({ ...item, completed: true })));
     setUserProgress((prev) => ({
       ...prev,
@@ -293,7 +290,6 @@ export default function TrainingPage() {
   };
 
   const resetProgress = async () => {
-    // Optional: Could call backend in bulk later. For now, local.
     setData((prev) => prev.map((item) => ({ ...item, completed: false })));
     setUserProgress((prev) => ({
       ...prev,
@@ -427,7 +423,7 @@ export default function TrainingPage() {
 
   if (loading)
     return (
-      <div className="h-full w-full">
+      <div className="h-full w-full ">
         <Loader />
       </div>
     );
@@ -435,17 +431,17 @@ export default function TrainingPage() {
   return (
     <div className="min-h-screen bg-slate-50 px-3 sm:px-4 md:px-6 py-4">
       {error && (
-        <div className="max-w-7xl mx-auto mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700">
+        <div className="max-w-8xl mx-auto mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700">
           {error}
         </div>
       )}
 
-      
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto mb-4 sm:mb-6"
+        className="max-w-8xl mx-auto mb-4 sm:mb-6"
       >
         <div className="app-card rounded-xl sm:rounded-2xl shadow-lg shadow-blue-100/30 p-4 sm:p-6">
           {/* Top Row */}
@@ -534,11 +530,10 @@ export default function TrainingPage() {
                 {[0, 25, 50, 75, 100].map((percent) => (
                   <div
                     key={percent}
-                    className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${
-                      completionPercentage >= percent
-                        ? "bg-white shadow-lg"
-                        : "bg-slate-300"
-                    }`}
+                    className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${completionPercentage >= percent
+                      ? "bg-white shadow-lg"
+                      : "bg-slate-300"
+                      }`}
                   />
                 ))}
               </div>
@@ -618,7 +613,7 @@ export default function TrainingPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
-        className="max-w-7xl mx-auto"
+        className="max-w-8xl mx-auto"
       >
         <div className="app-card rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl shadow-blue-100/50 p-4 sm:p-6 md:p-8">
           {/* Header with Controls */}
@@ -637,7 +632,6 @@ export default function TrainingPage() {
               </div>
             </div>
 
-            {/* Search and Actions */}
             <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
               <div className="relative w-full">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2  h-3 w-3 app-muted" />
@@ -653,11 +647,10 @@ export default function TrainingPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowCompleted(!showCompleted)}
-                  className={`px-3 sm:px-4 py-2.5 rounded-xl font-medium transition-all duration-100 flex items-center gap-2 flex-1 sm:flex-none justify-center ${
-                    showCompleted
-                      ? "bg-linear-to-r from-purple-50 to-pink-50 text-purple-700 border border-purple-200"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  }`}
+                  className={`px-3 sm:px-4 py-[6px] label-text rounded-xl font-medium transition-all duration-100 flex items-center gap-2 flex-1 sm:flex-none justify-center ${showCompleted
+                    ? "bg-linear-to-r from-purple-50 to-pink-50 text-purple-700 border border-purple-200"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    }`}
                 >
                   {showCompleted ? (
                     <Eye className="w-4 h-4" />
@@ -735,23 +728,20 @@ export default function TrainingPage() {
                       boxShadow: "0 10px 30px rgba(0, 0, 0, 0.05)",
                     }}
                     className={`group relative bg-white border rounded-xl sm:rounded-2xl transition-all duration-150 hover:border-purple-200
-                      ${
-                        isOpen
-                          ? "border-purple-300 bg-linear-to-r from-purple-50/30 via-white to-white"
-                          : "border border-slate-200"
+                      ${isOpen
+                        ? "border-purple-300 bg-linear-to-r from-purple-50/30 via-white to-white"
+                        : "border border-slate-200"
                       }
-                      ${
-                        item.completed ? "border-l-4 border-l-emerald-500" : ""
+                      ${item.completed ? "border-l-4 border-l-emerald-500" : ""
                       }`}
                   >
                     {/* Header */}
                     <div
                       className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 sm:px-6
-                      ${
-                        isOpen
+                      ${isOpen
                           ? "bg-linear-to-r from-purple-50/50 to-transparent"
                           : "bg-white"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3 flex-1">
                         {/* Completion Checkbox */}
@@ -759,11 +749,10 @@ export default function TrainingPage() {
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                           onClick={() => toggleCompletion(item.id)}
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-100 ${
-                            item.completed
-                              ? "bg-linear-to-br from-emerald-500 to-teal-500"
-                              : "bg-slate-100 hover:bg-slate-200"
-                          }`}
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-100 ${item.completed
+                            ? "bg-linear-to-br from-emerald-500 to-teal-500"
+                            : "bg-slate-100 hover:bg-slate-200"
+                            }`}
                           title={
                             !isAdmin ? "Toggle completion" : "Login required"
                           }
@@ -802,11 +791,10 @@ export default function TrainingPage() {
 
                           <div className="flex items-center gap-3 sm:gap-4 flex-1">
                             <div
-                              className={`hidden xs:flex w-8 h-8 sm:w-10 sm:h-10 items-center justify-center rounded-xl font-bold shadow-sm ${
-                                item.completed
-                                  ? "bg-linear-to-br from-emerald-100 to-teal-100 text-emerald-700"
-                                  : "bg-linear-to-br from-purple-100 to-pink-100 text-purple-700"
-                              }`}
+                              className={`hidden xs:flex w-8 h-8 sm:w-10 sm:h-10 items-center justify-center rounded-xl font-bold shadow-sm ${item.completed
+                                ? "bg-linear-to-br from-emerald-100 to-teal-100 text-emerald-700"
+                                : "bg-linear-to-br from-purple-100 to-pink-100 text-purple-700"
+                                }`}
                             >
                               {index + 1}
                             </div>
@@ -824,13 +812,12 @@ export default function TrainingPage() {
                               </div>
                               <div className="flex items-center gap-2 mt-1">
                                 <div
-                                  className={`px-2 py-0.5 rounded-lg text-xs font-medium ${
-                                    item.type === "video"
-                                      ? "bg-red-50 text-red-700"
-                                      : item.type === "pdf"
+                                  className={`px-2 py-0.5 rounded-lg text-xs font-medium ${item.type === "video"
+                                    ? "bg-red-50 text-red-700"
+                                    : item.type === "pdf"
                                       ? "bg-blue-50 text-blue-700"
                                       : "bg-emerald-50 text-emerald-700"
-                                  }`}
+                                    }`}
                                 >
                                   {item.type.toUpperCase()}
                                 </div>
@@ -946,7 +933,7 @@ export default function TrainingPage() {
                 <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-linear-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
                   <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 app-muted" />
                 </div>
-                <h3 className="text-lg sm:text-xl  font-bold app-text mb-2">
+                <h3 className="text-lg sm:text-xl  font-bold app-text">
                   No Training Materials Found
                 </h3>
                 <p className="label-text app-muted mb-6">
@@ -957,7 +944,7 @@ export default function TrainingPage() {
                     setSearchQuery("");
                     setShowCompleted(true);
                   }}
-                  className="px-6 py-3 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-xl  font-medium hover:shadow-lg hover:shadow-purple-200 transition-all duration-100 label-text sm:text-base"
+                  className="px-6 py-2 bg-linear-to-r from-purple-500 to-pink-500 text-white rounded-xl  font-medium hover:shadow-lg hover:shadow-purple-200 transition-all duration-100 label-text sm:text-base"
                 >
                   Clear Filters
                 </button>
