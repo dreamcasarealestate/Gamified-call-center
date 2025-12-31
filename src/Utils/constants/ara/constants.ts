@@ -9,13 +9,22 @@ export const COVERAGE_OPTIONS: SelectOption[] = [
 ];
 
 export const CAREER_OPTIONS: SelectOption[] = [
-  { label: "Select", value: "" },
-  { label: "Employed", value: "EMPLOYED" },
-  { label: "Self-Employed", value: "SELF_EMPLOYED" },
-  { label: "Unemployed", value: "UNEMPLOYED" },
-  { label: "Retired", value: "RETIRED" },
-  { label: "Student", value: "STUDENT" },
-];
+  { label: "AMBETTER", value: "AMBETTER" },
+      { label: "AETNA", value: "AETNA" },
+      { label: "BCBS", value: "BCBS" },
+      { label: "CARESOURCE", value: "CARESOURCE" },
+      { label: "CIGNA", value: "CIGNA" },
+      { label: "MOLINA", value: "MOLINA" },
+      { label: "OSCAR", value: "OSCAR" },
+      { label: "UNITED HEALTHCARE", value: "UNITED HEALTHCARE" },
+      { label: "FLORIDA BLUE", value: "FLORIDA BLUE" },
+      { label: "HEALTH FIRST", value: "HEALTH FIRST" },
+      { label: "UNIV OF UTHA", value: "UNIV OF UTHA" },
+      { label: "MEDICA", value: "CARESOURCE" },
+      { label: "PRIORITY HEALTH", value: "PRIORITY HEALTH" },
+      { label: "FIRST CHOICE", value: "FIRST CHOICE" },
+    ]
+
 
 export const WORK_TYPE_OPTIONS: SelectOption[] = [
   { label: "Select", value: "" },
