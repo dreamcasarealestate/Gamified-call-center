@@ -14,6 +14,7 @@ import {
   Calendar,
   User,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface ChatMessage {
   id: string;
@@ -34,6 +35,8 @@ export default function ChatHistory() {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const router = useRouter();
 
   const limit = 10;
 
@@ -63,6 +66,11 @@ export default function ChatHistory() {
     } finally {
       setLoading(false);
     }
+  };
+
+
+  const handleSenderClick = (senderId: string) => {
+    router.push(`/chat-history/${senderId}`);
   };
 
   useEffect(() => {
@@ -113,7 +121,7 @@ export default function ChatHistory() {
     }
   };
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6 bg-gradient-to-br min-h-screen">
+    <div className="p-6 max-w-8xl mx-auto space-y-6 bg-gradient-to-br min-h-screen">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex items-center justify-center gap-2">
           <a
@@ -121,7 +129,7 @@ export default function ChatHistory() {
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-200 hover:border-blue-300 hover:bg-gradient-to-r hover:from-white hover:to-blue-50 transition-all duration-300 group shadow-sm hover:shadow"
           >
             <Home className="w-4 h-4 text-gray-600 group-hover:text-blue-600 transition-colors duration-300" />
-            <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700 transition-colors duration-300">
+            <span className="label-text font-medium font-medium text-gray-700 group-hover:text-blue-700 transition-colors duration-300">
               Home
             </span>
           </a>
@@ -132,7 +140,7 @@ export default function ChatHistory() {
             <div className="p-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg">
               <MessageSquare className="w-4 h-4 text-white" />
             </div>
-            <span className="text-sm font-bold bg-gradient-to-r from-blue-700 to-indigo-800 bg-clip-text text-transparent">
+            <span className="label-text font-medium font-bold bg-gradient-to-r from-blue-700 to-indigo-800 bg-clip-text text-transparent">
               Chat History
             </span>
           </div>
@@ -161,7 +169,7 @@ export default function ChatHistory() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all"
+            className="w-full placeholder:text-[12px] pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all"
           />
         </div>
 
@@ -174,7 +182,7 @@ export default function ChatHistory() {
               setFromDate(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all"
           />
         </div>
 
@@ -187,7 +195,7 @@ export default function ChatHistory() {
               setToDate(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all"
+            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition-all"
           />
         </div>
       </div>
@@ -195,7 +203,7 @@ export default function ChatHistory() {
       {/* Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-700">
+          <table className="w-full text-left label-text font-medium text-gray-700">
             <thead className="bg-gradient-to-r from-gray-100 to-blue-50/50 text-xs uppercase font-semibold text-gray-700">
               <tr>
                 <th className="p-4 w-12">
@@ -214,12 +222,12 @@ export default function ChatHistory() {
             </thead>
 
             <tbody className="divide-y divide-gray-200/60">
-              {loading ? (
+              {!loading ? (
                 <tr>
                   <td colSpan={5} className="p-10 text-center">
                     <div className="flex flex-col items-center justify-center gap-3">
                       <Loader2 className="w-7 h-7 animate-spin text-blue-600" />
-                      <span className="text-gray-600 text-sm">Loading messages...</span>
+                      <span className="text-gray-600 label-text font-bold">Loading messages...</span>
                     </div>
                   </td>
                 </tr>
@@ -230,7 +238,7 @@ export default function ChatHistory() {
                       <MessageSquare className="w-8 h-8 text-gray-400" />
                       <div>
                         <p className="text-gray-700 font-medium">No messages found</p>
-                        <p className="text-gray-500 text-sm mt-1">
+                        <p className="text-gray-500 label-text font-medium mt-1">
                           {search || fromDate || toDate
                             ? "Try adjusting your filters"
                             : "Start a conversation to see messages here"}
@@ -240,7 +248,7 @@ export default function ChatHistory() {
                   </td>
                 </tr>
               ) : (
-                data.map((msg, index) => (
+                data.map((msg: any, index: number) => (
                   <tr
                     key={msg.id}
                     className={`transition-colors ${selectedIds.has(msg.id)
@@ -260,7 +268,7 @@ export default function ChatHistory() {
                     </td>
 
                     <td className="p-4">
-                      <div className="font-medium text-gray-900 whitespace-nowrap text-sm bg-gray-100/50 px-3 py-1.5 rounded-lg inline-block">
+                      <div className="font-medium text-gray-900 whitespace-nowrap label-text  bg-gray-100/50 px-3 py-1.5 rounded-lg inline-block">
                         {msg.createdAt
                           ? new Intl.DateTimeFormat("en-CA", {
                             year: "numeric",
@@ -284,16 +292,20 @@ export default function ChatHistory() {
                         {msg.message}
                       </div>
                     </td>
-
                     <td className="p-4">
-                      <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleSenderClick(msg?.senderId)}
+                        className="flex items-center gap-2 text-left group hover:underline"
+                      >
                         <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg">
                           <User className="w-4 h-4 text-blue-600" />
                         </div>
-                        <span className="font-medium text-gray-900">
+
+                        <span className="font-medium text-gray-900 group-hover:text-blue-700 transition">
                           {msg.senderName}
                         </span>
-                      </div>
+                      </button>
                     </td>
 
                     <td className="p-4">
@@ -327,9 +339,8 @@ export default function ChatHistory() {
           </table>
         </div>
 
-        {/* Pagination */}
         <div className="p-4 border-t border-gray-200 flex items-center justify-between bg-gradient-to-r from-gray-50 to-blue-50/30">
-          <div className="text-sm text-gray-600">
+          <div className="label-text font-medium text-gray-600">
             Page <span className="font-semibold text-gray-800">{page}</span> of{" "}
             <span className="font-semibold text-gray-800">{totalPages}</span> • Total{" "}
             <span className="font-semibold text-gray-800">{total}</span> items
@@ -361,7 +372,7 @@ export default function ChatHistory() {
                   <button
                     key={pageNum}
                     onClick={() => setPage(pageNum)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${page === pageNum
+                    className={`px-3 py-1.5 rounded-lg label-text font-medium  transition-all duration-200 ${page === pageNum
                       ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-sm"
                       : "text-gray-700 hover:bg-gray-100"
                       }`}
