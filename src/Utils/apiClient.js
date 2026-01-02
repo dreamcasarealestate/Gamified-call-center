@@ -8,7 +8,7 @@ const URLS = {
   blogs: `${base_url}/blog`,
   otp: `${base_url}/otp`,
   user: `${base_url}/users`,
-  s3bucket: "s3bucket",
+  s3bucket:`${base_url}/s3bucket`,
   training: `${base_url}/api/training`,
   leaderboard: `${base_url}/leaderboard`,
   agent: `${base_url}/agent`,

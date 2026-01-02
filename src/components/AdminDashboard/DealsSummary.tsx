@@ -63,7 +63,7 @@ function isSameDay(a: Date, b: Date) {
 
 function eachDayInclusive(from: Date, to: Date) {
   const out: Date[] = [];
-  let cur = startOfDay(from);
+  const cur = startOfDay(from);
   const end = startOfDay(to);
   while (cur.getTime() <= end.getTime()) {
     out.push(new Date(cur));
@@ -126,6 +126,7 @@ function RangeCalendar({
     if (!b) return;
     const c = new Date(b);
     c.setDate(1);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCursor(c);
   }, [value.from, value.to]);
 
@@ -314,16 +315,16 @@ export default function DealsSummaryByDate() {
 
       const safe: AgentRow[] = Array.isArray(body)
         ? body.map((r: any) => ({
-            agentId: typeof r?.agentId === "string" ? r.agentId : "",
-            agentName: typeof r?.agentName === "string" ? r.agentName : "Unknown",
-            data: Array.isArray(r?.data)
-              ? r.data.map((p: any) => ({
-                  date: typeof p?.date === "string" ? p.date : "",
-                  forms: safeNum(p?.forms),
-                  deals: safeNum(p?.deals),
-                }))
-              : [],
-          }))
+          agentId: typeof r?.agentId === "string" ? r.agentId : "",
+          agentName: typeof r?.agentName === "string" ? r.agentName : "Unknown",
+          data: Array.isArray(r?.data)
+            ? r.data.map((p: any) => ({
+              date: typeof p?.date === "string" ? p.date : "",
+              forms: safeNum(p?.forms),
+              deals: safeNum(p?.deals),
+            }))
+            : [],
+        }))
         : [];
 
       setRows(safe);
@@ -378,8 +379,8 @@ export default function DealsSummaryByDate() {
   const rangeLabel = hasTwoPointers
     ? `${fmtRange.format(draftRange.from!)} to ${fmtRange.format(draftRange.to!)}`
     : draftRange.from
-    ? `${fmtRange.format(draftRange.from)} to —`
-    : "Select date range";
+      ? `${fmtRange.format(draftRange.from)} to —`
+      : "Select date range";
 
   const applyRange = () => {
     if (!draftRange.from || !draftRange.to) return;
@@ -454,9 +455,7 @@ export default function DealsSummaryByDate() {
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       className="w-full"
     >
-        {loading ? (
-                <SpinnerLoader label="Fetching data..." />
-              ) : (
+
       <motion.div
         whileHover={{ y: -2 }}
         transition={{ type: "spring", stiffness: 260, damping: 18 }}
@@ -498,11 +497,10 @@ export default function DealsSummaryByDate() {
                           type="button"
                           disabled={!hasTwoPointers}
                           onClick={applyRange}
-                          className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
-                            hasTwoPointers
-                              ? "border-slate-200 bg-slate-900 text-white hover:bg-slate-800"
-                              : "border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed"
-                          }`}
+                          className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${hasTwoPointers
+                            ? "border-slate-200 bg-slate-900 text-white hover:bg-slate-800"
+                            : "border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed"
+                            }`}
                         >
                           Apply
                         </button>
@@ -516,11 +514,10 @@ export default function DealsSummaryByDate() {
                 type="button"
                 onClick={downloadPdf}
                 disabled={!showTable}
-                className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold shadow-sm transition ${
-                  showTable
-                    ? "border-emerald-100 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-                    : "border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed"
-                }`}
+                className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold shadow-sm transition ${showTable
+                  ? "border-emerald-100 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                  : "border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed"
+                  }`}
               >
                 <Download className="h-4 w-4" />
                 <span>Excel</span>
@@ -639,7 +636,6 @@ export default function DealsSummaryByDate() {
           )}
         </div>
       </motion.div>
-)}
     </motion.section>
   );
 }

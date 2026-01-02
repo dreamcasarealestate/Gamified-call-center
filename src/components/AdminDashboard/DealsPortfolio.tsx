@@ -204,6 +204,7 @@ function RangeCalendar({
     if (!b) return;
     const c = new Date(b);
     c.setDate(1);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCursor(c);
   }, [value.from, value.to]);
 
@@ -356,7 +357,7 @@ function RangeCalendar({
 export default function DealsPortfolioCard() {
   const initial = todayRangeDefault();
 
-  const [loading,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const [draftRange, setDraftRange] = useState<DraftRange>({
     from: initial.from,
@@ -397,17 +398,17 @@ export default function DealsPortfolioCard() {
 
       const rows: DealsPortfolioApiRow[] = Array.isArray(body)
         ? body.map((r: any) => ({
-            agentId: typeof r?.agentId === "string" ? r.agentId : "",
-            agentName: typeof r?.agentName === "string" ? r.agentName : "Unknown",
-            totalDeals:
-              typeof r?.totalDeals === "number" && Number.isFinite(r.totalDeals)
-                ? r.totalDeals
-                : 0,
-            totalForms:
-              typeof r?.totalForms === "number" && Number.isFinite(r.totalForms)
-                ? r.totalForms
-                : 0,
-          }))
+          agentId: typeof r?.agentId === "string" ? r.agentId : "",
+          agentName: typeof r?.agentName === "string" ? r.agentName : "Unknown",
+          totalDeals:
+            typeof r?.totalDeals === "number" && Number.isFinite(r.totalDeals)
+              ? r.totalDeals
+              : 0,
+          totalForms:
+            typeof r?.totalForms === "number" && Number.isFinite(r.totalForms)
+              ? r.totalForms
+              : 0,
+        }))
         : [];
 
       const totalDeals = rows.reduce((s, r) => s + clampInt(r.totalDeals), 0);
@@ -515,8 +516,8 @@ export default function DealsPortfolioCard() {
   const rangeLabel = hasTwoPointers
     ? `${fmtRange.format(draftRange.from!)} to ${fmtRange.format(draftRange.to!)}`
     : draftRange.from
-    ? `${fmtRange.format(draftRange.from)} to —`
-    : "Select date range";
+      ? `${fmtRange.format(draftRange.from)} to —`
+      : "Select date range";
 
   const applyRange = () => {
     if (!draftRange.from || !draftRange.to) return;
@@ -536,9 +537,7 @@ export default function DealsPortfolioCard() {
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       className="w-full"
     >
-      {loading ? (
-              <SpinnerLoader label="Fetching data..." />
-            ) : (
+
       <motion.div
         whileHover={{ y: -2 }}
         transition={{ type: "spring", stiffness: 260, damping: 18 }}
@@ -580,11 +579,10 @@ export default function DealsPortfolioCard() {
                           type="button"
                           disabled={!hasTwoPointers}
                           onClick={applyRange}
-                          className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${
-                            hasTwoPointers
-                              ? "border-slate-200 bg-slate-900 text-white hover:bg-slate-800"
-                              : "border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed"
-                          }`}
+                          className={`rounded-xl border px-3 py-2 text-xs font-semibold transition ${hasTwoPointers
+                            ? "border-slate-200 bg-slate-900 text-white hover:bg-slate-800"
+                            : "border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed"
+                            }`}
                         >
                           Apply
                         </button>
@@ -715,7 +713,7 @@ export default function DealsPortfolioCard() {
             </div>
           </div>
         </div>
-      </motion.div>)}
+      </motion.div>
     </motion.section>
   );
 }

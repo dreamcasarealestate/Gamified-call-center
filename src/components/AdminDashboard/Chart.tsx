@@ -1,4 +1,3 @@
-// component/dashboard/chat/index.tsx
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
@@ -21,9 +20,8 @@ import {
   Zap,
   BarChart3,
 } from "lucide-react";
-
 import apiClient from "../../Utils/apiClient";
-import { SpinnerLoader } from "./spinner";
+import Loader from "@/commonComponents/Loader";
 
 /* -------------------- Types -------------------- */
 
@@ -307,19 +305,19 @@ export default function DealsChatCard() {
       const body = res?.body?.data;
       const safe: Array<{ id: string; name: string }> = Array.isArray(body)
         ? body
-            .map((r: any) => {
-              const id = typeof r?.id === "string" ? r.id : "";
-              const first =
-                typeof r?.firstName === "string" ? r.firstName.trim() : "";
-              const last =
-                typeof r?.lastName === "string" ? r.lastName.trim() : "";
+          .map((r: any) => {
+            const id = typeof r?.id === "string" ? r.id : "";
+            const first =
+              typeof r?.firstName === "string" ? r.firstName.trim() : "";
+            const last =
+              typeof r?.lastName === "string" ? r.lastName.trim() : "";
 
-              const name =
-                [first, last].filter(Boolean).join(" ").trim() || "Unknown";
+            const name =
+              [first, last].filter(Boolean).join(" ").trim() || "Unknown";
 
-              return { id, name };
-            })
-            .filter((a) => a.id)
+            return { id, name };
+          })
+          .filter((a) => a.id)
         : [];
 
       console.log(safe, body, res);
@@ -479,6 +477,7 @@ export default function DealsChatCard() {
   );
 
   const loading = loadingAgents || loadingChart;
+  if (loading) return <Loader />
 
   return (
     <motion.section
@@ -487,266 +486,263 @@ export default function DealsChatCard() {
       transition={{ duration: 0.6 }}
       className="w-full"
     >
-      {loading ? (
-        <SpinnerLoader label="Fetching data..." />
-      ) : (
-        <div
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-white to-blue-50/50 p-6 shadow-2xl"
-          style={{
-            boxShadow:
-              "0 20px 60px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.5)",
-          }}
-        >
-          <motion.div
-            animate={{
-              x: [0, 50, 0],
-              y: [0, -30, 0],
-              rotate: [0, 180, 360],
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute top-10 right-10 h-32 w-32 rounded-full bg-gradient-to-r from-purple-200/30 to-pink-200/30 blur-xl"
-          />
-          <motion.div
-            animate={{
-              x: [0, -40, 0],
-              y: [0, 40, 0],
-              rotate: [360, 180, 0],
-            }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-            className="absolute bottom-10 left-10 h-40 w-40 rounded-full bg-gradient-to-r from-blue-200/30 to-cyan-200/30 blur-xl"
-          />
 
-          <motion.div
-            initial={{ y: -30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 100 }}
-            className="relative z-10 mb-8 flex flex-col gap-6 md:flex-row md:items-center md:justify-between"
-          >
-            <div className="flex-1">
-              <div className="flex items-center gap-3">
-                <motion.div
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    rotate: [0, 360],
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                  className="rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 p-2"
-                >
-                  <BarChart3 className="h-6 w-6 text-white" />
-                </motion.div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                      {title}
-                    </span>
-                  </h2>
-                  <p className="mt-2 text-sm font-medium text-gray-600">
-                    Interactive performance dashboard with animated charts and
-                    real-time insights
-                  </p>
-                </div>
+      <div
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-white to-blue-50/50 p-6 shadow-2xl"
+        style={{
+          boxShadow:
+            "0 20px 60px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.5)",
+        }}
+      >
+        <motion.div
+          animate={{
+            x: [0, 50, 0],
+            y: [0, -30, 0],
+            rotate: [0, 180, 360],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute top-10 right-10 h-32 w-32 rounded-full bg-gradient-to-r from-purple-200/30 to-pink-200/30 blur-xl"
+        />
+        <motion.div
+          animate={{
+            x: [0, -40, 0],
+            y: [0, 40, 0],
+            rotate: [360, 180, 0],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          className="absolute bottom-10 left-10 h-40 w-40 rounded-full bg-gradient-to-r from-blue-200/30 to-cyan-200/30 blur-xl"
+        />
+
+        <motion.div
+          initial={{ y: -30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 100 }}
+          className="relative z-10 mb-8 flex flex-col gap-6 md:flex-row md:items-center md:justify-between"
+        >
+          <div className="flex-1">
+            <div className="flex items-center gap-3">
+              <motion.div
+                animate={{
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 360],
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 p-2"
+              >
+                <BarChart3 className="h-6 w-6 text-white" />
+              </motion.div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    {title}
+                  </span>
+                </h2>
+                <p className="mt-2 text-sm font-medium text-gray-600">
+                  Interactive performance dashboard with animated charts and
+                  real-time insights
+                </p>
               </div>
             </div>
-
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-              className="relative"
-            >
-              <select
-                value={selectedAgentId}
-                onChange={(e) => setSelectedAgentId(e.target.value)}
-                className="h-12 min-w-[240px] appearance-none rounded-2xl border-2 border-blue-200 bg-white px-5 pr-12 text-sm font-bold text-gray-800 shadow-lg outline-none transition-all hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
-              >
-                <option value="all">All Agents</option>
-                {agents.map((a: any) => (
-                  <option key={a.id} value={a.id} className="py-2">
-                    {a.name}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
-                <motion.div
-                  animate={{ y: [0, 2, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <ChevronDown className="h-5 w-5 text-blue-500" />
-                </motion.div>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          <div className="relative z-10 mb-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-            {statCards.map((card, index) => (
-              <StatCard key={index} {...card} />
-            ))}
           </div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, duration: 0.7, type: "spring" }}
-            className="relative z-10 mb-8 rounded-3xl bg-gradient-to-br from-white to-blue-50/50 p-6 shadow-2xl"
-            style={{
-              border: "2px solid rgba(255, 255, 255, 0.8)",
-              boxShadow:
-                "0 15px 50px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.5)",
-            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+            className="relative"
           >
-            <div className="absolute inset-0 overflow-hidden rounded-3xl">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <motion.div
-                  key={i}
-                  animate={{
-                    y: [0, -20, 0],
-                    opacity: [0.2, 0.8, 0.2],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    delay: i * 0.4,
-                    ease: "easeInOut",
-                  }}
-                  className="absolute h-1 w-1 rounded-full bg-gradient-to-r from-purple-400 to-blue-400"
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                  }}
-                />
+            <select
+              value={selectedAgentId}
+              onChange={(e) => setSelectedAgentId(e.target.value)}
+              className="h-12 min-w-[240px] appearance-none rounded-2xl border-2 border-blue-200 bg-white px-5 pr-12 text-sm font-bold text-gray-800 shadow-lg outline-none transition-all hover:border-blue-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+            >
+              <option value="all">All Agents</option>
+              {agents.map((a: any) => (
+                <option key={a.id} value={a.id} className="py-2">
+                  {a.name}
+                </option>
               ))}
-            </div>
-
-            <div className="relative h-[360px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart
-                  data={timeline}
-                  margin={{ top: 20, right: 30, bottom: 20, left: 0 }}
-                >
-                  <defs>
-                    <linearGradient id="dealFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.8} />
-                      <stop
-                        offset="90%"
-                        stopColor="#8b5cf6"
-                        stopOpacity={0.1}
-                      />
-                    </linearGradient>
-                    <linearGradient id="formsFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.9} />
-                      <stop
-                        offset="90%"
-                        stopColor="#3b82f6"
-                        stopOpacity={0.2}
-                      />
-                    </linearGradient>
-                    <linearGradient id="agentsFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.9} />
-                      <stop
-                        offset="90%"
-                        stopColor="#10b981"
-                        stopOpacity={0.2}
-                      />
-                    </linearGradient>
-                  </defs>
-
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    vertical={false}
-                    stroke="#e5e7eb"
-                  />
-
-                  <XAxis
-                    dataKey="date"
-                    tick={{ fontSize: 12, fill: "#6b7280", fontWeight: 600 }}
-                    axisLine={{ stroke: "#d1d5db" }}
-                    tickLine={{ stroke: "#d1d5db" }}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 12, fill: "#6b7280", fontWeight: 600 }}
-                    axisLine={{ stroke: "#d1d5db" }}
-                    tickLine={{ stroke: "#d1d5db" }}
-                    width={40}
-                  />
-
-                  <Tooltip content={<FancyTooltip />} />
-
-                  <Area
-                    type="monotone"
-                    dataKey="deals"
-                    stroke="#8b5cf6"
-                    strokeWidth={3}
-                    fill="url(#dealFill)"
-                    dot={{
-                      r: 5,
-                      fill: "#8b5cf6",
-                      stroke: "#ffffff",
-                      strokeWidth: 2,
-                    }}
-                    activeDot={{
-                      r: 10,
-                      fill: "#ffffff",
-                      stroke: "#8b5cf6",
-                      strokeWidth: 3,
-                    }}
-                  />
-
-                  <Bar
-                    dataKey="forms"
-                    barSize={22}
-                    radius={[8, 8, 0, 0]}
-                    fill="url(#formsFill)"
-                  />
-
-                  <Bar
-                    dataKey="activeAgents"
-                    barSize={16}
-                    radius={[6, 6, 0, 0]}
-                    fill="url(#agentsFill)"
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <motion.span
-                whileHover={{ scale: 1.1, y: -3 }}
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-100 to-purple-50 px-5 py-2.5 text-sm font-bold text-purple-900 shadow-lg"
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+              <motion.div
+                animate={{ y: [0, 2, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
               >
-                <motion.span
-                  animate={{ scale: [1, 1.3, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="h-3 w-3 rounded-full bg-gradient-to-r from-purple-500 to-purple-600"
-                />
-                Deals
-              </motion.span>
-
-              <motion.span
-                whileHover={{ scale: 1.1, y: -3 }}
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-100 to-blue-50 px-5 py-2.5 text-sm font-bold text-blue-900 shadow-lg"
-              >
-                <motion.span
-                  animate={{ scale: [1, 1.3, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
-                  className="h-3 w-3 rounded-full bg-gradient-to-r from-blue-500 to-blue-600"
-                />
-                Forms
-              </motion.span>
-
-              <motion.span
-                whileHover={{ scale: 1.1, y: -3 }}
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 px-5 py-2.5 text-sm font-bold text-emerald-900 shadow-lg"
-              >
-                <motion.span
-                  animate={{ scale: [1, 1.3, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: 0.4 }}
-                  className="h-3 w-3 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600"
-                />
-                Active Agents
-              </motion.span>
+                <ChevronDown className="h-5 w-5 text-blue-500" />
+              </motion.div>
             </div>
           </motion.div>
+        </motion.div>
+
+        <div className="relative z-10 mb-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {statCards.map((card, index) => (
+            <StatCard key={index} {...card} />
+          ))}
         </div>
-      )}
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5, duration: 0.7, type: "spring" }}
+          className="relative z-10 mb-8 rounded-3xl bg-gradient-to-br from-white to-blue-50/50 p-6 shadow-2xl"
+          style={{
+            border: "2px solid rgba(255, 255, 255, 0.8)",
+            boxShadow:
+              "0 15px 50px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.5)",
+          }}
+        >
+          <div className="absolute inset-0 overflow-hidden rounded-3xl">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <motion.div
+                key={i}
+                animate={{
+                  y: [0, -20, 0],
+                  opacity: [0.2, 0.8, 0.2],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  delay: i * 0.4,
+                  ease: "easeInOut",
+                }}
+                className="absolute h-1 w-1 rounded-full bg-gradient-to-r from-purple-400 to-blue-400"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="relative h-[360px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart
+                data={timeline}
+                margin={{ top: 20, right: 30, bottom: 20, left: 0 }}
+              >
+                <defs>
+                  <linearGradient id="dealFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.8} />
+                    <stop
+                      offset="90%"
+                      stopColor="#8b5cf6"
+                      stopOpacity={0.1}
+                    />
+                  </linearGradient>
+                  <linearGradient id="formsFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.9} />
+                    <stop
+                      offset="90%"
+                      stopColor="#3b82f6"
+                      stopOpacity={0.2}
+                    />
+                  </linearGradient>
+                  <linearGradient id="agentsFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10b981" stopOpacity={0.9} />
+                    <stop
+                      offset="90%"
+                      stopColor="#10b981"
+                      stopOpacity={0.2}
+                    />
+                  </linearGradient>
+                </defs>
+
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#e5e7eb"
+                />
+
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 12, fill: "#6b7280", fontWeight: 600 }}
+                  axisLine={{ stroke: "#d1d5db" }}
+                  tickLine={{ stroke: "#d1d5db" }}
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: "#6b7280", fontWeight: 600 }}
+                  axisLine={{ stroke: "#d1d5db" }}
+                  tickLine={{ stroke: "#d1d5db" }}
+                  width={40}
+                />
+
+                <Tooltip content={<FancyTooltip />} />
+
+                <Area
+                  type="monotone"
+                  dataKey="deals"
+                  stroke="#8b5cf6"
+                  strokeWidth={3}
+                  fill="url(#dealFill)"
+                  dot={{
+                    r: 5,
+                    fill: "#8b5cf6",
+                    stroke: "#ffffff",
+                    strokeWidth: 2,
+                  }}
+                  activeDot={{
+                    r: 10,
+                    fill: "#ffffff",
+                    stroke: "#8b5cf6",
+                    strokeWidth: 3,
+                  }}
+                />
+
+                <Bar
+                  dataKey="forms"
+                  barSize={22}
+                  radius={[8, 8, 0, 0]}
+                  fill="url(#formsFill)"
+                />
+
+                <Bar
+                  dataKey="activeAgents"
+                  barSize={16}
+                  radius={[6, 6, 0, 0]}
+                  fill="url(#agentsFill)"
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <motion.span
+              whileHover={{ scale: 1.1, y: -3 }}
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-100 to-purple-50 px-5 py-2.5 text-sm font-bold text-purple-900 shadow-lg"
+            >
+              <motion.span
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="h-3 w-3 rounded-full bg-gradient-to-r from-purple-500 to-purple-600"
+              />
+              Deals
+            </motion.span>
+
+            <motion.span
+              whileHover={{ scale: 1.1, y: -3 }}
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-100 to-blue-50 px-5 py-2.5 text-sm font-bold text-blue-900 shadow-lg"
+            >
+              <motion.span
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
+                className="h-3 w-3 rounded-full bg-gradient-to-r from-blue-500 to-blue-600"
+              />
+              Forms
+            </motion.span>
+
+            <motion.span
+              whileHover={{ scale: 1.1, y: -3 }}
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 px-5 py-2.5 text-sm font-bold text-emerald-900 shadow-lg"
+            >
+              <motion.span
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{ duration: 2, repeat: Infinity, delay: 0.4 }}
+                className="h-3 w-3 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600"
+              />
+              Active Agents
+            </motion.span>
+          </div>
+        </motion.div>
+      </div>
     </motion.section>
   );
 }
